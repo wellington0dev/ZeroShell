@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
-# Instala as dependências usadas por este setup Hyprland + quickshell
-# e linka as configs de ~/dotfiles em ~/.config, com base no array
-# CONFIG_DIRS (dirs.sh).
+# Instala as dependências usadas por este setup Hyprland + quickshell,
+# linka as configs de ~/dotfiles em ~/.config (CONFIG_DIRS) e copia os
+# scripts do setup pra lá também (SCRIPT_FILES), com base nos arrays
+# em dirs.sh.
 #
 # Usage:
 #   ./install.sh
@@ -55,6 +56,21 @@ for dir in "${CONFIG_DIRS[@]}"; do
 
     ln -s "$src" "$dest"
     echo "  -> $dir linkado"
+done
+
+echo "==> Copiando scripts para $CONFIG_DIR..."
+
+for file in "${SCRIPT_FILES[@]}"; do
+    src="$DOTS_DIR/$file"
+    dest="$CONFIG_DIR/$file"
+
+    if [[ ! -e "$src" ]]; then
+        echo "  !! $file não existe em $DOTS_DIR, pulando"
+        continue
+    fi
+
+    echo "  -> $file"
+    cp -a "$src" "$dest"
 done
 
 echo "==> Concluído."
