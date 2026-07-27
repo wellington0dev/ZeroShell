@@ -16,4 +16,4 @@ SCRIPT_FILES=(
 )
 
 CONFIG_DIR="$HOME/.config"
-DOTS_DIR="$HOME/dotfiles"
+DOTS_DIR="$HOME/ZeroShell"
