@@ -1,0 +1,12 @@
+{
+    "background": "{{ colors.background.dark.hex }}",
+    "surface": "{{ colors.surface_container.dark.hex }}",
+    "surfaceAlt": "{{ colors.surface_container_high.dark.hex }}",
+    "border": "{{ colors.outline_variant.dark.hex }}",
+    "foreground": "{{ colors.on_background.dark.hex }}",
+    "foregroundMuted": "{{ colors.on_surface_variant.dark.hex | set_lightness: 58 }}",
+    "accent": "{{ colors.primary.dark.hex }}",
+    "accentAlt": "{{ wallAccent2.hex | to_color | set_lightness: 80 }}",
+    "danger": "{{ colors.error.dark.hex }}",
+    "success": "{{ colors.success.dark.hex }}"
+}

@@ -1,0 +1,9 @@
+.claude
+
+# Estado gerado em tempo de execução (cores do tema, sessão da Helena,
+# preferências de captura de tela...) - não é código-fonte, e alguns desses
+# arquivos guardam caminhos/segredos específicos desta máquina/usuário. Os
+# arquivos QML que os leem já têm valores padrão portáveis embutidos (veja os
+# JsonAdapter em cada singleton), então é seguro não versionar isso: o shell
+# recria cada arquivo sozinho na primeira vez que precisar escrever algo.
+State/*.json

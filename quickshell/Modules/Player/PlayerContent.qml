@@ -1,0 +1,352 @@
+import QtQuick
+import QtQuick.Shapes
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Widgets
+import Quickshell.Services.Mpris
+import qs.Theme
+import qs.Widgets
+
+// Conteúdo visual do player MPRIS (capa com anel de progresso em volta,
+// título/álbum/artista, controles) - sem janela própria, embutido na aba
+// "Player" do Dashboard. Estilo inspirado no caelestia
+// (github.com/caelestia-dots/shell, módulo dashboard/dash/Media.qml): o
+// anel de progresso circunda a capa em vez de ficar como barra separada, e
+// os controles de prev/play/next viram pílulas em vez de ícones soltos.
+//
+// Layout em linha - capa à esquerda, infos + controles à direita -, com
+// bastante espaço (30px) entre a capa e o resto e margem lateral extra pra
+// não ficar colado nas bordas do card.
+RowLayout {
+    id: root
+
+    readonly property MprisPlayer player: Player.active
+
+    // Most MPRIS players (browsers especially) only report position on
+    // seek/pause/track-change, not continuously during playback - this ticks
+    // a local estimate once a second while playing and resyncs to the real
+    // value whenever the player actually reports one, instead of the seek
+    // bar only moving when the player happens to notify us.
+    property real displayPosition: 0
+
+    readonly property real progress: (player && player.length > 0) ? displayPosition / player.length : 0
+
+    function resyncPosition() {
+        displayPosition = player ? player.position : 0
+    }
+
+    function formatTime(seconds) {
+        if (!seconds || seconds < 0) return "0:00"
+        const total = Math.floor(seconds)
+        const m = Math.floor(total / 60)
+        const s = total % 60
+        return m + ":" + String(s).padStart(2, "0")
+    }
+
+    Component.onCompleted: resyncPosition()
+    onPlayerChanged: resyncPosition()
+
+    Connections {
+        target: root.player
+        function onPositionChanged() { root.resyncPosition() }
+        function onTrackChanged() { root.resyncPosition() }
+    }
+
+    Timer {
+        interval: 1000
+        repeat: true
+        running: root.player !== null && root.player.isPlaying
+        onTriggered: {
+            if (root.player) root.displayPosition = Math.min(root.displayPosition + 1, root.player.length || 0)
+        }
+    }
+
+    Layout.leftMargin: 22
+    Layout.rightMargin: 22
+    spacing: 30
+
+    // Capa com o anel de progresso da faixa em volta - à esquerda.
+    Item {
+        Layout.alignment: Qt.AlignVCenter
+        Layout.preferredWidth: 132
+        Layout.preferredHeight: 132
+
+        Shape {
+            id: ring
+
+            anchors.fill: parent
+            preferredRendererType: Shape.CurveRenderer
+
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: Colors.surfaceAlt
+                strokeWidth: 4
+                capStyle: ShapePath.RoundCap
+
+                PathAngleArc {
+                    radiusX: ring.width / 2 - 2
+                    radiusY: ring.height / 2 - 2
+                    centerX: ring.width / 2
+                    centerY: ring.height / 2
+                    startAngle: -90
+                    sweepAngle: 360
+                }
+            }
+
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: Colors.accent
+                strokeWidth: 4
+                capStyle: ShapePath.RoundCap
+
+                PathAngleArc {
+                    radiusX: ring.width / 2 - 2
+                    radiusY: ring.height / 2 - 2
+                    centerX: ring.width / 2
+                    centerY: ring.height / 2
+                    startAngle: -90
+                    sweepAngle: 360 * Math.max(0, Math.min(1, root.progress))
+
+                    Behavior on sweepAngle {
+                        NumberAnimation { duration: Motion.durationSlow; easing.type: Easing.OutCubic }
+                    }
+                }
+            }
+        }
+
+        // "ClippingRectangle" em vez de Rectangle+clip:true: um Rectangle
+        // comum só recorta numa caixa reta (ignora o radius), então a capa
+        // quadrada continuaria aparecendo por baixo do círculo.
+        ClippingRectangle {
+            anchors.centerIn: parent
+            width: parent.width - 14
+            height: width
+            radius: width / 2
+            color: Colors.surfaceAlt
+
+            Image {
+                id: cover
+                anchors.fill: parent
+                source: root.player && root.player.trackArtUrl ? root.player.trackArtUrl : ""
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                visible: status === Image.Ready
+            }
+
+            Icon {
+                anchors.centerIn: parent
+                visible: cover.status !== Image.Ready
+                icon: "music-note"
+                size: 28
+                tint: Colors.foregroundMuted
+            }
+        }
+    }
+
+    // Infos + controles - à direita, alinhados à esquerda (não mais
+    // centralizados embaixo da capa).
+    ColumnLayout {
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignVCenter
+        spacing: Colors.spacing
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+            visible: Player.players.length > 1
+
+            Repeater {
+                model: Player.players
+
+                delegate: Rectangle {
+                    id: tab
+
+                    required property var modelData
+
+                    width: 24
+                    height: 24
+                    radius: Colors.radiusSmall
+                    color: Player.active === modelData
+                        ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18)
+                        : (tabHover.hovered ? Colors.surfaceAlt : "transparent")
+                    border.color: Player.active === modelData ? Colors.accent : "transparent"
+                    border.width: 1
+
+                    IconImage {
+                        anchors.centerIn: parent
+                        implicitSize: 14
+                        source: Quickshell.iconPath(tab.modelData.desktopEntry, true)
+                    }
+
+                    HoverHandler { id: tabHover }
+                    TapHandler { onTapped: Player.select(tab.modelData) }
+                }
+            }
+
+            Item { Layout.fillWidth: true }
+        }
+
+        Text {
+            text: root.player && root.player.trackTitle ? root.player.trackTitle : "Nada tocando"
+            color: Colors.foreground
+            font.pixelSize: 14
+            font.bold: true
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+        }
+
+        Text {
+            text: root.player && root.player.trackAlbum ? root.player.trackAlbum : ""
+            color: Colors.foregroundMuted
+            font.pixelSize: 10
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+            visible: text.length > 0
+        }
+
+        Text {
+            text: root.player ? root.player.trackArtist : ""
+            color: Colors.accentAlt
+            font.pixelSize: 11
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+            visible: text.length > 0
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.topMargin: 4
+            spacing: 2
+
+            Slider {
+                Layout.fillWidth: true
+                value: root.progress
+                onMoved: (v) => {
+                    if (root.player && root.player.canSeek) {
+                        root.player.position = v * root.player.length
+                        root.displayPosition = v * root.player.length
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    text: root.formatTime(root.displayPosition)
+                    color: Colors.foregroundMuted
+                    font.pixelSize: 9
+                }
+
+                Item { Layout.fillWidth: true }
+
+                Text {
+                    text: root.formatTime(root.player ? root.player.length : 0)
+                    color: Colors.foregroundMuted
+                    font.pixelSize: 9
+                }
+            }
+        }
+
+        // Controles em formato de pílula - prev/next tonais (fundo suave) e
+        // o play/pause em destaque, preenchido com a cor de acento.
+        // Centralizados em relação à barra de progresso (mesma largura da
+        // coluna, já que ambos são fillWidth).
+        RowLayout {
+            Layout.alignment: Qt.AlignHCenter
+            spacing: Colors.spacing
+
+            IconButton {
+                icon: "shuffle"
+                size: 20
+                visible: root.player && root.player.shuffleSupported
+                active: root.player && root.player.shuffle
+                onClicked: root.player.shuffle = !root.player.shuffle
+            }
+
+            Rectangle {
+                width: 38
+                height: 38
+                radius: 19
+                color: Colors.surfaceAlt
+                opacity: (root.player && root.player.canGoPrevious) ? 1 : 0.4
+
+                Icon {
+                    anchors.centerIn: parent
+                    icon: "skip-previous"
+                    size: 16
+                    tint: Colors.foreground
+                }
+
+                TapHandler {
+                    enabled: root.player && root.player.canGoPrevious
+                    onTapped: root.player.previous()
+                }
+            }
+
+            Rectangle {
+                width: 60
+                height: 40
+                radius: 20
+                color: Colors.accent
+                opacity: (root.player && root.player.canTogglePlaying) ? 1 : 0.5
+
+                Icon {
+                    anchors.centerIn: parent
+                    icon: root.player && root.player.isPlaying ? "pause" : "play"
+                    size: 18
+                    tint: Colors.background
+                }
+
+                TapHandler {
+                    onTapped: if (root.player && root.player.canTogglePlaying) root.player.togglePlaying()
+                }
+            }
+
+            Rectangle {
+                width: 38
+                height: 38
+                radius: 19
+                color: Colors.surfaceAlt
+                opacity: (root.player && root.player.canGoNext) ? 1 : 0.4
+
+                Icon {
+                    anchors.centerIn: parent
+                    icon: "skip-next"
+                    size: 16
+                    tint: Colors.foreground
+                }
+
+                TapHandler {
+                    enabled: root.player && root.player.canGoNext
+                    onTapped: root.player.next()
+                }
+            }
+
+            IconButton {
+                icon: "repeat"
+                size: 20
+                visible: root.player && root.player.loopSupported
+                active: root.player && root.player.loopState !== MprisLoopState.None
+                onClicked: {
+                    root.player.loopState = root.player.loopState === MprisLoopState.None
+                        ? MprisLoopState.Playlist
+                        : (root.player.loopState === MprisLoopState.Playlist ? MprisLoopState.Track : MprisLoopState.None)
+                }
+            }
+        }
+
+        // Sem player nenhum ativo, mostra uma dica em vez da tela ficar
+        // vazia (a "capa" à esquerda já vira o ícone de nota musical nesse
+        // caso, mas os controles continuam aparecendo desabilitados - isso
+        // aqui só reforça por que estão assim).
+        Text {
+            visible: root.player === null
+            text: "Nenhum player encontrado"
+            color: Colors.foregroundMuted
+            font.pixelSize: 11
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+}
