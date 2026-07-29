@@ -29,10 +29,23 @@ RowLayout {
     // bar only moving when the player happens to notify us.
     property real displayPosition: 0
 
-    readonly property real progress: (player && player.length > 0) ? displayPosition / player.length : 0
+    // Duração cacheada localmente, igual ao displayPosition acima, e pelo
+    // MESMO motivo: "player.length" não é confiável pra ler direto/reativo a
+    // cada instante - visto ao vivo que, logo depois de um seek, ele lê um
+    // valor errado por um instante (bateu EXATAMENTE com a posição do seek,
+    // não com a duração real da faixa), fazendo o rótulo "total" e a barra
+    // de progresso enlouquecerem por um momento (o "buga tudo" relatado).
+    // "playerctl metadata" confirmou que o mpris:length de verdade nunca
+    // mudou - só a leitura reativa de "player.length" aqui ficava errada.
+    // Por isso só resincroniza em eventos estruturais (troca de faixa/
+    // player), nunca em resposta a "positionChanged".
+    property real trackLength: 0
 
-    function resyncPosition() {
+    readonly property real progress: trackLength > 0 ? displayPosition / trackLength : 0
+
+    function resyncTrack() {
         displayPosition = player ? player.position : 0
+        trackLength = player ? player.length : 0
     }
 
     function formatTime(seconds) {
@@ -43,13 +56,15 @@ RowLayout {
         return m + ":" + String(s).padStart(2, "0")
     }
 
-    Component.onCompleted: resyncPosition()
-    onPlayerChanged: resyncPosition()
+    Component.onCompleted: resyncTrack()
+    onPlayerChanged: resyncTrack()
 
     Connections {
         target: root.player
-        function onPositionChanged() { root.resyncPosition() }
-        function onTrackChanged() { root.resyncPosition() }
+        // Só a posição resincroniza a cada notificação - "trackLength" fica
+        // de fora de propósito (ver comentário acima).
+        function onPositionChanged() { root.displayPosition = root.player ? root.player.position : 0 }
+        function onTrackChanged() { root.resyncTrack() }
     }
 
     Timer {
@@ -57,7 +72,7 @@ RowLayout {
         repeat: true
         running: root.player !== null && root.player.isPlaying
         onTriggered: {
-            if (root.player) root.displayPosition = Math.min(root.displayPosition + 1, root.player.length || 0)
+            root.displayPosition = Math.min(root.displayPosition + 1, root.trackLength)
         }
     }
 
@@ -224,10 +239,18 @@ RowLayout {
             Slider {
                 Layout.fillWidth: true
                 value: root.progress
-                onMoved: (v) => {
+                // "moved" só atualiza o rótulo de tempo local (barato, pode
+                // disparar a cada pixel arrastado) - a busca de verdade via
+                // MPRIS (player.position = ...) só acontece em "released",
+                // uma vez só, ao soltar o botão. Usar "moved" pra isso
+                // mandava uma busca por posição a cada movimento do mouse -
+                // visto ao vivo travando o vídeo (várias buscas em sequência
+                // rápida enquanto arrastava).
+                onMoved: (v) => root.displayPosition = v * root.trackLength
+                onReleased: (v) => {
                     if (root.player && root.player.canSeek) {
-                        root.player.position = v * root.player.length
-                        root.displayPosition = v * root.player.length
+                        root.player.position = v * root.trackLength
+                        root.displayPosition = v * root.trackLength
                     }
                 }
             }
@@ -245,7 +268,7 @@ RowLayout {
                 Item { Layout.fillWidth: true }
 
                 Text {
-                    text: root.formatTime(root.player ? root.player.length : 0)
+                    text: root.formatTime(root.trackLength)
                     color: Colors.foregroundMuted
                     font.pixelSize: 9
                     font.family: Colors.fontFamily

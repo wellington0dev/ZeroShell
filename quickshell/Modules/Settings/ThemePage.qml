@@ -41,6 +41,12 @@ Item {
                 onClicked: root.mode = "radius"
             }
 
+            Button {
+                text: "Animações"
+                primary: root.mode === "motion"
+                onClicked: root.mode = "motion"
+            }
+
             Item { Layout.fillWidth: true }
         }
 
@@ -60,6 +66,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             visible: root.mode === "radius"
+        }
+
+        MotionCustomizer {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: root.mode === "motion"
         }
     }
 }

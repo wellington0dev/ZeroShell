@@ -56,22 +56,19 @@ PanelWindow {
             query = ""
             selectedIndex = 0
             searchInput.text = ""
-            card.opacity = 0
-            // Fora da tela por baixo, sem animar ainda - a janela nem tá
-            // mapeada nesse instante, então esse salto não chega a ser visto
-            // (mesmo truque do opacity acima).
-            card.slideMargin = -(card.height)
-            // forceActiveFocus() right as the surface becomes visible can race
-            // the compositor still mapping it, silently no-opping and leaving
-            // nothing focused (so the next keypress falls through and closes
-            // the launcher instead of typing). Deferring it a tick fixes that -
-            // it also gives the pop-in Behaviors below a frame to kick in.
-            Qt.callLater(() => {
-                searchInput.forceActiveFocus()
-                card.opacity = 1
-                card.slideMargin = card.restMargin
-            })
+            // forceActiveFocus() right as the surface becomes visible can
+            // race the compositor still mapping it, silently no-opping and
+            // leaving nothing focused (so the next keypress falls through
+            // and closes the launcher instead of typing). Um Timer (mesmo
+            // 1ms) dá tempo do mapeamento terminar antes de pedir foco.
+            focusTimer.start()
         }
+    }
+
+    Timer {
+        id: focusTimer
+        interval: 1
+        onTriggered: searchInput.forceActiveFocus()
     }
 
     visible: Visibility.launcherOpen
@@ -96,15 +93,27 @@ PanelWindow {
     Rectangle {
         id: card
 
-        // Margem de descanso (painel aberto) - bem mais perto da borda que
-        // antes. "slideMargin" é o que a âncora de fato usa: parte de bem
-        // abaixo da tela (fora de vista) e sobe até aqui quando abre.
+        // Ligação declarativa direta com Visibility.launcherOpen, mesma
+        // técnica do DashboardWindow.qml ("margins.top: DashboardState.open
+        // ? 0 : -implicitHeight") - nada de resetar valor e reaplicar depois
+        // via Qt.callLater/Timer feito à mão. Um Behavior comum já anima
+        // toda vez que o binding recalcula, em QUALQUER direção (abrindo ou
+        // fechando), porque a propriedade guarda o valor antigo mesmo com a
+        // janela invisível - reabrir sempre parte de "-height" de verdade.
+        //
+        // A versão anterior fazia esse reset manualmente dentro de
+        // onVisibleChanged (opacity=0, slideMargin=-height, depois
+        // Qt.callLater pra 1/restMargin) - testado ao vivo com gravação de
+        // tela: Qt.callLater roda rápido demais aqui (mesmo tick, sem nenhum
+        // frame desenhado entre os dois valores), o Behavior via redirecionado
+        // pro valor final antes de interpolar nada, e o resultado era um
+        // salto instantâneo sem animação nenhuma visível.
         readonly property int restMargin: 12
-        property int slideMargin: restMargin
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: slideMargin
+        anchors.bottomMargin: Visibility.launcherOpen ? restMargin : -height
+        opacity: Visibility.launcherOpen ? 1 : 0
         width: 480
         height: 420
         radius: Colors.radiusShell
@@ -112,7 +121,7 @@ PanelWindow {
         border.color: Colors.border
         border.width: 2
 
-        Behavior on slideMargin {
+        Behavior on anchors.bottomMargin {
             NumberAnimation {
                 duration: Motion.durationNormal
                 easing.type: Easing.BezierSpline

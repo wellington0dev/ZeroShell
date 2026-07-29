@@ -1,6 +1,8 @@
 pragma Singleton
 
+import QtQuick
 import Quickshell
+import Quickshell.Io
 
 // Curvas de animação "Material Design 3 expressive", adaptadas do
 // Appearance.qml do end-4/dots-hyprland (um shell Quickshell bem conhecido).
@@ -19,10 +21,41 @@ import Quickshell
 // "premium"/intencional ao movimento. Usadas hoje nos painéis que deslizam
 // (Player, Helena) e nos pop-ins (Launcher, menu de energia).
 Singleton {
-    // Durações em milissegundos.
-    readonly property int durationFast: 150
-    readonly property int durationNormal: 250
-    readonly property int durationSlow: 400
+    id: root
+
+    // Durações em milissegundos - configuráveis em Configurações > Aparência
+    // > Animações (MotionCustomizer.qml), por isso vêm de um FileView (igual
+    // ao raio em Colors.qml) em vez de "readonly property int" direto: editar
+    // o CONTEÚDO de um arquivo "pragma Singleton" faz o Quickshell recarregar
+    // o módulo inteiro, fechando toda janela aberta - os valores de verdade
+    // ficam em State/motion-config.json, e o FileView só recarrega os dados.
+    //
+    // As curvas (bezier) abaixo continuam fixas de propósito: não fazem parte
+    // do pedido (só "o tempo das animações"), e não têm um jeito óbvio de
+    // virar um slider - só as 3 durações são editáveis.
+    readonly property int durationFast: adapter.fast
+    readonly property int durationNormal: adapter.normal
+    readonly property int durationSlow: adapter.slow
+
+    function setDuration(key, value) {
+        adapter[key] = value
+        motionFile.writeAdapter()
+    }
+
+    // Sem "watchChanges"/"onFileChanged: reload()" de propósito, mesmo
+    // motivo do radiusFile em Colors.qml: só este singleton (via
+    // setDuration) escreve nesse arquivo.
+    FileView {
+        id: motionFile
+        path: Quickshell.env("HOME") + "/.config/quickshell/State/motion-config.json"
+
+        JsonAdapter {
+            id: adapter
+            property int fast: 150
+            property int normal: 250
+            property int slow: 400
+        }
+    }
 
     // Curvas M3 de uso geral.
     readonly property var standard: [0.2, 0, 0, 1, 1, 1]
