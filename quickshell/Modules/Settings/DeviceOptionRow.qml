@@ -26,6 +26,7 @@ RowLayout {
         text: root.node ? (root.node.description || root.node.name) : ""
         color: root.selected ? Colors.foreground : Colors.foregroundMuted
         font.pixelSize: 12
+        font.family: Colors.fontFamily
         elide: Text.ElideRight
         Layout.fillWidth: true
     }

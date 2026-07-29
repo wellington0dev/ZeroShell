@@ -7,11 +7,20 @@ import qs.State
 
 // Motor de captura/gravação de tela (grim + slurp + wf-recorder por baixo) e
 // suas configurações persistidas (pasta de destino, copiar pro clipboard,
-// notificar). Usado pelo CaptureMenu (a UI de escolha) e pela CapturePage nas
-// Configurações (pra editar as opções).
+// notificar). Usado pelo CaptureMenu (a UI de escolha, aberta pela sidebar) e
+// pela CapturePage nas Configurações (pra editar as opções).
 //
-// Formato de "target": "region" (usuário desenha uma seleção), "window"
-// (janela focada agora) ou "fullscreen" (tela inteira).
+// Os keybinds SUPER+SHIFT+S/G não passam pelo menu - abrem direto o
+// CapturePicker (Modules/Capture/CapturePicker.qml), um overlay próprio que
+// resolve tudo num gesto só (clique numa janela = só ela, clique fora = tela
+// cheia, clique e arrasta = região livre), inspirado no "areapicker" do
+// caelestia (github.com/caelestia-dots/shell) em vez do slurp usado pelo
+// menu - slurp não dá pra fazer hover-preview nem decidir entre clique/
+// arrasto no mesmo gesto sem heurísticas frágeis.
+//
+// Formato de "target" (usado só pelo CaptureMenu/script, não pelo picker):
+// "region" (usuário desenha uma seleção), "window" (usuário clica numa
+// janela) ou "fullscreen" (tela inteira).
 Singleton {
     id: root
 
@@ -23,11 +32,33 @@ Singleton {
     IpcHandler {
         target: "capture"
 
-        // Bound ao keybind SUPER+SHIFT+S no hyprland.lua:
-        // qs ipc call capture toggle
+        // Abre/fecha o CaptureMenu (a UI de escolha manual de alvo) - hoje só
+        // acessível pelo botão da sidebar, sem keybind dedicado.
         function toggle(): void {
             Visibility.captureMenuOpen = !Visibility.captureMenuOpen
         }
+        // open/close explícitos (além do toggle acima) - scripts que
+        // precisam de estado determinístico (ex.: debug-shell.sh) não podem
+        // usar um toggle cego sem saber o estado atual antes.
+        function open(): void { Visibility.captureMenuOpen = true }
+        // Fecha tanto o CaptureMenu quanto o CapturePicker, se algum dos
+        // dois estiver aberto - útil pra scripts (ex.: debug-shell.sh, que já
+        // chama "capture close" ao encerrar) garantirem estado limpo sem
+        // precisar saber qual dos dois tava aberto.
+        function close(): void {
+            Visibility.captureMenuOpen = false
+            root.cancelPicker()
+        }
+
+        // Bound ao keybind SUPER+SHIFT+S no hyprland.lua: abre o
+        // CapturePicker direto no modo screenshot, sem passar pelo menu.
+        function screenshotAuto(): void { root.openPicker(false) }
+
+        // Mesmo esquema do de cima, só que grava em vez de tirar print -
+        // bound ao keybind SUPER+SHIFT+G. Chamar de novo enquanto já tá
+        // gravando não abre o picker de novo (ver openPicker) - pra parar,
+        // usa o botão da sidebar (CaptureIndicator.qml) ou o menu.
+        function recordAuto(): void { root.openPicker(true) }
     }
 
     readonly property string scriptsDir: Quickshell.env("HOME") + "/.config/hypr/scripts"
@@ -83,13 +114,51 @@ Singleton {
                pad(d.getHours()) + "-" + pad(d.getMinutes()) + "-" + pad(d.getSeconds())
     }
 
-    // Resolve a geometria pro alvo pedido e entrega via callback(geomString).
-    // "fullscreen" responde na hora (string vazia = sem "-g"); "region" e
-    // "window" chamam capture-geometry.sh, que só retorna quando o usuário
-    // termina de selecionar (ou nada, se cancelar - ver comentário no script).
+    // ---- CapturePicker (SUPER+SHIFT+S/G) ----
+    // "pickerOpen" controla o Loader do CapturePicker em shell.qml -
+    // destruído de verdade ao fechar (mesmo motivo do CaptureMenu: uma
+    // superfície layer-shell "invisible" ainda disputaria com o grim/
+    // wf-recorder pela superfície de tela cheia).
+    property bool pickerOpen: false
+    property bool pickerForRecording: false
+
+    function openPicker(forRecording) {
+        // Já gravando: SUPER+SHIFT+G de novo não deveria abrir o picker por
+        // cima de uma gravação em andamento - usa o botão da sidebar/menu
+        // pra parar.
+        if (forRecording && root.recording) return
+        root.pickerForRecording = forRecording
+        root.pickerOpen = true
+    }
+
+    function cancelPicker() {
+        root.pickerOpen = false
+    }
+
+    // Chamado pelo CapturePicker quando o usuário termina a seleção (clique,
+    // clique fora ou arrasto). "geom" já vem pronto no formato "X,Y WxH", ou
+    // vazio pra tela cheia - o picker resolve tudo sozinho, sem precisar do
+    // capture-geometry.sh/slurp.
+    function resolvePicker(geom) {
+        root.pickerOpen = false
+        // Mesmo atraso/motivo do requestScreenshot/requestRecording abaixo:
+        // dá tempo do picker sumir da tela antes do grim/wf-recorder entrarem
+        // em ação (senão a própria seleção/overlay apareceria no print).
+        root.pendingAction = () => {
+            if (root.pickerForRecording) root.startRecordingWithGeometry(geom)
+            else root.screenshotWithGeometry(geom)
+        }
+        pendingActionTimer.restart()
+    }
+
+    // Resolve a geometria pro alvo pedido e entrega via callback(geom,
+    // cancelled). "fullscreen" responde na hora (geom vazio = sem "-g",
+    // nunca cancelado). "region" e "window" chamam capture-geometry.sh, que
+    // só retorna quando o usuário termina de selecionar - geom vazio aqui
+    // sempre quer dizer cancelado (Esc), ver comentário no script.
     function geometryFor(target, callback) {
         if (target === "fullscreen") {
-            callback("")
+            callback("", false)
             return
         }
         // Se uma seleção anterior ficou pendurada (ex.: slurp que nunca
@@ -110,7 +179,10 @@ Singleton {
         property var callback: null
         stdout: StdioCollector {
             onStreamFinished: {
-                if (geometryProcess.callback) geometryProcess.callback(this.text.trim())
+                if (geometryProcess.callback) {
+                    const geom = this.text.trim()
+                    geometryProcess.callback(geom, !geom)
+                }
             }
         }
     }
@@ -120,14 +192,12 @@ Singleton {
     // - veja shell.qml) sumir da tela antes do grim/slurp entrarem em ação.
     // Fica AQUI (no singleton, que nunca é destruído) e não dentro do
     // CaptureMenu, porque um Timer dentro do menu seria destruído junto com
-    // ele antes de disparar.
+    // ele antes de disparar. Reusado também pelo CapturePicker (mesmo
+    // problema, ver resolvePicker acima).
     property var pendingAction: null
 
     Timer {
         id: pendingActionTimer
-        // Pequena folga pra deixar o CaptureMenu (destruído de verdade pelo
-        // Loader - veja shell.qml) sumir da tela antes do grim/slurp
-        // entrarem em ação.
         interval: 250
         onTriggered: {
             if (root.pendingAction) root.pendingAction()
@@ -147,20 +217,23 @@ Singleton {
 
     // ---- Screenshot ----
     function screenshot(target) {
-        geometryFor(target, (geom) => {
-            // Região/janela cancelada (slurp fechado com Esc, por exemplo)
-            // retorna string vazia - aborta em vez de tirar print da tela toda.
-            if (target !== "fullscreen" && !geom) return
-
-            const file = root.screenshotsDir + "/screenshot_" + root.timestamp() + ".png"
-            screenshotProcess.command = [
-                "bash", root.scriptsDir + "/capture-screenshot.sh",
-                file, geom,
-                root.copyToClipboard ? "1" : "0",
-                root.notifyOnCapture ? "1" : "0"
-            ]
-            screenshotProcess.running = true
+        geometryFor(target, (geom, cancelled) => {
+            // Seleção cancelada (slurp fechado com Esc, por exemplo) - aborta
+            // em vez de tirar print da tela toda.
+            if (cancelled) return
+            root.screenshotWithGeometry(geom)
         })
+    }
+
+    function screenshotWithGeometry(geom) {
+        const file = root.screenshotsDir + "/screenshot_" + root.timestamp() + ".png"
+        screenshotProcess.command = [
+            "bash", root.scriptsDir + "/capture-screenshot.sh",
+            file, geom,
+            root.copyToClipboard ? "1" : "0",
+            root.notifyOnCapture ? "1" : "0"
+        ]
+        screenshotProcess.running = true
     }
 
     Process { id: screenshotProcess }
@@ -168,16 +241,20 @@ Singleton {
     // ---- Gravação ----
     function startRecording(target) {
         if (root.recording) return
-        geometryFor(target, (geom) => {
-            if (target !== "fullscreen" && !geom) return
-
-            const file = root.videosDir + "/recording_" + root.timestamp() + ".mp4"
-            root.currentRecordingFile = file
-            root.recordingSeconds = 0
-            recordProcess.command = ["bash", root.scriptsDir + "/capture-record-start.sh", file, geom]
-            recordProcess.running = true
-            root.recording = true
+        geometryFor(target, (geom, cancelled) => {
+            if (cancelled) return
+            root.startRecordingWithGeometry(geom)
         })
+    }
+
+    function startRecordingWithGeometry(geom) {
+        if (root.recording) return
+        const file = root.videosDir + "/recording_" + root.timestamp() + ".mp4"
+        root.currentRecordingFile = file
+        root.recordingSeconds = 0
+        recordProcess.command = ["bash", root.scriptsDir + "/capture-record-start.sh", file, geom]
+        recordProcess.running = true
+        root.recording = true
     }
 
     function stopRecording() {

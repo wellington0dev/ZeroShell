@@ -34,6 +34,7 @@ Item {
                 text: "Bluetooth"
                 color: Colors.foreground
                 font.pixelSize: 16
+                font.family: Colors.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }

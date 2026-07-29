@@ -27,6 +27,7 @@ Column {
         text: Qt.formatDateTime(clock.date, "hh")
         color: Colors.foreground
         font.pixelSize: 15
+        font.family: Colors.fontFamily
         font.bold: true
     }
 
@@ -36,5 +37,6 @@ Column {
         text: Qt.formatDateTime(clock.date, "mm")
         color: Colors.foregroundMuted
         font.pixelSize: 12
+        font.family: Colors.fontFamily
     }
 }

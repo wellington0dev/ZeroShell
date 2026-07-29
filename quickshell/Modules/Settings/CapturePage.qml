@@ -21,6 +21,7 @@ Item {
             text: "Captura de tela"
             color: Colors.foreground
             font.pixelSize: 16
+            font.family: Colors.fontFamily
             font.bold: true
         }
 
@@ -29,6 +30,7 @@ Item {
             text: "Pasta das capturas"
             color: Colors.foregroundMuted
             font.pixelSize: Colors.fontSizeSmall
+            font.family: Colors.fontFamily
         }
 
         RowLayout {
@@ -53,6 +55,7 @@ Item {
             text: "Pasta das gravações"
             color: Colors.foregroundMuted
             font.pixelSize: Colors.fontSizeSmall
+            font.family: Colors.fontFamily
         }
 
         RowLayout {
@@ -87,6 +90,7 @@ Item {
                 text: "Copiar captura para a área de transferência"
                 color: Colors.foreground
                 font.pixelSize: Colors.fontSizeSmall
+                font.family: Colors.fontFamily
                 Layout.fillWidth: true
             }
 
@@ -103,6 +107,7 @@ Item {
                 text: "Notificar ao terminar captura/gravação"
                 color: Colors.foreground
                 font.pixelSize: Colors.fontSizeSmall
+                font.family: Colors.fontFamily
                 Layout.fillWidth: true
             }
 

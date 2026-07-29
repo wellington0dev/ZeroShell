@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 #
-# Finds a dominant color in an image whose hue is distinct from the image's
-# single most dominant color (which matugen already uses as its source_color).
-# Prints it as matugen --import-json-string input, so a second real wallpaper
-# color can be injected as colors.wallAccent2 alongside matugen's own roles.
+# Picks the two most dominant, sufficiently saturated colors in an image
+# that have visibly different hues. These are used directly as the shell's
+# accent/accentAlt colors (see quickshell-colors.json) instead of matugen's
+# own primary/secondary roles - a Material You scheme only ever samples one
+# real color from the image (the seed) and derives the rest by rotating its
+# hue mathematically, which can drift onto hues that aren't actually in the
+# picture (e.g. a wallpaper with no cyan at all still getting a cyan accent).
+# Sampling two real dominant colors keeps both accents visually tied to what
+# the wallpaper actually looks like.
 #
 # Usage:
 #   extract-colors.py <path-to-image>
@@ -55,12 +60,17 @@ def main():
     while len(colors) < 2:
         colors.append(colors[0] if colors else (128, 128, 128))
 
-    r, g, b = colors[1]
-    hexval = "#{:02x}{:02x}{:02x}".format(r, g, b)
-    # Top-level key, not nested under "colors": matugen's template renderer
+    def to_hex(rgb):
+        r, g, b = rgb
+        return "#{:02x}{:02x}{:02x}".format(r, g, b)
+
+    # Top-level keys, not nested under "colors": matugen's template renderer
     # only merges --import-json-string into the live "colors.*" namespace for
     # --json/--dump-json output, not for actual template rendering.
-    print(json.dumps({"wallAccent2": {"color": hexval}}))
+    print(json.dumps({
+        "wallAccent1": {"color": to_hex(colors[0])},
+        "wallAccent2": {"color": to_hex(colors[1])},
+    }))
 
 
 if __name__ == "__main__":

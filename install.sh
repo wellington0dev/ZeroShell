@@ -26,6 +26,8 @@ PACMAN_PKGS=(
     libnotify         # notify-send
     grim              # screenshot
     cava              # terminal sound view    
+    ttf-jetbrains-mono-nerd # fonte do shell (qs.Theme.Colors.fontFamily), com os glifos de ícone
+    python-pam
 )
 
 echo "==> Instalando pacotes oficiais..."

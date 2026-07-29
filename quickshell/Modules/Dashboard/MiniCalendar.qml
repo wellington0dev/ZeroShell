@@ -38,6 +38,7 @@ ColumnLayout {
         text: root.months[root.month] + " de " + root.year
         color: Colors.foreground
         font.pixelSize: Colors.fontSizeSmall
+        font.family: Colors.fontFamily
         font.bold: true
         Layout.alignment: Qt.AlignHCenter
     }
@@ -60,6 +61,7 @@ ColumnLayout {
                 text: modelData
                 color: Colors.foregroundMuted
                 font.pixelSize: 10
+                font.family: Colors.fontFamily
             }
         }
 
@@ -81,6 +83,7 @@ ColumnLayout {
                     text: parent.modelData === 0 ? "" : parent.modelData
                     color: parent.isToday ? Colors.background : Colors.foreground
                     font.pixelSize: 11
+                    font.family: Colors.fontFamily
                     font.bold: parent.isToday
                 }
             }

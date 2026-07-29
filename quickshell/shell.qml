@@ -15,6 +15,7 @@ import qs.Modules.Helena
 import qs.Modules.Power
 import qs.Modules.Capture
 import qs.Modules.Dashboard
+import qs.Modules.Lock
 import qs.State
 
 ShellRoot {
@@ -22,17 +23,25 @@ ShellRoot {
     SettingsWindow {}
     NotificationPopups {}
     LauncherWindow {}
+    LauncherTrigger {}
     HelenaWindow {}
     VoiceWidget {}
     PowerMenu {}
     DashboardTrigger {}
     DashboardWindow {}
+    LockScreen {}
 
-    // CaptureMenu é o único painel que, ao fechar, precisa ser DESTRUÍDO de
-    // verdade (não só escondido) - veja o comentário em CaptureMenu.qml pra
-    // entender por quê (disputa de superfície em tela cheia com o slurp).
+    // CaptureMenu e CapturePicker são os únicos painéis que, ao fechar,
+    // precisam ser DESTRUÍDOS de verdade (não só escondidos) - veja os
+    // comentários em CaptureMenu.qml/CapturePicker.qml pra entender por quê
+    // (disputa de superfície em tela cheia com o slurp/grim).
     Loader {
         active: Visibility.captureMenuOpen
         sourceComponent: CaptureMenu {}
+    }
+
+    Loader {
+        active: CaptureService.pickerOpen
+        sourceComponent: CapturePicker {}
     }
 }

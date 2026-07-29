@@ -16,6 +16,7 @@ Item {
             text: "Aparência"
             color: Colors.foreground
             font.pixelSize: 16
+            font.family: Colors.fontFamily
             font.bold: true
         }
 
@@ -34,6 +35,12 @@ Item {
                 onClicked: root.mode = "custom"
             }
 
+            Button {
+                text: "Raio"
+                primary: root.mode === "radius"
+                onClicked: root.mode = "radius"
+            }
+
             Item { Layout.fillWidth: true }
         }
 
@@ -47,6 +54,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             visible: root.mode === "custom"
+        }
+
+        RadiusCustomizer {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: root.mode === "radius"
         }
     }
 }

@@ -2,10 +2,14 @@
 # Used only if no good color could be extracted from the image at all.
 fallback_color = "#1a1b26"
 # NOTE: matugen 4.1.0 (installed version) ignores `source_color_index` from
-# this config file - it only reads it from the CLI flag. See apply-theme.sh,
-# which passes `--source-color-index 0` to trust matugen's own population+
-# chroma ranking instead of picking small vivid accents over the image's
-# actual dominant color.
+# this config file - it's CLI-only. See apply-theme.sh, which passes
+# `--source-color-index 0` to trust matugen's own population+chroma ranking
+# instead of picking small vivid accents over the image's actual dominant
+# color.
+#
+# The scheme type is the opposite: the per-template `type` key below
+# OVERRIDES the CLI `--type` flag for that template, not the other way
+# around - so it has to be set here, not in apply-theme.sh.
 
 [config.custom_colors]
 # Material You has no native "success" role, so we seed one and let
@@ -26,4 +30,10 @@ input_path = "./templates/quickshell-colors.json"
 # Relativo à pasta deste config.toml (~/.config/matugen/), não um caminho
 # absoluto - assim funciona em qualquer usuário/máquina, não só nesta.
 output_path = "../quickshell/State/colors.json"
-type = "SchemeContent"
+# Only affects the neutral background/surface/foreground tones now - accent
+# colors are sampled directly from the image (see apply-theme.sh), because
+# even "expressive" schemes only ever sample ONE real color from the image
+# and derive the rest by rotating its hue mathematically, which can land on
+# hues that aren't actually in the picture. SchemeNeutral gives the most
+# muted, unobtrusive surfaces so the real accent colors are what stands out.
+type = "SchemeNeutral"

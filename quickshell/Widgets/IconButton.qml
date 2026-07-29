@@ -28,7 +28,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusSmall
+        radius: Colors.radiusButton
         opacity: root.enabled ? 1 : 0.4
         color: root.active
             ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18)

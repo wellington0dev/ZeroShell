@@ -43,7 +43,7 @@ PanelWindow {
         anchors.fill: parent
         color: Colors.background
         border.color: Colors.border
-        radius: Colors.radiusMedium
+        radius: Colors.radiusShell
         border.width: 2
 
         ColumnLayout {

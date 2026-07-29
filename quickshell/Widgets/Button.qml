@@ -23,7 +23,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusSmall
+        radius: Colors.radiusButton
         opacity: root.enabled ? 1 : 0.5
         color: root.primary
             ? (hover.hovered ? Colors.accentAlt : Colors.accent)
@@ -39,6 +39,7 @@ Item {
             text: root.text
             color: root.primary ? Colors.background : Colors.foreground
             font.pixelSize: 12
+            font.family: Colors.fontFamily
         }
     }
 

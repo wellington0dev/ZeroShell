@@ -123,10 +123,84 @@ Singleton {
     readonly property int radiusLarge: 18
     readonly property int radiusFull: 9999
 
+    // Raio de canto CONFIGURÁVEL por categoria (Configurações > Aparência >
+    // Raio), separado da escala fixa acima. A escala fixa continua servindo
+    // pra elementos decorativos/estruturais onde não faz sentido o usuário
+    // escolher (avatares circulares, pilulas de status, swatches) - só
+    // painéis do shell, botões e inputs têm um raio próprio configurável,
+    // porque cada categoria tem proporções bem diferentes (um painel inteiro
+    // e um botãozinho não deveriam ser forçados pro mesmo número).
+    readonly property int radiusShell: radiusAdapter.shell
+    readonly property int radiusButton: radiusAdapter.button
+    readonly property int radiusInput: radiusAdapter.input
+    // Raio das janelas do Hyprland (decoration.rounding) - não é algo que
+    // este QML desenha; RadiusCustomizer.qml (Settings > Aparência) escreve
+    // esse valor tanto aqui (JSON, pra UI lembrar o que tá salvo) quanto em
+    // hypr/window_radius.lua + "hyprctl reload" (o que de fato aplica).
+    readonly property int radiusWindow: radiusAdapter.window
+
+    // Se true, mudar QUALQUER categoria muda as 4 juntas pro mesmo valor -
+    // pra quem só quer um raio só no lugar de ajustar shell/botão/input/
+    // janela um por um. Controlado pelo toggle "Manter alinhado" no topo do
+    // RadiusCustomizer.qml.
+    readonly property bool radiusLinked: radiusAdapter.linked
+
+    function setRadius(key, value) {
+        if (radiusAdapter.linked) {
+            radiusAdapter.shell = value
+            radiusAdapter.button = value
+            radiusAdapter.input = value
+            radiusAdapter.window = value
+        } else {
+            radiusAdapter[key] = value
+        }
+        radiusFile.writeAdapter()
+    }
+
+    function setRadiusLinked(value) {
+        radiusAdapter.linked = value
+        // Ao ligar o alinhamento, unifica tudo no valor do shell na hora -
+        // senão "ligado" ficaria mentindo (os 4 sliders continuariam
+        // mostrando números diferentes até a próxima mudança).
+        if (value) {
+            const v = radiusAdapter.shell
+            radiusAdapter.button = v
+            radiusAdapter.input = v
+            radiusAdapter.window = v
+        }
+        radiusFile.writeAdapter()
+    }
+
+    // Sem "watchChanges"/"onFileChanged: reload()" de propósito: só este
+    // singleton (via setRadius) escreve nesse arquivo. Reagir à própria
+    // escrita já causou um bug real de duplicação num JSON parecido
+    // (NotificationService.qml) - aqui os valores são escalares, não um
+    // array, então não duplicariam, mas o auto-reload seria só trabalho
+    // supérfluo mesmo assim.
+    FileView {
+        id: radiusFile
+        path: Quickshell.env("HOME") + "/.config/quickshell/State/radius-config.json"
+
+        JsonAdapter {
+            id: radiusAdapter
+            property int shell: 18
+            property int button: 8
+            property int input: 8
+            property int window: 4
+            property bool linked: false
+        }
+    }
+
     // Espaçamento padrão usado em margins/spacing de layouts pelo shell todo.
     readonly property int spacing: 8
 
-    readonly property string fontFamily: "sans-serif"
+    // JetBrainsMono Nerd Font - instalada pelo install.sh (pacote
+    // ttf-jetbrains-mono-nerd). QtQuick "Text"/"TextInput"/"TextEdit" puros
+    // (sem QtQuick Controls) não herdam "font" de um ancestral, e
+    // "Qt.application.font" é somente-leitura em QML - por isso
+    // "font.family: Colors.fontFamily" é repetido ao lado de cada
+    // "font.pixelSize:" do shell, em vez de setado num lugar só.
+    readonly property string fontFamily: "JetBrainsMono Nerd Font"
 
     // Escala de tamanho de fonte - use estes tokens em vez de números soltos
     // (ex.: font.pixelSize: Colors.fontSizeSmall) pra manter consistência.

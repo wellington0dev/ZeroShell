@@ -38,6 +38,7 @@ ColumnLayout {
             text: "Cada cor é salva assim que você escolhe."
             color: Colors.foregroundMuted
             font.pixelSize: 11
+            font.family: Colors.fontFamily
             Layout.fillWidth: true
         }
 

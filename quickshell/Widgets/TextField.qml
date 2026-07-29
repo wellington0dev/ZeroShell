@@ -27,7 +27,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusSmall
+        radius: Colors.radiusInput
         color: Colors.surface
         border.color: input.activeFocus ? Colors.accent : Colors.border
         border.width: 1
@@ -43,6 +43,7 @@ Item {
             text: root.placeholder
             color: Colors.foregroundMuted
             font.pixelSize: 12
+            font.family: Colors.fontFamily
             visible: input.text.length === 0
         }
 
@@ -52,6 +53,7 @@ Item {
             anchors.margins: 8
             color: Colors.foreground
             font.pixelSize: 12
+            font.family: Colors.fontFamily
             verticalAlignment: TextInput.AlignVCenter
             clip: true
             selectByMouse: true

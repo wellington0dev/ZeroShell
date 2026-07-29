@@ -2,7 +2,7 @@
 -- Source: ~/.config/hypr/scripts/sync-hypr-colors.sh
 
 return {
-    active_border_1 = "rgba(aed369ee)",
-    active_border_2 = "rgba(b9dfd3ee)",
-    inactive_border = "rgba(44493aaa)",
+    active_border_1 = "rgba(b3e5c0ee)",
+    active_border_2 = "rgba(f8baa0ee)",
+    inactive_border = "rgba(464745aa)",
 }

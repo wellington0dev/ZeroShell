@@ -23,7 +23,7 @@ ColumnLayout {
         Layout.preferredWidth: 56
         Layout.preferredHeight: 56
         Layout.alignment: Qt.AlignHCenter
-        radius: Colors.radiusMedium
+        radius: Colors.radiusButton
         color: root.selected
             ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18)
             : (hover.hovered ? Colors.surfaceAlt : Colors.surface)
@@ -48,5 +48,6 @@ ColumnLayout {
         text: root.label
         color: root.selected ? Colors.accent : Colors.foregroundMuted
         font.pixelSize: Colors.fontSizeSmall
+        font.family: Colors.fontFamily
     }
 }

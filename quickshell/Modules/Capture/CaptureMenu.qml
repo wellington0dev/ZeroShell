@@ -58,7 +58,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         width: 360
         height: 220
-        radius: Colors.radiusLarge
+        radius: Colors.radiusShell
         color: Colors.background
         border.color: Colors.border
         border.width: 2
@@ -83,6 +83,7 @@ PanelWindow {
                 text: "Captura de tela"
                 color: Colors.foreground
                 font.pixelSize: Colors.fontSizeLarge
+                font.family: Colors.fontFamily
                 font.bold: true
                 Layout.alignment: Qt.AlignHCenter
             }

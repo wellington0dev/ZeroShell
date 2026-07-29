@@ -31,6 +31,7 @@ ColumnLayout {
                 text: root.device.name
                 color: Colors.foreground
                 font.pixelSize: 13
+                font.family: Colors.fontFamily
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
@@ -41,6 +42,7 @@ ColumnLayout {
                     : root.device.paired ? "Pareado" : ""
                 color: Colors.foregroundMuted
                 font.pixelSize: 11
+                font.family: Colors.fontFamily
                 visible: text.length > 0
             }
         }
@@ -50,6 +52,7 @@ ColumnLayout {
             text: Math.round(root.device.battery * 100) + "%"
             color: Colors.foregroundMuted
             font.pixelSize: 11
+            font.family: Colors.fontFamily
         }
 
         TapHandler { onTapped: root.clicked() }
@@ -90,6 +93,7 @@ ColumnLayout {
                 text: "Confiar"
                 color: Colors.foregroundMuted
                 font.pixelSize: 11
+                font.family: Colors.fontFamily
             }
 
             Switch {

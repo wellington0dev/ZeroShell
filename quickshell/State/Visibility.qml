@@ -19,4 +19,9 @@ Singleton {
     property bool powerMenuOpen: false
     property bool captureMenuOpen: false
     property bool voiceOpen: false
+
+    // Categoria ativa em Configurações (Modules/Settings/CategoryNav.qml) -
+    // mora aqui, não como property local da nav, pra dar pra trocar de fora
+    // via IPC (hypr/scripts/debug-shell*.sh), sem precisar simular clique.
+    property string settingsCategory: "theme"
 }

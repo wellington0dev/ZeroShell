@@ -45,6 +45,7 @@ ColumnLayout {
             text: root.network.name
             color: Colors.foreground
             font.pixelSize: 13
+            font.family: Colors.fontFamily
             elide: Text.ElideRight
             Layout.fillWidth: true
         }
@@ -53,12 +54,14 @@ ColumnLayout {
             visible: root.network.security !== WifiSecurityType.Open
             text: "🔒"
             font.pixelSize: 11
+            font.family: Colors.fontFamily
         }
 
         Text {
             text: Math.round(root.network.signalStrength * 100) + "%"
             color: Colors.foregroundMuted
             font.pixelSize: 11
+            font.family: Colors.fontFamily
         }
 
         TapHandler { onTapped: root.clicked() }
@@ -79,6 +82,7 @@ ColumnLayout {
                 text: "Conectado a esta rede"
                 color: Colors.foregroundMuted
                 font.pixelSize: 11
+                font.family: Colors.fontFamily
                 Layout.fillWidth: true
             }
 
@@ -98,6 +102,7 @@ ColumnLayout {
                 text: "Rede salva"
                 color: Colors.foregroundMuted
                 font.pixelSize: 11
+                font.family: Colors.fontFamily
                 Layout.fillWidth: true
             }
 
@@ -143,6 +148,7 @@ ColumnLayout {
                 text: root.error
                 color: Colors.danger
                 font.pixelSize: 11
+                font.family: Colors.fontFamily
             }
         }
     }

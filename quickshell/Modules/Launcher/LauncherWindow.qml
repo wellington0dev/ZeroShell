@@ -17,6 +17,11 @@ PanelWindow {
         function toggle(): void {
             Visibility.launcherOpen = !Visibility.launcherOpen
         }
+        // open/close explícitos (além do toggle acima) - scripts que
+        // precisam de estado determinístico (ex.: debug-shell.sh) não podem
+        // usar um toggle cego sem saber o estado atual antes.
+        function open(): void { Visibility.launcherOpen = true }
+        function close(): void { Visibility.launcherOpen = false }
     }
 
     property string query: ""
@@ -50,8 +55,12 @@ PanelWindow {
         if (visible) {
             query = ""
             selectedIndex = 0
-            card.scale = 0.92
+            searchInput.text = ""
             card.opacity = 0
+            // Fora da tela por baixo, sem animar ainda - a janela nem tá
+            // mapeada nesse instante, então esse salto não chega a ser visto
+            // (mesmo truque do opacity acima).
+            card.slideMargin = -(card.height)
             // forceActiveFocus() right as the surface becomes visible can race
             // the compositor still mapping it, silently no-opping and leaving
             // nothing focused (so the next keypress falls through and closes
@@ -59,8 +68,8 @@ PanelWindow {
             // it also gives the pop-in Behaviors below a frame to kick in.
             Qt.callLater(() => {
                 searchInput.forceActiveFocus()
-                card.scale = 1
                 card.opacity = 1
+                card.slideMargin = card.restMargin
             })
         }
     }
@@ -87,19 +96,27 @@ PanelWindow {
     Rectangle {
         id: card
 
-        anchors.centerIn: parent
+        // Margem de descanso (painel aberto) - bem mais perto da borda que
+        // antes. "slideMargin" é o que a âncora de fato usa: parte de bem
+        // abaixo da tela (fora de vista) e sobe até aqui quando abre.
+        readonly property int restMargin: 12
+        property int slideMargin: restMargin
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: slideMargin
         width: 480
         height: 420
-        radius: Colors.radiusLarge
+        radius: Colors.radiusShell
         color: Colors.background
         border.color: Colors.border
         border.width: 2
 
-        Behavior on scale {
+        Behavior on slideMargin {
             NumberAnimation {
                 duration: Motion.durationNormal
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.boing
+                easing.bezierCurve: Motion.emphasizedDecel
             }
         }
         Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }
@@ -114,7 +131,7 @@ PanelWindow {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 40
-                radius: Colors.radiusSmall
+                radius: Colors.radiusInput
                 color: Colors.surface
                 border.color: searchInput.activeFocus ? Colors.accent : Colors.border
                 border.width: 1
@@ -128,6 +145,7 @@ PanelWindow {
                     anchors.margins: 10
                     color: Colors.foreground
                     font.pixelSize: 14
+                    font.family: Colors.fontFamily
                     verticalAlignment: TextInput.AlignVCenter
                     clip: true
 
@@ -157,6 +175,7 @@ PanelWindow {
                         text: "Buscar aplicativos..."
                         color: Colors.foregroundMuted
                         font.pixelSize: 14
+                        font.family: Colors.fontFamily
                         visible: searchInput.text.length === 0
                     }
                 }
@@ -192,6 +211,7 @@ PanelWindow {
                 text: "Nenhum aplicativo encontrado"
                 color: Colors.foregroundMuted
                 font.pixelSize: 12
+                font.family: Colors.fontFamily
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }

@@ -21,7 +21,7 @@ ClippingRectangle {
     property int percent: 0
     property color fillColor: Colors.accent
 
-    radius: Colors.radiusLarge
+    radius: Colors.radiusShell
     color: Colors.surface
     border.color: Colors.border
     border.width: 1
@@ -54,6 +54,7 @@ ClippingRectangle {
             text: root.percent + "%"
             color: Colors.foreground
             font.pixelSize: 17
+            font.family: Colors.fontFamily
             font.bold: true
         }
 
@@ -62,6 +63,7 @@ ClippingRectangle {
             text: root.label
             color: Colors.foregroundMuted
             font.pixelSize: 10
+            font.family: Colors.fontFamily
         }
     }
 }

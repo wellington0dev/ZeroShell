@@ -46,6 +46,7 @@ Item {
                 text: Qt.formatDateTime(clock.date, "hh:mm")
                 color: Colors.foreground
                 font.pixelSize: 32
+                font.family: Colors.fontFamily
                 font.bold: true
             }
         }
@@ -72,32 +73,48 @@ Item {
         anchors.right: parent.right
         spacing: Colors.spacing
 
-        Text {
-            text: "Notificações"
-            color: Colors.foregroundMuted
-            font.pixelSize: Colors.fontSizeSmall
-            font.bold: true
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Colors.spacing
+
+            Text {
+                text: "Notificações"
+                color: Colors.foregroundMuted
+                font.pixelSize: Colors.fontSizeSmall
+                font.family: Colors.fontFamily
+                font.bold: true
+                Layout.fillWidth: true
+            }
+
+            Button {
+                text: "Limpar"
+                primary: false
+                visible: NotificationService.history.length > 0
+                onClicked: NotificationService.clearHistory()
+            }
         }
 
         ListView {
-            visible: NotificationService.notifications.length > 0
+            visible: NotificationService.history.length > 0
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
             spacing: Colors.spacing
-            model: NotificationService.notifications
+            model: NotificationService.history
 
             delegate: NotificationCard {
                 width: ListView.view.width
                 notification: modelData
+                isPopup: false
             }
         }
 
         Text {
-            visible: NotificationService.notifications.length === 0
+            visible: NotificationService.history.length === 0
             text: "Nenhuma notificação recente"
             color: Colors.foregroundMuted
             font.pixelSize: Colors.fontSizeSmall
+            font.family: Colors.fontFamily
             Layout.alignment: Qt.AlignHCenter
             Layout.fillHeight: true
         }

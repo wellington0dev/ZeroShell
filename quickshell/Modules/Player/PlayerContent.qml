@@ -190,6 +190,7 @@ RowLayout {
             text: root.player && root.player.trackTitle ? root.player.trackTitle : "Nada tocando"
             color: Colors.foreground
             font.pixelSize: 14
+            font.family: Colors.fontFamily
             font.bold: true
             elide: Text.ElideRight
             Layout.fillWidth: true
@@ -199,6 +200,7 @@ RowLayout {
             text: root.player && root.player.trackAlbum ? root.player.trackAlbum : ""
             color: Colors.foregroundMuted
             font.pixelSize: 10
+            font.family: Colors.fontFamily
             elide: Text.ElideRight
             Layout.fillWidth: true
             visible: text.length > 0
@@ -208,6 +210,7 @@ RowLayout {
             text: root.player ? root.player.trackArtist : ""
             color: Colors.accentAlt
             font.pixelSize: 11
+            font.family: Colors.fontFamily
             elide: Text.ElideRight
             Layout.fillWidth: true
             visible: text.length > 0
@@ -236,6 +239,7 @@ RowLayout {
                     text: root.formatTime(root.displayPosition)
                     color: Colors.foregroundMuted
                     font.pixelSize: 9
+                    font.family: Colors.fontFamily
                 }
 
                 Item { Layout.fillWidth: true }
@@ -244,6 +248,7 @@ RowLayout {
                     text: root.formatTime(root.player ? root.player.length : 0)
                     color: Colors.foregroundMuted
                     font.pixelSize: 9
+                    font.family: Colors.fontFamily
                 }
             }
         }
@@ -345,6 +350,7 @@ RowLayout {
             text: "Nenhum player encontrado"
             color: Colors.foregroundMuted
             font.pixelSize: 11
+            font.family: Colors.fontFamily
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
         }

@@ -24,7 +24,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusSmall
+        radius: Colors.radiusInput
         color: Colors.surface
         border.color: input.activeFocus ? Colors.accent : Colors.border
         border.width: 1
@@ -40,6 +40,7 @@ Item {
             text: root.placeholder
             color: Colors.foregroundMuted
             font.pixelSize: 12
+            font.family: Colors.fontFamily
             visible: input.text.length === 0
         }
 
@@ -54,6 +55,7 @@ Item {
             }
             color: Colors.foreground
             font.pixelSize: 12
+            font.family: Colors.fontFamily
             echoMode: root.revealed ? TextInput.Normal : TextInput.Password
             clip: true
             selectByMouse: true

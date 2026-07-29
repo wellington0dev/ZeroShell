@@ -8,11 +8,20 @@ import qs.Widgets
 Rectangle {
     id: root
 
-    property Notification notification
+    // "var", não "Notification": no popup é o objeto Notification ao vivo,
+    // mas no histórico do Dashboard (isPopup: false) é uma cópia simples dos
+    // dados (ver NotificationService.qml) - um tipo QML forte rejeitaria essa
+    // segunda forma.
+    property var notification
+
+    // false na lista do Dashboard (HomeTab.qml): ali o card representa
+    // histórico persistente, não deve sumir sozinho enquanto ninguém olha -
+    // só nos popups (NotificationPopups.qml) o timeout deve valer.
+    property bool isPopup: true
 
     readonly property int urgency: notification ? notification.urgency : NotificationUrgency.Normal
     readonly property color urgencyColor: urgency === NotificationUrgency.Critical ? Colors.danger : Colors.accent
-    readonly property bool autoExpires: urgency !== NotificationUrgency.Critical
+    readonly property bool autoExpires: root.isPopup && urgency !== NotificationUrgency.Critical
     readonly property int timeoutMs: notification && notification.expireTimeout > 0
         ? notification.expireTimeout * 1000
         : 5000
@@ -29,7 +38,7 @@ Rectangle {
 
     width: 340
     implicitHeight: content.implicitHeight + 24
-    // radius: Colors.radiusLarge
+    radius: Colors.radiusShell
     color: Colors.surface
     border.color: urgencyColor
     border.width: 1
@@ -94,6 +103,7 @@ Rectangle {
                     text: root.notification ? root.notification.appName : ""
                     color: Colors.foregroundMuted
                     font.pixelSize: 10
+                    font.family: Colors.fontFamily
                     Layout.fillWidth: true
                     elide: Text.ElideRight
                 }
@@ -102,6 +112,7 @@ Rectangle {
                     text: root.notification ? root.notification.summary : ""
                     color: Colors.foreground
                     font.pixelSize: 13
+                    font.family: Colors.fontFamily
                     font.bold: true
                     wrapMode: Text.Wrap
                     Layout.fillWidth: true
@@ -111,7 +122,14 @@ Rectangle {
             IconButton {
                 size: 24
                 icon: "close"
-                onClicked: if (root.notification) root.notification.dismiss()
+                onClicked: {
+                    if (!root.notification) return
+                    // No histórico (Dashboard) "notification" é uma cópia
+                    // simples dos dados, não o objeto Notification ao vivo -
+                    // não tem .dismiss(), some da lista via removeFromHistory.
+                    if (root.isPopup) root.notification.dismiss()
+                    else NotificationService.removeFromHistory(root.notification.id)
+                }
             }
         }
 
@@ -120,6 +138,7 @@ Rectangle {
             text: root.notification ? root.notification.body : ""
             color: Colors.foregroundMuted
             font.pixelSize: 12
+            font.family: Colors.fontFamily
             wrapMode: Text.Wrap
             Layout.fillWidth: true
         }

@@ -33,6 +33,7 @@ Item {
             text: "Sidebar"
             color: Colors.foreground
             font.pixelSize: 16
+            font.family: Colors.fontFamily
             font.bold: true
         }
 
@@ -40,6 +41,7 @@ Item {
             text: "Escolha quais itens aparecem na barra lateral."
             color: Colors.foregroundMuted
             font.pixelSize: Colors.fontSizeSmall
+            font.family: Colors.fontFamily
         }
 
         ListView {
@@ -56,6 +58,7 @@ Item {
                     text: modelData.label
                     color: Colors.foreground
                     font.pixelSize: Colors.fontSizeSmall
+                    font.family: Colors.fontFamily
                     Layout.fillWidth: true
                 }
 

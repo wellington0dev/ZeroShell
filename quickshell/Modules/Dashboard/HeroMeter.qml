@@ -20,7 +20,7 @@ Rectangle {
 
     readonly property real strokeW: 4
 
-    radius: Colors.radiusLarge
+    radius: Colors.radiusShell
     color: Colors.surface
     border.color: Colors.border
     border.width: 1
@@ -93,6 +93,7 @@ Rectangle {
                 text: root.label
                 color: root.ringColor
                 font.pixelSize: 14
+                font.family: Colors.fontFamily
                 font.bold: true
             }
 
@@ -101,6 +102,7 @@ Rectangle {
                 text: root.sublabel
                 color: Colors.foregroundMuted
                 font.pixelSize: 10
+                font.family: Colors.fontFamily
                 elide: Text.ElideRight
                 visible: text.length > 0
             }
@@ -110,6 +112,7 @@ Rectangle {
                 text: root.percent + "%"
                 color: Colors.foreground
                 font.pixelSize: 28
+                font.family: Colors.fontFamily
                 font.bold: true
             }
         }

@@ -27,7 +27,7 @@ ColumnLayout {
         Layout.preferredWidth: 64
         Layout.preferredHeight: 64
         Layout.alignment: Qt.AlignHCenter
-        radius: Colors.radiusMedium
+        radius: Colors.radiusButton
         color: root.confirming
             ? Qt.rgba(Colors.danger.r, Colors.danger.g, Colors.danger.b, 0.18)
             : (hover.hovered ? Colors.surfaceAlt : Colors.surface)
@@ -62,5 +62,6 @@ ColumnLayout {
         text: root.confirming ? "Confirmar?" : root.label
         color: root.confirming ? Colors.danger : Colors.foregroundMuted
         font.pixelSize: Colors.fontSizeSmall
+        font.family: Colors.fontFamily
     }
 }

@@ -12,7 +12,7 @@ Rectangle {
 
     signal activated()
 
-    radius: Colors.radiusSmall
+    radius: Colors.radiusButton
     color: selected
         ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.16)
         : (hover.hovered ? Colors.surfaceAlt : "transparent")
@@ -43,6 +43,7 @@ Rectangle {
                 text: root.entry ? root.entry.name : ""
                 color: Colors.foreground
                 font.pixelSize: 13
+                font.family: Colors.fontFamily
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
@@ -51,6 +52,7 @@ Rectangle {
                 text: root.entry ? root.entry.genericName : ""
                 color: Colors.foregroundMuted
                 font.pixelSize: 10
+                font.family: Colors.fontFamily
                 elide: Text.ElideRight
                 Layout.fillWidth: true
                 visible: text.length > 0

@@ -22,7 +22,7 @@ Rectangle {
     readonly property int sweepAngle: 270
     readonly property real strokeW: 6
 
-    radius: Colors.radiusLarge
+    radius: Colors.radiusShell
     color: Colors.surface
     border.color: Colors.border
     border.width: 1
@@ -46,6 +46,7 @@ Rectangle {
                 text: root.label
                 color: Colors.foregroundMuted
                 font.pixelSize: 10
+                font.family: Colors.fontFamily
             }
         }
 
@@ -107,6 +108,7 @@ Rectangle {
                 text: root.percent + "%"
                 color: root.ringColor
                 font.pixelSize: 16
+                font.family: Colors.fontFamily
                 font.bold: true
             }
         }

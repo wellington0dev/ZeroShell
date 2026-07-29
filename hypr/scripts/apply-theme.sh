@@ -39,14 +39,20 @@ if ! command -v matugen >/dev/null 2>&1; then
 fi
 
 script_dir="$(dirname "$0")"
-# quickshell-colors.json always reads wallAccent2, so this needs a value even
-# when python-pillow isn't installed - falls back to a neutral gray that
-# matugen still tints/lightens like any other color.
-extra_colors='{"wallAccent2":{"color":"#7c7c7c"}}'
+# quickshell-colors.json always reads wallAccent1/wallAccent2, so these need
+# a value even when python-pillow isn't installed - falls back to neutral
+# grays that matugen still tints/lightens like any other color.
+extra_colors='{"wallAccent1":{"color":"#7c7c7c"},"wallAccent2":{"color":"#7c7c7c"}}'
 if command -v python3 >/dev/null 2>&1 && python3 -c "import PIL" >/dev/null 2>&1; then
     extra_colors="$(python3 "$script_dir/extract-colors.py" "$wallpaper")"
 fi
 
-matugen image "$wallpaper" --source-color-index 0 --import-json-string "$extra_colors"
+# accent/accentAlt come from wallAccent1/wallAccent2 (real colors sampled
+# from the image, see extract-colors.py), not from matugen's own
+# primary/secondary roles - so --type here only affects the neutral
+# background/surface/foreground tones. The quickshell template's own
+# `type = "SchemeNeutral"` in matugen/config.toml wins over this flag
+# regardless, since a template's own type overrides the global CLI one.
+matugen image "$wallpaper" --source-color-index 0 --type scheme-neutral --import-json-string "$extra_colors"
 
 "$script_dir/sync-hypr-colors.sh"

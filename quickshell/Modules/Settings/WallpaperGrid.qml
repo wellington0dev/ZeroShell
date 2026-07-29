@@ -57,6 +57,7 @@ ColumnLayout {
             text: "Cores do wallpaper"
             color: Colors.foreground
             font.pixelSize: 12
+            font.family: Colors.fontFamily
         }
 
         Switch {

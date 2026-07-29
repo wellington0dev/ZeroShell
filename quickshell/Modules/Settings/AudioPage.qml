@@ -21,6 +21,7 @@ Item {
             text: "Áudio"
             color: Colors.foreground
             font.pixelSize: 16
+            font.family: Colors.fontFamily
             font.bold: true
         }
 

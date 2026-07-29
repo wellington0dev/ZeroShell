@@ -23,6 +23,7 @@ RowLayout {
         text: root.node ? (root.node.description || root.node.name) : "—"
         color: Colors.foreground
         font.pixelSize: 13
+        font.family: Colors.fontFamily
         elide: Text.ElideRight
         Layout.preferredWidth: 160
     }
@@ -37,6 +38,7 @@ RowLayout {
         text: root.ready ? Math.round(node.audio.volume * 100) + "%" : "—"
         color: Colors.foregroundMuted
         font.pixelSize: 11
+        font.family: Colors.fontFamily
         Layout.preferredWidth: 34
     }
 }

@@ -17,6 +17,17 @@ FloatingWindow {
         function toggle(): void {
             Visibility.settingsOpen = !Visibility.settingsOpen
         }
+        // open/close explícitos (além do toggle acima) - scripts que
+        // precisam de estado determinístico (ex.: debug-shell.sh) não podem
+        // usar um toggle cego sem saber o estado atual antes.
+        function open(): void { Visibility.settingsOpen = true }
+        function close(): void { Visibility.settingsOpen = false }
+
+        // Troca a categoria ativa - "wifi", "bluetooth", "audio", "theme",
+        // "capture" ou "sidebar" (ver Modules/Settings/CategoryNav.qml). Não
+        // valida o nome: um valor inválido só faz o Loader acima cair no
+        // "default" (null, painel vazio), sem quebrar nada.
+        function category(name: string): void { Visibility.settingsCategory = name }
     }
 
     title: "Configurações"
@@ -41,6 +52,7 @@ FloatingWindow {
                 text: "Configurações"
                 color: Colors.foreground
                 font.pixelSize: 18
+                font.family: Colors.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }

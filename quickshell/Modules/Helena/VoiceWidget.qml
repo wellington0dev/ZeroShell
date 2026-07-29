@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import qs.Theme
 import qs.Widgets
 import qs.State
@@ -24,6 +25,19 @@ FloatingWindow {
 
     onClosed: Visibility.voiceOpen = false
 
+    IpcHandler {
+        target: "voice"
+
+        // Sem keybind dedicado hoje (só clique na sidebar) - existe pra
+        // scripts (ex.: hypr/scripts/debug-shell.sh) abrirem sem precisar
+        // simular clique de mouse.
+        function toggle(): void {
+            Visibility.voiceOpen = !Visibility.voiceOpen
+        }
+        function open(): void { Visibility.voiceOpen = true }
+        function close(): void { Visibility.voiceOpen = false }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Colors.spacing * 2
@@ -36,6 +50,7 @@ FloatingWindow {
                 text: "Chat de voz"
                 color: Colors.foreground
                 font.pixelSize: Colors.fontSizeLarge
+                font.family: Colors.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }
@@ -92,6 +107,7 @@ FloatingWindow {
             text: VoiceService.statusText
             color: VoiceService.errorText ? Colors.danger : Colors.foregroundMuted
             font.pixelSize: Colors.fontSizeSmall
+            font.family: Colors.fontFamily
             horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
             wrapMode: Text.WordWrap

@@ -56,5 +56,6 @@ Column {
         text: root.percent + "%"
         color: root.tint
         font.pixelSize: 11
+        font.family: Colors.fontFamily
     }
 }

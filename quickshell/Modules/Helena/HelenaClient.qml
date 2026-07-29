@@ -12,6 +12,7 @@ Singleton {
     id: root
 
     readonly property string baseUrl: "http://localhost:4567"
+    readonly property string repoUrl: "https://github.com/wellington0dev/helena-ai.git"
 
     property string token: sessionAdapter.token
     property var user: null
@@ -24,6 +25,24 @@ Singleton {
     property string sendError: ""
 
     readonly property bool loggedIn: token.length > 0
+
+    // true assim que uma checagem confirma que o servidor não responde -
+    // diferente de loginError/sendError (que só populam DEPOIS de uma ação
+    // do usuário), isso é checado proativamente (ver checkServer(), chamado
+    // por HelenaWindow.qml ao abrir o painel) pra avisar mesmo se a pessoa só
+    // abriu o chat pra olhar, sem tentar logar ou mandar nada ainda.
+    property bool serverUnreachable: false
+
+    function checkServer() {
+        const xhr = new XMLHttpRequest()
+        xhr.open("GET", root.baseUrl + "/health")
+        xhr.timeout = 5000
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return
+            root.serverUnreachable = (xhr.status === 0)
+        }
+        xhr.send()
+    }
 
     FileView {
         id: sessionFile
@@ -68,7 +87,15 @@ Singleton {
                 onSuccess(data)
             } else {
                 if (xhr.status === 401 && root.token) root.logout()
-                const msg = (data && data.error) || ("Erro " + (xhr.status || "de conexão"))
+                // status 0 = XHR nunca chegou a receber resposta HTTP nenhuma
+                // (conexão recusada) - o sinal de que o servidor da Helena
+                // não tá rodando em root.baseUrl, não um erro comum da API.
+                const msg = xhr.status === 0
+                    ? "Não consegui falar com a Helena em " + root.baseUrl + ". " +
+                      "Ela ainda não tá instalada/rodando nesta máquina? " +
+                      "Clone " + root.repoUrl + " e rode 'helena setup' + 'helena start' " +
+                      "(ou 'helena service install' pra subir sozinha no login)."
+                    : (data && data.error) || ("Erro " + xhr.status)
                 onError(msg, xhr.status)
             }
         }

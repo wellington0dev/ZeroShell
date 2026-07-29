@@ -9,7 +9,9 @@ import qs.Widgets
 RowLayout {
     id: root
 
-    property string current: "home"
+    // Vive em DashboardState (não como property local) pra dar pra trocar de
+    // aba de fora via IPC (hypr/scripts/debug-shell*.sh).
+    readonly property string current: DashboardState.currentTab
     spacing: Colors.spacing
 
     readonly property var tabs: [
@@ -30,7 +32,7 @@ RowLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 36
-            radius: Colors.radiusMedium
+            radius: Colors.radiusButton
             color: active ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18) : (hover.hovered ? Colors.surfaceAlt : "transparent")
             border.color: active ? Colors.accent : "transparent"
             border.width: 1
@@ -51,11 +53,12 @@ RowLayout {
                     text: tab.modelData.label
                     color: tab.active ? Colors.accent : Colors.foregroundMuted
                     font.pixelSize: Colors.fontSizeSmall
+                    font.family: Colors.fontFamily
                 }
             }
 
             HoverHandler { id: hover }
-            TapHandler { onTapped: root.current = tab.modelData.key }
+            TapHandler { onTapped: DashboardState.currentTab = tab.modelData.key }
         }
     }
 }

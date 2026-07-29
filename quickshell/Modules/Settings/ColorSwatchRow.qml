@@ -18,6 +18,7 @@ RowLayout {
         text: root.label
         color: Colors.foreground
         font.pixelSize: 12
+        font.family: Colors.fontFamily
         Layout.fillWidth: true
     }
 
@@ -25,6 +26,7 @@ RowLayout {
         text: root.value.toString()
         color: Colors.foregroundMuted
         font.pixelSize: 11
+        font.family: Colors.fontFamily
     }
 
     Rectangle {

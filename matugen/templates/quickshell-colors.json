@@ -5,7 +5,7 @@
     "border": "{{ colors.outline_variant.dark.hex }}",
     "foreground": "{{ colors.on_background.dark.hex }}",
     "foregroundMuted": "{{ colors.on_surface_variant.dark.hex | set_lightness: 58 }}",
-    "accent": "{{ colors.primary.dark.hex }}",
+    "accent": "{{ wallAccent1.hex | to_color | set_lightness: 80 }}",
     "accentAlt": "{{ wallAccent2.hex | to_color | set_lightness: 80 }}",
     "danger": "{{ colors.error.dark.hex }}",
     "success": "{{ colors.success.dark.hex }}"
