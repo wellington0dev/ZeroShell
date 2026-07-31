@@ -1,11 +1,16 @@
 import QtQuick
 import Quickshell
 import qs.Theme
+import qs.State
 
 PanelWindow {
     id: root
 
-    readonly property var notifications: NotificationService.notifications
+    // "Notificações" desligado (Dashboard > aba Ajustes) só esconde os
+    // POPUPS - o NotificationService continua registrando tudo em
+    // "history" normalmente (aba Início do Dashboard), então nada se perde
+    // enquanto tá "mudo", só não interrompe na hora.
+    readonly property var notifications: QuickSettings.notificationsEnabled ? NotificationService.notifications : []
 
     visible: notifications.length > 0
     color: "transparent"
@@ -30,7 +35,7 @@ PanelWindow {
         width: parent.width
         implicitHeight: contentHeight
         model: root.notifications
-        spacing: Colors.spacing
+        spacing: Styles.spacing
         interactive: false
 
         add: Transition {

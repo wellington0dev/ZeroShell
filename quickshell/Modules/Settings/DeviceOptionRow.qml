@@ -11,22 +11,22 @@ RowLayout {
 
     signal clicked()
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     Rectangle {
         width: 10
         height: 10
         radius: 5
-        color: root.selected ? Colors.accent : "transparent"
-        border.color: root.selected ? Colors.accent : Colors.border
+        color: root.selected ? Styles.accent : "transparent"
+        border.color: root.selected ? Styles.accent : Styles.border
         border.width: 1
     }
 
     Text {
         text: root.node ? (root.node.description || root.node.name) : ""
-        color: root.selected ? Colors.foreground : Colors.foregroundMuted
+        color: root.selected ? Styles.foreground : Styles.foregroundMuted
         font.pixelSize: 12
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         elide: Text.ElideRight
         Layout.fillWidth: true
     }

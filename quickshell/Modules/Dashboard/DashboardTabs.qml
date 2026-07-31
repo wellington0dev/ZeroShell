@@ -12,12 +12,13 @@ RowLayout {
     // Vive em DashboardState (não como property local) pra dar pra trocar de
     // aba de fora via IPC (hypr/scripts/debug-shell*.sh).
     readonly property string current: DashboardState.currentTab
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     readonly property var tabs: [
         { key: "home", icon: "home", label: "Início" },
         { key: "player", icon: "music-note", label: "Player" },
-        { key: "system", icon: "cpu", label: "Sistema" }
+        { key: "system", icon: "cpu", label: "Sistema" },
+        { key: "quick", icon: "gear", label: "Ajustes" }
     ]
 
     Repeater {
@@ -32,9 +33,9 @@ RowLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 36
-            radius: Colors.radiusButton
-            color: active ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18) : (hover.hovered ? Colors.surfaceAlt : "transparent")
-            border.color: active ? Colors.accent : "transparent"
+            radius: Styles.radiusButton
+            color: active ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.18) : (hover.hovered ? Styles.surfaceAlt : "transparent")
+            border.color: active ? Styles.accent : "transparent"
             border.width: 1
 
             Behavior on color { ColorAnimation { duration: Motion.durationFast } }
@@ -46,14 +47,14 @@ RowLayout {
                 Icon {
                     icon: tab.modelData.icon
                     size: 16
-                    tint: tab.active ? Colors.accent : Colors.foregroundMuted
+                    tint: tab.active ? Styles.accent : Styles.foregroundMuted
                 }
 
                 Text {
                     text: tab.modelData.label
-                    color: tab.active ? Colors.accent : Colors.foregroundMuted
-                    font.pixelSize: Colors.fontSizeSmall
-                    font.family: Colors.fontFamily
+                    color: tab.active ? Styles.accent : Styles.foregroundMuted
+                    font.pixelSize: Styles.fontSizeSmall
+                    font.family: Styles.fontFamily
                 }
             }
 

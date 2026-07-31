@@ -15,21 +15,21 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Colors.spacing * 2
+        spacing: Styles.spacing * 2
 
         Text {
             text: "Áudio"
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 16
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             font.bold: true
         }
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
-            Text { text: "Saída"; color: Colors.foregroundMuted; font.pixelSize: 12 }
+            Text { text: "Saída"; color: Styles.foregroundMuted; font.pixelSize: 12 }
 
             VolumeRow {
                 Layout.fillWidth: true
@@ -51,9 +51,9 @@ Item {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
-            Text { text: "Entrada"; color: Colors.foregroundMuted; font.pixelSize: 12 }
+            Text { text: "Entrada"; color: Styles.foregroundMuted; font.pixelSize: 12 }
 
             VolumeRow {
                 Layout.fillWidth: true

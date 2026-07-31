@@ -5,7 +5,7 @@ import QtQuick.Effects
 //
 // Contexto: janelas de verdade (FloatingWindow, como a de Configurações)
 // recebem sombra automática do Hyprland (config em hyprland.lua,
-// decoration.shadow). Mas boa parte do shell (Sidebar, Player, Helena,
+// decoration.shadow). Mas boa parte do shell (Sidebar, Dashboard, Volume,
 // Launcher, menu de energia) usa PanelWindow, que é uma superfície
 // "layer-shell" - um tipo de janela especial pra barras/painéis que o
 // Hyprland não decora com sombra. Sem isso, esses painéis pareceriam "colados"

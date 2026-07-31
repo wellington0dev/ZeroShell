@@ -25,8 +25,8 @@ ClippingRectangle {
     implicitWidth: size
     implicitHeight: size
     radius: width / 2
-    color: Colors.surfaceAlt
-    border.color: Colors.border
+    color: Styles.surfaceAlt
+    border.color: Styles.border
     border.width: 1
 
     Image {

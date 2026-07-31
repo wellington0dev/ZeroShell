@@ -12,29 +12,29 @@ RowLayout {
 
     signal changed(string key, color value)
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     Text {
         text: root.label
-        color: Colors.foreground
+        color: Styles.foreground
         font.pixelSize: 12
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         Layout.fillWidth: true
     }
 
     Text {
         text: root.value.toString()
-        color: Colors.foregroundMuted
+        color: Styles.foregroundMuted
         font.pixelSize: 11
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
     }
 
     Rectangle {
         width: 24
         height: 24
-        radius: Colors.radiusSmall
+        radius: Styles.radiusSmall
         color: root.value
-        border.color: Colors.border
+        border.color: Styles.border
         border.width: 1
 
         TapHandler { onTapped: dialog.open() }

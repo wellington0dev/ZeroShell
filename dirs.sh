@@ -13,7 +13,7 @@ SCRIPT_FILES=(
     install.sh
     update.sh
     dirs.sh
-    readmi.md
+    README.md
 )
 
 CONFIG_DIR="$HOME/.config"

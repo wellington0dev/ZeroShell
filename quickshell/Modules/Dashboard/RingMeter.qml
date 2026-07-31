@@ -16,15 +16,19 @@ Rectangle {
     property string icon
     property string label
     property int percent: 0
-    property color ringColor: Colors.accent
+    property color ringColor: Styles.accent
+    // "%" pra CPU/RAM/armazenamento (o uso original) - "°" pra temperatura
+    // (SystemTab.qml), sem precisar de um componente à parte só pra trocar
+    // o símbolo depois do número.
+    property string unit: "%"
 
     readonly property int startAngle: -225
     readonly property int sweepAngle: 270
     readonly property real strokeW: 6
 
-    radius: Colors.radiusShell
-    color: Colors.surface
-    border.color: Colors.border
+    radius: Styles.radiusShell
+    color: Styles.surface
+    border.color: Styles.border
     border.width: 1
 
     ColumnLayout {
@@ -44,9 +48,9 @@ Rectangle {
 
             Text {
                 text: root.label
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 10
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
             }
         }
 
@@ -68,7 +72,7 @@ Rectangle {
 
                 ShapePath {
                     fillColor: "transparent"
-                    strokeColor: Colors.surfaceAlt
+                    strokeColor: Styles.surfaceAlt
                     strokeWidth: root.strokeW
                     capStyle: ShapePath.RoundCap
 
@@ -105,10 +109,10 @@ Rectangle {
 
             Text {
                 anchors.centerIn: shape
-                text: root.percent + "%"
+                text: root.percent + root.unit
                 color: root.ringColor
                 font.pixelSize: 16
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
             }
         }

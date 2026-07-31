@@ -11,7 +11,7 @@ RowLayout {
 
     readonly property bool ready: !!(node && node.ready && node.audio)
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     IconButton {
         size: 28
@@ -21,9 +21,9 @@ RowLayout {
 
     Text {
         text: root.node ? (root.node.description || root.node.name) : "—"
-        color: Colors.foreground
+        color: Styles.foreground
         font.pixelSize: 13
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         elide: Text.ElideRight
         Layout.preferredWidth: 160
     }
@@ -36,9 +36,9 @@ RowLayout {
 
     Text {
         text: root.ready ? Math.round(node.audio.volume * 100) + "%" : "—"
-        color: Colors.foregroundMuted
+        color: Styles.foregroundMuted
         font.pixelSize: 11
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         Layout.preferredWidth: 34
     }
 }

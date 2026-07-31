@@ -28,12 +28,12 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusButton
+        radius: Styles.radiusButton
         opacity: root.enabled ? 1 : 0.4
         color: root.active
-            ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18)
-            : (hover.hovered ? Colors.surfaceAlt : "transparent")
-        border.color: root.active ? Colors.accent : "transparent"
+            ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.18)
+            : (hover.hovered ? Styles.surfaceAlt : "transparent")
+        border.color: root.active ? Styles.accent : "transparent"
         border.width: 1
 
         Behavior on color { ColorAnimation { duration: 120 } }
@@ -43,7 +43,7 @@ Item {
             size: Math.max(10, root.size - 16)
             icon: root.icon
             monochrome: root.monochrome
-            tint: root.active ? Colors.accent : Colors.foreground
+            tint: root.active ? Styles.accent : Styles.foreground
         }
     }
 

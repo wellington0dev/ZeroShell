@@ -8,6 +8,7 @@ import Quickshell.Widgets
 import qs.Theme
 import qs.Widgets
 import qs.Modules.Power
+import qs.State
 
 // Lockscreen de verdade, via protocolo ext-session-lock do Wayland
 // (WlSessionLock) - diferente dos outros painéis do shell (PanelWindow
@@ -55,6 +56,19 @@ Item {
         function debugUnlock(): void {
             sessionLock.locked = false
         }
+    }
+
+    // Trava a sessão sozinha depois de 5min sem input (mouse/teclado) -
+    // "timeout" é em SEGUNDOS (confirmado ao vivo: com timeout=5, isIdle
+    // virava true exatos ~5.0s depois do quickshell subir, não 5000s).
+    // "enabled: !QuickSettings.keepAwake" é o que faz o toggle "Manter
+    // acordado" (Dashboard > aba Ajustes) também desligar o auto-lock, não
+    // só o suspend/DPMS do sistema (ver IdleInhibitor em Sidebar.qml).
+    IdleMonitor {
+        id: idleMonitor
+        timeout: 300
+        enabled: !QuickSettings.keepAwake
+        onIsIdleChanged: if (isIdle) sessionLock.locked = true
     }
 
     WlSessionLock {
@@ -128,11 +142,11 @@ Item {
                     id: mainColumn
 
                     anchors.centerIn: parent
-                    spacing: Colors.spacing * 1.5
+                    spacing: Styles.spacing * 1.5
 
                     // Wallpaper + avatar ficam FORA do card, flutuando sobre
                     // o blur - só usuário/input/erro ficam dentro do card
-                    // (Colors.background). Item comum (não ColumnLayout)
+                    // (Styles.background). Item comum (não ColumnLayout)
                     // porque o avatar precisa SOBREPOR o wallpaper (50% da
                     // própria altura por cima dele, estilo banner de perfil)
                     // - um layout normal só empilha sem sobrepor.
@@ -154,9 +168,9 @@ Item {
                             anchors.horizontalCenter: parent.horizontalCenter
                             width: 374
                             height: 218
-                            radius: Colors.radiusShell
-                            color: Colors.surfaceAlt
-                            border.color: Colors.border
+                            radius: Styles.radiusShell
+                            color: Styles.surfaceAlt
+                            border.color: Styles.border
                             border.width: 2
 
                             Image {
@@ -175,8 +189,8 @@ Item {
                             width: 120
                             height: 120
                             radius: width / 2
-                            color: Colors.surfaceAlt
-                            border.color: Colors.border
+                            color: Styles.surfaceAlt
+                            border.color: Styles.border
                             border.width: 2
 
                             Image {
@@ -194,34 +208,34 @@ Item {
 
                         Layout.alignment: Qt.AlignHCenter
                         width: 300
-                        height: cardContent.implicitHeight + Colors.spacing * 3
-                        radius: Colors.radiusShell
-                        color: Colors.background
-                        border.color: Colors.border
+                        height: cardContent.implicitHeight + Styles.spacing * 3
+                        radius: Styles.radiusShell
+                        color: Styles.background
+                        border.color: Styles.border
                         border.width: 2
 
                         ColumnLayout {
                             id: cardContent
 
                             anchors.fill: parent
-                            anchors.margins: Colors.spacing * 1.5
-                            spacing: Colors.spacing
+                            anchors.margins: Styles.spacing * 1.5
+                            spacing: Styles.spacing
 
                             Text {
                                 Layout.alignment: Qt.AlignHCenter
                                 text: lockRoot.username
-                                color: Colors.foreground
-                                font.pixelSize: Colors.fontSizeTitle
+                                color: Styles.foreground
+                                font.pixelSize: Styles.fontSizeTitle
                                 font.bold: true
-                                font.family: Colors.fontFamily
+                                font.family: Styles.fontFamily
                             }
 
                             Rectangle {
                                 Layout.fillWidth: true
                                 implicitHeight: 40
-                                radius: Colors.radiusInput
-                                color: Colors.surface
-                                border.color: passwordInput.activeFocus ? Colors.accent : Colors.border
+                                radius: Styles.radiusInput
+                                color: Styles.surface
+                                border.color: passwordInput.activeFocus ? Styles.accent : Styles.border
                                 border.width: 1
 
                                 Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -230,9 +244,9 @@ Item {
                                     id: passwordInput
                                     anchors.fill: parent
                                     anchors.margins: 10
-                                    color: Colors.foreground
-                                    font.pixelSize: Colors.fontSizeNormal
-                                    font.family: Colors.fontFamily
+                                    color: Styles.foreground
+                                    font.pixelSize: Styles.fontSizeNormal
+                                    font.family: Styles.fontFamily
                                     echoMode: TextInput.Password
                                     verticalAlignment: TextInput.AlignVCenter
                                     clip: true
@@ -245,9 +259,9 @@ Item {
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: surfaceRoot.checking ? "Verificando…" : "Senha"
-                                        color: Colors.foregroundMuted
-                                        font.pixelSize: Colors.fontSizeNormal
-                                        font.family: Colors.fontFamily
+                                        color: Styles.foregroundMuted
+                                        font.pixelSize: Styles.fontSizeNormal
+                                        font.family: Styles.fontFamily
                                         visible: passwordInput.text.length === 0
                                     }
                                 }
@@ -257,9 +271,9 @@ Item {
                                 Layout.fillWidth: true
                                 visible: surfaceRoot.errorText.length > 0
                                 text: surfaceRoot.errorText
-                                color: Colors.danger
-                                font.pixelSize: Colors.fontSizeSmall
-                                font.family: Colors.fontFamily
+                                color: Styles.danger
+                                font.pixelSize: Styles.fontSizeSmall
+                                font.family: Styles.fontFamily
                                 horizontalAlignment: Text.AlignHCenter
                             }
                         }
@@ -277,7 +291,7 @@ Item {
 
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    anchors.margins: Colors.spacing * 2
+                    anchors.margins: Styles.spacing * 2
                     icon: "shutdown"
                     size: 40
                     onClicked: powerPopup.visible = !powerPopup.visible
@@ -290,12 +304,12 @@ Item {
                     visible: false
                     anchors.right: powerButton.left
                     anchors.bottom: powerButton.bottom
-                    anchors.rightMargin: Colors.spacing * 1.5
+                    anchors.rightMargin: Styles.spacing * 1.5
                     width: 300
                     height: 120
-                    radius: Colors.radiusShell
-                    color: Colors.background
-                    border.color: Colors.border
+                    radius: Styles.radiusShell
+                    color: Styles.background
+                    border.color: Styles.border
                     border.width: 2
 
                     Process { id: powerProc }
@@ -307,7 +321,7 @@ Item {
 
                     RowLayout {
                         anchors.centerIn: parent
-                        spacing: Colors.spacing
+                        spacing: Styles.spacing
 
                         PowerButton {
                             icon: "logout"
@@ -325,7 +339,7 @@ Item {
                             icon: "restart"
                             label: "Reiniciar"
                             needsConfirm: true
-                            tint: Colors.danger
+                            tint: Styles.danger
                             onActivated: powerPopup.runPower(["systemctl", "reboot"])
                         }
 
@@ -333,7 +347,7 @@ Item {
                             icon: "shutdown"
                             label: "Desligar"
                             needsConfirm: true
-                            tint: Colors.danger
+                            tint: Styles.danger
                             onActivated: powerPopup.runPower(["systemctl", "poweroff"])
                         }
                     }

@@ -8,7 +8,7 @@ import qs.Theme
 Column {
     id: root
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     // Snapshot reativo de toda janela que o Hyprland expõe pelo protocolo
     // wlr-foreign-toplevel - isso inclui janelas minimizadas/em segundo

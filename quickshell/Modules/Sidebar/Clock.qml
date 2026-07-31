@@ -25,9 +25,9 @@ Column {
         width: 32
         horizontalAlignment: Text.AlignHCenter
         text: Qt.formatDateTime(clock.date, "hh")
-        color: Colors.foreground
+        color: Styles.foreground
         font.pixelSize: 15
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         font.bold: true
     }
 
@@ -35,8 +35,8 @@ Column {
         width: 32
         horizontalAlignment: Text.AlignHCenter
         text: Qt.formatDateTime(clock.date, "mm")
-        color: Colors.foregroundMuted
+        color: Styles.foregroundMuted
         font.pixelSize: 12
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
     }
 }

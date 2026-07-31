@@ -10,6 +10,5 @@ return {
     captureMenu = "qs ipc call capture toggle",           -- menu de captura/gravação de tela (só pela sidebar agora)
     captureAuto = "qs ipc call capture screenshotAuto",   -- captura: clique=janela, fora=tela cheia, arrasta=região
     recordAuto  = "qs ipc call capture recordAuto",       -- mesmo esquema do de cima, pra gravação
-    helenaChat  = "qs ipc call helena toggle",            -- chat da Helena
     settingsWin = "qs ipc call settings toggle",           -- janela de Configurações
 }

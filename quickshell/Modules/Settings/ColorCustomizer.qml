@@ -10,15 +10,15 @@ ColumnLayout {
 
     readonly property string scriptsDir: Quickshell.env("HOME") + "/.config/hypr/scripts"
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     function applyColor(key, value) {
         const props = {}
         props[key] = value.toString()
-        Colors.setCustom(props)
+        Styles.setCustom(props)
         // Picking a color by hand means the palette is custom now - stop the
         // next wallpaper change from silently overwriting it.
-        Colors.setUseWallpaperColors(false)
+        Styles.setUseWallpaperColors(false)
     }
 
     FileView {
@@ -36,9 +36,9 @@ ColumnLayout {
 
         Text {
             text: "Cada cor é salva assim que você escolhe."
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 11
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             Layout.fillWidth: true
         }
 
@@ -47,7 +47,7 @@ ColumnLayout {
             primary: false
             onClicked: {
                 const wp = (currentWallpaperFile.text() || "").trim()
-                Colors.setUseWallpaperColors(true)
+                Styles.setUseWallpaperColors(true)
                 if (wp) resetProcess.run(["bash", root.scriptsDir + "/apply-theme.sh", wp])
             }
         }
@@ -62,18 +62,18 @@ ColumnLayout {
         ColumnLayout {
             id: list
             width: parent.width
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
-            ColorSwatchRow { label: "Fundo"; key: "background"; value: Colors.background; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Superfície"; key: "surface"; value: Colors.surface; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Superfície alternativa"; key: "surfaceAlt"; value: Colors.surfaceAlt; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Borda"; key: "border"; value: Colors.border; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Texto"; key: "foreground"; value: Colors.foreground; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Texto secundário"; key: "foregroundMuted"; value: Colors.foregroundMuted; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Destaque"; key: "accent"; value: Colors.accent; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Destaque alternativo"; key: "accentAlt"; value: Colors.accentAlt; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Perigo"; key: "danger"; value: Colors.danger; onChanged: (k, v) => root.applyColor(k, v) }
-            ColorSwatchRow { label: "Sucesso"; key: "success"; value: Colors.success; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Fundo"; key: "background"; value: Styles.background; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Superfície"; key: "surface"; value: Styles.surface; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Superfície alternativa"; key: "surfaceAlt"; value: Styles.surfaceAlt; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Borda"; key: "border"; value: Styles.border; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Texto"; key: "foreground"; value: Styles.foreground; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Texto secundário"; key: "foregroundMuted"; value: Styles.foregroundMuted; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Destaque"; key: "accent"; value: Styles.accent; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Destaque alternativo"; key: "accentAlt"; value: Styles.accentAlt; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Perigo"; key: "danger"; value: Styles.danger; onChanged: (k, v) => root.applyColor(k, v) }
+            ColorSwatchRow { label: "Sucesso"; key: "success"; value: Styles.success; onChanged: (k, v) => root.applyColor(k, v) }
         }
     }
 }

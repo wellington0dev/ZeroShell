@@ -8,8 +8,8 @@ import qs.Theme
 // e reatribuir "checked" de fora, ex.:
 //
 //   Switch {
-//       checked: Colors.useWallpaperColors
-//       onToggled: Colors.setUseWallpaperColors(!Colors.useWallpaperColors)
+//       checked: Styles.useWallpaperColors
+//       onToggled: Styles.setUseWallpaperColors(!Styles.useWallpaperColors)
 //   }
 //
 // Por quê? Porque na maioria dos usos (Wi-Fi ligado/desligado, Bluetooth,
@@ -29,8 +29,8 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: height / 2
-        color: root.checked ? Colors.accent : Colors.surfaceAlt
-        border.color: Colors.border
+        color: root.checked ? Styles.accent : Styles.surfaceAlt
+        border.color: Styles.border
         border.width: 1
 
         Behavior on color { ColorAnimation { duration: 150 } }
@@ -40,7 +40,7 @@ Item {
             width: parent.height - 4
             height: width
             radius: width / 2
-            color: Colors.background
+            color: Styles.background
             anchors.verticalCenter: parent.verticalCenter
             x: root.checked ? parent.width - width - 2 : 2
 

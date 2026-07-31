@@ -15,27 +15,27 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Colors.spacing * 1.5
+        spacing: Styles.spacing * 1.5
 
         Text {
             text: "Captura de tela"
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 16
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             font.bold: true
         }
 
         // ---- Pasta de screenshots ----
         Text {
             text: "Pasta das capturas"
-            color: Colors.foregroundMuted
-            font.pixelSize: Colors.fontSizeSmall
-            font.family: Colors.fontFamily
+            color: Styles.foregroundMuted
+            font.pixelSize: Styles.fontSizeSmall
+            font.family: Styles.fontFamily
         }
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
             TextField {
                 id: screenshotsField
@@ -53,14 +53,14 @@ Item {
         // ---- Pasta de gravações ----
         Text {
             text: "Pasta das gravações"
-            color: Colors.foregroundMuted
-            font.pixelSize: Colors.fontSizeSmall
-            font.family: Colors.fontFamily
+            color: Styles.foregroundMuted
+            font.pixelSize: Styles.fontSizeSmall
+            font.family: Styles.fontFamily
         }
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
             TextField {
                 id: videosField
@@ -77,9 +77,9 @@ Item {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.topMargin: Colors.spacing / 2
+            Layout.topMargin: Styles.spacing / 2
             Layout.preferredHeight: 1
-            color: Colors.border
+            color: Styles.border
         }
 
         // ---- Opções rápidas ----
@@ -88,9 +88,9 @@ Item {
 
             Text {
                 text: "Copiar captura para a área de transferência"
-                color: Colors.foreground
-                font.pixelSize: Colors.fontSizeSmall
-                font.family: Colors.fontFamily
+                color: Styles.foreground
+                font.pixelSize: Styles.fontSizeSmall
+                font.family: Styles.fontFamily
                 Layout.fillWidth: true
             }
 
@@ -105,9 +105,9 @@ Item {
 
             Text {
                 text: "Notificar ao terminar captura/gravação"
-                color: Colors.foreground
-                font.pixelSize: Colors.fontSizeSmall
-                font.family: Colors.fontFamily
+                color: Styles.foreground
+                font.pixelSize: Styles.fontSizeSmall
+                font.family: Styles.fontFamily
                 Layout.fillWidth: true
             }
 

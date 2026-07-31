@@ -58,13 +58,13 @@ Item {
         width: parent.width
         height: 6
         radius: 3
-        color: Colors.surfaceAlt
+        color: Styles.surfaceAlt
 
         Rectangle {
             width: track.width * Math.max(0, Math.min(1, root.displayValue))
             height: parent.height
             radius: parent.radius
-            color: Colors.accent
+            color: Styles.accent
         }
     }
 
@@ -73,7 +73,7 @@ Item {
         width: 14
         height: 14
         radius: 7
-        color: Colors.foreground
+        color: Styles.foreground
         anchors.verticalCenter: parent.verticalCenter
         x: Math.max(0, Math.min(1, root.displayValue)) * (root.width - width)
     }

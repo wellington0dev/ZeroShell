@@ -25,16 +25,16 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         RowLayout {
             Layout.fillWidth: true
 
             Text {
                 text: "Bluetooth"
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 16
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }
@@ -48,14 +48,14 @@ Item {
         Text {
             visible: !root.adapter
             text: "Nenhum adaptador Bluetooth encontrado"
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
         }
 
         ListView {
             visible: root.adapter && root.adapter.enabled
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
             clip: true
             model: root.adapter ? root.adapter.devices.values : []
 

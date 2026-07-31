@@ -11,7 +11,7 @@ ColumnLayout {
     // pra trocar de categoria de fora via IPC (hypr/scripts/debug-shell*.sh).
     readonly property string current: Visibility.settingsCategory
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     IconButton {
         icon: "wifi"
@@ -47,6 +47,12 @@ ColumnLayout {
         icon: "sidebar"
         active: root.current === "sidebar"
         onClicked: Visibility.settingsCategory = "sidebar"
+    }
+
+    IconButton {
+        icon: "window"
+        active: root.current === "plugins"
+        onClicked: Visibility.settingsCategory = "plugins"
     }
 
     Item { Layout.fillHeight: true }

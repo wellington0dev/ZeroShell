@@ -28,7 +28,7 @@ IconButton {
         width: 8
         height: 8
         radius: 4
-        color: Colors.danger
+        color: Styles.danger
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.margins: 2

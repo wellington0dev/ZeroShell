@@ -30,11 +30,11 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         width: 260
-        spacing: Colors.spacing * 1.5
+        spacing: Styles.spacing * 1.5
 
         ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
             ProfilePicture {
                 Layout.alignment: Qt.AlignHCenter
@@ -44,9 +44,9 @@ Item {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: Qt.formatDateTime(clock.date, "hh:mm")
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 32
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
             }
         }
@@ -60,28 +60,28 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: leftColumn.right
-        anchors.leftMargin: Colors.spacing * 2
+        anchors.leftMargin: Styles.spacing * 2
         width: 1
-        color: Colors.border
+        color: Styles.border
     }
 
     ColumnLayout {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: divider.right
-        anchors.leftMargin: Colors.spacing * 2
+        anchors.leftMargin: Styles.spacing * 2
         anchors.right: parent.right
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
             Text {
                 text: "Notificações"
-                color: Colors.foregroundMuted
-                font.pixelSize: Colors.fontSizeSmall
-                font.family: Colors.fontFamily
+                color: Styles.foregroundMuted
+                font.pixelSize: Styles.fontSizeSmall
+                font.family: Styles.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }
@@ -99,7 +99,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
             model: NotificationService.history
 
             delegate: NotificationCard {
@@ -112,9 +112,9 @@ Item {
         Text {
             visible: NotificationService.history.length === 0
             text: "Nenhuma notificação recente"
-            color: Colors.foregroundMuted
-            font.pixelSize: Colors.fontSizeSmall
-            font.family: Colors.fontFamily
+            color: Styles.foregroundMuted
+            font.pixelSize: Styles.fontSizeSmall
+            font.family: Styles.fontFamily
             Layout.alignment: Qt.AlignHCenter
             Layout.fillHeight: true
         }

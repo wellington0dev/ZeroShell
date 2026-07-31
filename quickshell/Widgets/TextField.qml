@@ -2,8 +2,9 @@ import QtQuick
 import qs.Theme
 
 // Campo de texto de uma linha só, com placeholder e borda que acende na cor
-// de destaque quando focado. Usado no login/cadastro da Helena (usuário e,
-// com passwordMode:true, a senha).
+// de destaque quando focado. Usado nos campos de texto simples das
+// Configurações (ex.: pasta de destino em CapturePage.qml) - pra senha, ver
+// PasswordField.qml (revela/oculta, ícone de olho).
 //
 // QML não tem um "TextField" pronto e temático fora do módulo QtQuick.Controls
 // (que traria o próprio estilo nativo do sistema, difícil de recolorir); por
@@ -17,7 +18,6 @@ Item {
 
     property alias text: input.text
     property string placeholder: ""
-    property bool passwordMode: false
     readonly property alias input: input
 
     signal accepted()
@@ -27,9 +27,9 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusInput
-        color: Colors.surface
-        border.color: input.activeFocus ? Colors.accent : Colors.border
+        radius: Styles.radiusInput
+        color: Styles.surface
+        border.color: input.activeFocus ? Styles.accent : Styles.border
         border.width: 1
 
         Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -41,9 +41,9 @@ Item {
                 leftMargin: 8
             }
             text: root.placeholder
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             visible: input.text.length === 0
         }
 
@@ -51,13 +51,12 @@ Item {
             id: input
             anchors.fill: parent
             anchors.margins: 8
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             verticalAlignment: TextInput.AlignVCenter
             clip: true
             selectByMouse: true
-            echoMode: root.passwordMode ? TextInput.Password : TextInput.Normal
             onAccepted: root.accepted()
         }
     }

@@ -15,7 +15,7 @@ ColumnLayout {
     property string error: ""
     property string password: ""
 
-    spacing: Colors.spacing / 2
+    spacing: Styles.spacing / 2
 
     Connections {
         target: root.network
@@ -30,22 +30,22 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         Rectangle {
             width: 8
             height: 8
             radius: 4
-            color: root.network.connected ? Colors.success : "transparent"
-            border.color: Colors.border
+            color: root.network.connected ? Styles.success : "transparent"
+            border.color: Styles.border
             border.width: root.network.connected ? 0 : 1
         }
 
         Text {
             text: root.network.name
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 13
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             elide: Text.ElideRight
             Layout.fillWidth: true
         }
@@ -54,14 +54,14 @@ ColumnLayout {
             visible: root.network.security !== WifiSecurityType.Open
             text: "🔒"
             font.pixelSize: 11
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
         }
 
         Text {
             text: Math.round(root.network.signalStrength * 100) + "%"
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 11
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
         }
 
         TapHandler { onTapped: root.clicked() }
@@ -71,18 +71,18 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.leftMargin: 16
         visible: root.selected
-        spacing: Colors.spacing / 2
+        spacing: Styles.spacing / 2
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
             visible: root.network.connected
 
             Text {
                 text: "Conectado a esta rede"
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 11
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 Layout.fillWidth: true
             }
 
@@ -95,14 +95,14 @@ ColumnLayout {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
             visible: !root.network.connected && root.network.known
 
             Text {
                 text: "Rede salva"
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 11
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 Layout.fillWidth: true
             }
 
@@ -120,12 +120,12 @@ ColumnLayout {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Colors.spacing / 2
+            spacing: Styles.spacing / 2
             visible: !root.network.connected && !root.network.known
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Colors.spacing
+                spacing: Styles.spacing
 
                 PasswordField {
                     Layout.fillWidth: true
@@ -146,9 +146,9 @@ ColumnLayout {
             Text {
                 visible: root.error.length > 0
                 text: root.error
-                color: Colors.danger
+                color: Styles.danger
                 font.pixelSize: 11
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
             }
         }
     }

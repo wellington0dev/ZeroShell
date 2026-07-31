@@ -20,7 +20,7 @@ Rectangle {
     property bool isPopup: true
 
     readonly property int urgency: notification ? notification.urgency : NotificationUrgency.Normal
-    readonly property color urgencyColor: urgency === NotificationUrgency.Critical ? Colors.danger : Colors.accent
+    readonly property color urgencyColor: urgency === NotificationUrgency.Critical ? Styles.danger : Styles.accent
     readonly property bool autoExpires: root.isPopup && urgency !== NotificationUrgency.Critical
     readonly property int timeoutMs: notification && notification.expireTimeout > 0
         ? notification.expireTimeout * 1000
@@ -38,8 +38,8 @@ Rectangle {
 
     width: 340
     implicitHeight: content.implicitHeight + 24
-    radius: Colors.radiusShell
-    color: Colors.surface
+    radius: Styles.radiusShell
+    color: Styles.surface
     border.color: urgencyColor
     border.width: 1
     clip: true
@@ -72,7 +72,7 @@ Rectangle {
                 Layout.preferredWidth: 36
                 Layout.preferredHeight: 36
                 radius: 10
-                color: Colors.surfaceAlt
+                color: Styles.surfaceAlt
 
                 Image {
                     id: iconImage
@@ -91,7 +91,7 @@ Rectangle {
                     visible: iconImage.status !== Image.Ready
                     icon: "bell"
                     size: 18
-                    tint: Colors.foregroundMuted
+                    tint: Styles.foregroundMuted
                 }
             }
 
@@ -101,18 +101,18 @@ Rectangle {
 
                 Text {
                     text: root.notification ? root.notification.appName : ""
-                    color: Colors.foregroundMuted
+                    color: Styles.foregroundMuted
                     font.pixelSize: 10
-                    font.family: Colors.fontFamily
+                    font.family: Styles.fontFamily
                     Layout.fillWidth: true
                     elide: Text.ElideRight
                 }
 
                 Text {
                     text: root.notification ? root.notification.summary : ""
-                    color: Colors.foreground
+                    color: Styles.foreground
                     font.pixelSize: 13
-                    font.family: Colors.fontFamily
+                    font.family: Styles.fontFamily
                     font.bold: true
                     wrapMode: Text.Wrap
                     Layout.fillWidth: true
@@ -136,9 +136,9 @@ Rectangle {
         Text {
             visible: text.length > 0
             text: root.notification ? root.notification.body : ""
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             wrapMode: Text.Wrap
             Layout.fillWidth: true
         }

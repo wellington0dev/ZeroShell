@@ -41,10 +41,10 @@ Column {
 
             Rectangle {
                 anchors.centerIn: parent
-                radius: Colors.radiusFull
+                radius: Styles.radiusFull
                 width: parent.width
                 height: parent.height
-                color: hover.hovered ? Colors.surfaceAlt : "transparent"
+                color: hover.hovered ? Styles.surfaceAlt : "transparent"
 
                 Behavior on color { ColorAnimation { duration: 120 } }
             }
@@ -59,10 +59,10 @@ Column {
                 anchors.centerIn: parent
                 width: hitArea.modelData.focused ? 20 : (hitArea.modelData.active ? 12 : 8)
                 height: hitArea.modelData.focused ? 24 : (hitArea.modelData.active ? 12 : 8)
-                radius: Colors.radiusFull
+                radius: Styles.radiusFull
                 color: hitArea.modelData.focused
-                    ? Colors.workspaceFocused
-                    : (hitArea.modelData.active ? Colors.workspaceActive : Colors.workspaceEmpty)
+                    ? Styles.workspaceFocused
+                    : (hitArea.modelData.active ? Styles.workspaceActive : Styles.workspaceEmpty)
                 opacity: hitArea.modelData.focused || hitArea.modelData.active ? 1 : 0.5
 
                 Behavior on width {
@@ -87,9 +87,9 @@ Column {
                     visible: hitArea.modelData.focused
                     opacity: parent.width > 16 ? 1 : 0
                     text: hitArea.modelData.id
-                    color: Colors.background
-                    font.pixelSize: Colors.fontSizeSmallest
-                    font.family: Colors.fontFamily
+                    color: Styles.background
+                    font.pixelSize: Styles.fontSizeSmallest
+                    font.family: Styles.fontFamily
                     font.bold: true
 
                     Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }

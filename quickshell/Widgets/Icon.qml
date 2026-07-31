@@ -20,7 +20,7 @@ Item {
     id: root
 
     property string icon
-    property color tint: Colors.foreground
+    property color tint: Styles.foreground
     property bool monochrome: true
     property int size: 20
 

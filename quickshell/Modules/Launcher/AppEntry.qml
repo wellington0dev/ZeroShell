@@ -12,10 +12,10 @@ Rectangle {
 
     signal activated()
 
-    radius: Colors.radiusButton
+    radius: Styles.radiusButton
     color: selected
-        ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.16)
-        : (hover.hovered ? Colors.surfaceAlt : "transparent")
+        ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.16)
+        : (hover.hovered ? Styles.surfaceAlt : "transparent")
 
     RowLayout {
         anchors.fill: parent
@@ -25,8 +25,8 @@ Rectangle {
         Rectangle {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32
-            radius: Colors.radiusSmall
-            color: Colors.surfaceAlt
+            radius: Styles.radiusSmall
+            color: Styles.surfaceAlt
 
             IconImage {
                 anchors.centerIn: parent
@@ -41,18 +41,18 @@ Rectangle {
 
             Text {
                 text: root.entry ? root.entry.name : ""
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 13
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
 
             Text {
                 text: root.entry ? root.entry.genericName : ""
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 10
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 elide: Text.ElideRight
                 Layout.fillWidth: true
                 visible: text.length > 0

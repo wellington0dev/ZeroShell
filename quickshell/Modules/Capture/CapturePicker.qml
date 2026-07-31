@@ -173,10 +173,10 @@ PanelWindow {
             y: area.sy
             width: area.ex - area.sx
             height: area.ey - area.sy
-            radius: area.hoveringWindow ? Colors.radiusShell : 0
-            color: pickerRoot.recording ? Colors.danger : Colors.accent
+            radius: area.hoveringWindow ? Styles.radiusShell : 0
+            color: pickerRoot.recording ? Styles.danger : Styles.accent
             opacity: 0.15
-            border.color: pickerRoot.recording ? Colors.danger : Colors.accent
+            border.color: pickerRoot.recording ? Styles.danger : Styles.accent
             border.width: 2
 
             Behavior on x { enabled: !area.pressed; NumberAnimation { duration: Motion.durationFast } }
@@ -188,8 +188,8 @@ PanelWindow {
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.margins: 8
-                radius: Colors.radiusButton
-                color: Colors.background
+                radius: Styles.radiusButton
+                color: Styles.background
                 width: label.implicitWidth + 16
                 height: label.implicitHeight + 8
                 visible: selection.width > width + 16 && selection.height > height + 16
@@ -202,9 +202,9 @@ PanelWindow {
                         : (area.hoveringWindow
                             ? (pickerRoot.recording ? "Gravar janela" : "Janela")
                             : (pickerRoot.recording ? "Gravar região" : "Região"))
-                    color: Colors.foreground
-                    font.pixelSize: Colors.fontSizeSmall
-                    font.family: Colors.fontFamily
+                    color: Styles.foreground
+                    font.pixelSize: Styles.fontSizeSmall
+                    font.family: Styles.fontFamily
                 }
             }
         }

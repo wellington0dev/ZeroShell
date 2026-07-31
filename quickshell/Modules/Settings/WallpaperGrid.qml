@@ -12,7 +12,7 @@ ColumnLayout {
     readonly property string scriptsDir: Quickshell.env("HOME") + "/.config/hypr/scripts"
     readonly property string wallpapersDir: Quickshell.env("HOME") + "/Wallpapers"
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     FileView {
         id: currentFile
@@ -32,7 +32,7 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         Button {
             text: "Anterior"
@@ -55,16 +55,16 @@ ColumnLayout {
 
         Text {
             text: "Cores do wallpaper"
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
         }
 
         Switch {
-            checked: Colors.useWallpaperColors
+            checked: Styles.useWallpaperColors
             onToggled: {
-                const next = !Colors.useWallpaperColors
-                Colors.setUseWallpaperColors(next)
+                const next = !Styles.useWallpaperColors
+                Styles.setUseWallpaperColors(next)
                 // Sync immediately instead of waiting for the next wallpaper change.
                 if (next && root.current) root.run(["bash", root.scriptsDir + "/apply-theme.sh", root.current])
             }
@@ -93,10 +93,10 @@ ColumnLayout {
 
             Rectangle {
                 anchors.fill: parent
-                radius: Colors.radiusSmall
-                color: Colors.surfaceAlt
+                radius: Styles.radiusSmall
+                color: Styles.surfaceAlt
                 border.width: filePath === root.current ? 2 : 0
-                border.color: Colors.accent
+                border.color: Styles.accent
                 clip: true
 
                 Image {

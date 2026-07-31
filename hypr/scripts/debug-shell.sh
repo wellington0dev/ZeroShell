@@ -27,16 +27,14 @@ DEBUG_WORKSPACE=99
 declare -A PANELS=(
     [sidebar]=""
     [launcher]="launcher"
-    [helena]="helena"
     [settings]="settings"
     [powermenu]="powermenu"
     [capture]="capture"
-    [voice]="voice"
     [dashboard]="dashboard"
 )
 # Ordem determinística de captura (arrays associativos no bash não garantem
 # ordem de iteração).
-ORDER=(sidebar launcher helena settings powermenu capture voice dashboard)
+ORDER=(sidebar launcher settings powermenu capture dashboard)
 
 # Sub-páginas de "dashboard" e "settings" - cada uma ganha o próprio print
 # (dashboard-home.png, settings-wifi.png, etc.) em vez de só a aba/categoria

@@ -22,8 +22,8 @@ Column {
     readonly property int percent: ready ? Math.round(device.percentage * 100) : 0
     readonly property bool charging: ready && device.state === UPowerDeviceState.Charging
     readonly property color tint: !ready
-        ? Colors.foregroundMuted
-        : (charging ? Colors.accent : (percent <= 20 ? Colors.danger : Colors.foregroundMuted))
+        ? Styles.foregroundMuted
+        : (charging ? Styles.accent : (percent <= 20 ? Styles.danger : Styles.foregroundMuted))
 
     readonly property string iconName: charging
         ? "battery-charging"
@@ -56,6 +56,6 @@ Column {
         text: root.percent + "%"
         color: root.tint
         font.pixelSize: 11
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
     }
 }

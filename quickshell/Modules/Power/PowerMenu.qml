@@ -46,12 +46,17 @@ PanelWindow {
         right: true
     }
 
-    onVisibleChanged: {
-        if (visible) {
-            card.scale = 0.92
-            card.opacity = 0
-            Qt.callLater(() => { card.scale = 1; card.opacity = 1 })
-        }
+    // Tipo/velocidade da animação de abrir/fechar vêm de
+    // Configurações > Aparência > Animações (Motion.animationType) - ver
+    // Widgets/PanelAnim.qml. Ligação declarativa direta com
+    // Visibility.powerMenuOpen, não o reset manual + Qt.callLater de antes -
+    // testado ao vivo (no Launcher, mesmo padrão) que essa versão manual não
+    // chega a animar nada, só salta direto pro valor final.
+    PanelAnim {
+        id: anim
+        open: Visibility.powerMenuOpen
+        edge: "bottom"
+        distance: card.height
     }
 
     MouseArea {
@@ -64,21 +69,33 @@ PanelWindow {
     Rectangle {
         id: card
 
-        // Canto inferior-esquerdo, não centralizado - leftMargin de 76 (não
-        // um valor pequeno) pra não ficar embaixo da sidebar (56px de
-        // largura + 10 de margem = ~66px ocupados ali), mesmo raciocínio de
-        // HelenaWindow.qml.
+        // Canto inferior-esquerdo, não centralizado - leftMargin maior
+        // (Styles.sidebarClearance) pra não ficar embaixo da sidebar (56px
+        // de largura + 10 de margem = ~66px ocupados ali).
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 76
-        anchors.bottomMargin: 20
+        anchors.leftMargin: Styles.sidebarClearance
+        anchors.bottomMargin: Styles.edgeMargin + anim.slideOffset
         width: 420
         height: 160
-        radius: Colors.radiusShell
-        color: Colors.background
-        border.color: Colors.border
+        radius: Styles.radiusShell
+        color: Styles.background
+        border.color: Styles.border
         border.width: 2
 
+        opacity: anim.targetOpacity
+        scale: anim.targetScale
+        transformOrigin: Item.Bottom
+
+        // Mesma curva do slide do Dashboard (Motion.standard) - pedido pra
+        // ficar igual em todos os painéis, não cada um com a sua.
+        Behavior on anchors.bottomMargin {
+            NumberAnimation {
+                duration: Motion.durationNormal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Motion.standard
+            }
+        }
         Behavior on scale {
             NumberAnimation {
                 duration: Motion.durationNormal
@@ -92,21 +109,21 @@ PanelWindow {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Colors.spacing * 2
-            spacing: Colors.spacing * 1.5
+            anchors.margins: Styles.spacing * 2
+            spacing: Styles.spacing * 1.5
 
             Text {
                 text: "Menu de energia"
-                color: Colors.foreground
-                font.pixelSize: Colors.fontSizeLarge
-                font.family: Colors.fontFamily
+                color: Styles.foreground
+                font.pixelSize: Styles.fontSizeLarge
+                font.family: Styles.fontFamily
                 font.bold: true
                 Layout.alignment: Qt.AlignHCenter
             }
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Colors.spacing * 1.5
+                spacing: Styles.spacing * 1.5
 
                 PowerButton {
                     icon: "lock"
@@ -134,7 +151,7 @@ PanelWindow {
                     icon: "restart"
                     label: "Reiniciar"
                     needsConfirm: true
-                    tint: Colors.danger
+                    tint: Styles.danger
                     onActivated: root.run(["systemctl", "reboot"])
                 }
 
@@ -142,7 +159,7 @@ PanelWindow {
                     icon: "shutdown"
                     label: "Desligar"
                     needsConfirm: true
-                    tint: Colors.danger
+                    tint: Styles.danger
                     onActivated: root.run(["systemctl", "poweroff"])
                 }
             }

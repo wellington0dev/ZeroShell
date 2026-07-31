@@ -24,7 +24,7 @@ FloatingWindow {
         function close(): void { Visibility.settingsOpen = false }
 
         // Troca a categoria ativa - "wifi", "bluetooth", "audio", "theme",
-        // "capture" ou "sidebar" (ver Modules/Settings/CategoryNav.qml). Não
+        // "capture", "sidebar" ou "plugins" (ver Modules/Settings/CategoryNav.qml). Não
         // valida o nome: um valor inválido só faz o Loader acima cair no
         // "default" (null, painel vazio), sem quebrar nada.
         function category(name: string): void { Visibility.settingsCategory = name }
@@ -32,7 +32,7 @@ FloatingWindow {
 
     title: "Configurações"
     visible: Visibility.settingsOpen
-    color: Colors.background
+    color: Styles.background
 
     implicitWidth: 720
     implicitHeight: 480
@@ -42,17 +42,24 @@ FloatingWindow {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Colors.spacing * 2
-        spacing: Colors.spacing * 2
+        anchors.margins: Styles.spacing * 2
+        spacing: Styles.spacing * 2
 
         RowLayout {
             Layout.fillWidth: true
+            spacing: Styles.spacing
+
+            Icon {
+                icon: "gear"
+                size: 18
+                tint: Styles.foreground
+            }
 
             Text {
                 text: "Configurações"
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 18
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }
@@ -66,7 +73,7 @@ FloatingWindow {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: Colors.spacing * 2
+            spacing: Styles.spacing * 2
 
             CategoryNav {
                 id: nav
@@ -76,7 +83,7 @@ FloatingWindow {
             Rectangle {
                 Layout.fillHeight: true
                 Layout.preferredWidth: 1
-                color: Colors.border
+                color: Styles.border
             }
 
             Loader {
@@ -91,6 +98,7 @@ FloatingWindow {
                         case "theme": return themePageComp
                         case "capture": return capturePageComp
                         case "sidebar": return sidebarPageComp
+                        case "plugins": return pluginsPageComp
                         default: return null
                     }
                 }
@@ -104,4 +112,5 @@ FloatingWindow {
     Component { id: themePageComp; ThemePage {} }
     Component { id: capturePageComp; CapturePage {} }
     Component { id: sidebarPageComp; SidebarPage {} }
+    Component { id: pluginsPageComp; PluginsPage {} }
 }

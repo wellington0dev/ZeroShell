@@ -7,8 +7,8 @@ import qs.Widgets
 
 // Raio de canto por categoria (Shell/Botões/Inputs/Janelas) - usada pela aba
 // "Aparência" das Configurações. Shell/Botões/Inputs são só CSS - mudam na
-// hora (Colors.setRadius grava em State/radius-config.json, e todo
-// componente já lê Colors.radiusShell/Button/Input reativamente). "Janelas"
+// hora (Styles.setRadius grava em State/radius-config.json, e todo
+// componente já lê Styles.radiusShell/Button/Input reativamente). "Janelas"
 // é diferente: não existe no quickshell, é o "decoration.rounding" do
 // Hyprland - setRadius ainda grava o valor aqui (só pra UI lembrar a
 // posição do slider), mas quem aplica de verdade é o script bash + hyprctl
@@ -18,7 +18,7 @@ ColumnLayout {
 
     readonly property string scriptsDir: Quickshell.env("HOME") + "/.config/hypr/scripts"
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     Process {
         id: windowRadiusProcess
@@ -29,44 +29,44 @@ ColumnLayout {
     }
 
     // Ponto único por onde toda mudança de raio passa - importante porque no
-    // modo alinhado (Colors.radiusLinked) mexer em QUALQUER slider também
-    // muda "window" nos bastidores (Colors.setRadius cuida disso), e "window"
+    // modo alinhado (Styles.radiusLinked) mexer em QUALQUER slider também
+    // muda "window" nos bastidores (Styles.setRadius cuida disso), e "window"
     // é a única categoria que não é só CSS: precisa do hyprctl reload pra
     // valer de verdade, então dispara o Process sempre que isso pode ter
     // acontecido - não só quando quem mexeu foi o slider "Janelas" mesmo.
     function applyRadius(key, value) {
-        Colors.setRadius(key, value)
-        if (key === "window" || Colors.radiusLinked) windowRadiusProcess.run(Colors.radiusWindow)
+        Styles.setRadius(key, value)
+        if (key === "window" || Styles.radiusLinked) windowRadiusProcess.run(Styles.radiusWindow)
     }
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         Text {
             text: "Manter tudo alinhado"
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             Layout.fillWidth: true
         }
 
         Switch {
-            checked: Colors.radiusLinked
+            checked: Styles.radiusLinked
             onToggled: {
-                Colors.setRadiusLinked(!Colors.radiusLinked)
-                if (Colors.radiusLinked) windowRadiusProcess.run(Colors.radiusWindow)
+                Styles.setRadiusLinked(!Styles.radiusLinked)
+                if (Styles.radiusLinked) windowRadiusProcess.run(Styles.radiusWindow)
             }
         }
     }
 
     Text {
-        text: Colors.radiusLinked
+        text: Styles.radiusLinked
             ? "Os 4 valores abaixo mudam juntos."
             : "Cada categoria tem seu próprio raio - um painel inteiro e um botãozinho não ficam bem com o mesmo número."
-        color: Colors.foregroundMuted
+        color: Styles.foregroundMuted
         font.pixelSize: 11
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         wrapMode: Text.Wrap
         Layout.fillWidth: true
     }
@@ -74,7 +74,7 @@ ColumnLayout {
     RadiusRow {
         Layout.fillWidth: true
         label: "Shell"
-        value: Colors.radiusShell
+        value: Styles.radiusShell
         maxValue: 32
         onMoved: (v) => root.applyRadius("shell", v)
     }
@@ -82,7 +82,7 @@ ColumnLayout {
     RadiusRow {
         Layout.fillWidth: true
         label: "Botões"
-        value: Colors.radiusButton
+        value: Styles.radiusButton
         maxValue: 24
         onMoved: (v) => root.applyRadius("button", v)
     }
@@ -90,7 +90,7 @@ ColumnLayout {
     RadiusRow {
         Layout.fillWidth: true
         label: "Inputs"
-        value: Colors.radiusInput
+        value: Styles.radiusInput
         maxValue: 24
         onMoved: (v) => root.applyRadius("input", v)
     }
@@ -98,7 +98,7 @@ ColumnLayout {
     RadiusRow {
         Layout.fillWidth: true
         label: "Janelas"
-        value: Colors.radiusWindow
+        value: Styles.radiusWindow
         maxValue: 24
         onMoved: (v) => root.applyRadius("window", v)
     }

@@ -17,7 +17,6 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(programs.menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-wallpaper.sh next"))
-hl.bind(mainMod .. " + H", hl.dsp.exec_cmd(programs.helenaChat))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(programs.settingsWin))
 
 -- Move focus with mainMod + arrow keys

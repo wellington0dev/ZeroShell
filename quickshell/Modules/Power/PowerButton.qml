@@ -9,7 +9,7 @@ ColumnLayout {
     property string icon
     property string label
     property bool needsConfirm: false
-    property color tint: Colors.foreground
+    property color tint: Styles.foreground
 
     signal activated()
 
@@ -27,11 +27,11 @@ ColumnLayout {
         Layout.preferredWidth: 64
         Layout.preferredHeight: 64
         Layout.alignment: Qt.AlignHCenter
-        radius: Colors.radiusButton
+        radius: Styles.radiusButton
         color: root.confirming
-            ? Qt.rgba(Colors.danger.r, Colors.danger.g, Colors.danger.b, 0.18)
-            : (hover.hovered ? Colors.surfaceAlt : Colors.surface)
-        border.color: root.confirming ? Colors.danger : Colors.border
+            ? Qt.rgba(Styles.danger.r, Styles.danger.g, Styles.danger.b, 0.18)
+            : (hover.hovered ? Styles.surfaceAlt : Styles.surface)
+        border.color: root.confirming ? Styles.danger : Styles.border
         border.width: 1
 
         Behavior on color { ColorAnimation { duration: Motion.durationFast } }
@@ -40,7 +40,7 @@ ColumnLayout {
             anchors.centerIn: parent
             icon: root.icon
             size: 26
-            tint: root.confirming ? Colors.danger : root.tint
+            tint: root.confirming ? Styles.danger : root.tint
         }
 
         HoverHandler { id: hover }
@@ -60,8 +60,8 @@ ColumnLayout {
     Text {
         Layout.alignment: Qt.AlignHCenter
         text: root.confirming ? "Confirmar?" : root.label
-        color: root.confirming ? Colors.danger : Colors.foregroundMuted
-        font.pixelSize: Colors.fontSizeSmall
-        font.family: Colors.fontFamily
+        color: root.confirming ? Styles.danger : Styles.foregroundMuted
+        font.pixelSize: Styles.fontSizeSmall
+        font.family: Styles.fontFamily
     }
 }

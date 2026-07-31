@@ -90,59 +90,69 @@ PanelWindow {
 
     Shadow { target: card }
 
+    // Tipo/velocidade da animação de abrir/fechar vêm de
+    // Configurações > Aparência > Animações (Motion.animationType) - ver
+    // Widgets/PanelAnim.qml. Ligação declarativa direta com
+    // Visibility.launcherOpen (nada de resetar valor e reaplicar depois via
+    // Qt.callLater/Timer feito à mão - testado ao vivo com gravação de tela
+    // que essa versão manual não anima nada, só salta direto pro valor
+    // final).
+    PanelAnim {
+        id: anim
+        open: Visibility.launcherOpen
+        edge: "bottom"
+        distance: card.height
+    }
+
     Rectangle {
         id: card
 
-        // Ligação declarativa direta com Visibility.launcherOpen, mesma
-        // técnica do DashboardWindow.qml ("margins.top: DashboardState.open
-        // ? 0 : -implicitHeight") - nada de resetar valor e reaplicar depois
-        // via Qt.callLater/Timer feito à mão. Um Behavior comum já anima
-        // toda vez que o binding recalcula, em QUALQUER direção (abrindo ou
-        // fechando), porque a propriedade guarda o valor antigo mesmo com a
-        // janela invisível - reabrir sempre parte de "-height" de verdade.
-        //
-        // A versão anterior fazia esse reset manualmente dentro de
-        // onVisibleChanged (opacity=0, slideMargin=-height, depois
-        // Qt.callLater pra 1/restMargin) - testado ao vivo com gravação de
-        // tela: Qt.callLater roda rápido demais aqui (mesmo tick, sem nenhum
-        // frame desenhado entre os dois valores), o Behavior via redirecionado
-        // pro valor final antes de interpolar nada, e o resultado era um
-        // salto instantâneo sem animação nenhuma visível.
-        readonly property int restMargin: 12
+        readonly property int restMargin: Styles.edgeMargin
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Visibility.launcherOpen ? restMargin : -height
-        opacity: Visibility.launcherOpen ? 1 : 0
+        anchors.bottomMargin: restMargin + anim.slideOffset
+        opacity: anim.targetOpacity
+        scale: anim.targetScale
+        transformOrigin: Item.Bottom
         width: 480
         height: 420
-        radius: Colors.radiusShell
-        color: Colors.background
-        border.color: Colors.border
+        radius: Styles.radiusShell
+        color: Styles.background
+        border.color: Styles.border
         border.width: 2
 
+        // Mesma curva do slide do Dashboard (Motion.standard) - pedido pra
+        // ficar igual em todos os painéis, não cada um com a sua.
         Behavior on anchors.bottomMargin {
             NumberAnimation {
                 duration: Motion.durationNormal
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.emphasizedDecel
+                easing.bezierCurve: Motion.standard
             }
         }
         Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }
+        Behavior on scale {
+            NumberAnimation {
+                duration: Motion.durationNormal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Motion.boing
+            }
+        }
 
         MouseArea { anchors.fill: parent }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Colors.spacing * 1.5
-            spacing: Colors.spacing
+            anchors.margins: Styles.spacing * 1.5
+            spacing: Styles.spacing
 
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 40
-                radius: Colors.radiusInput
-                color: Colors.surface
-                border.color: searchInput.activeFocus ? Colors.accent : Colors.border
+                radius: Styles.radiusInput
+                color: Styles.surface
+                border.color: searchInput.activeFocus ? Styles.accent : Styles.border
                 border.width: 1
 
                 Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -152,9 +162,9 @@ PanelWindow {
 
                     anchors.fill: parent
                     anchors.margins: 10
-                    color: Colors.foreground
+                    color: Styles.foreground
                     font.pixelSize: 14
-                    font.family: Colors.fontFamily
+                    font.family: Styles.fontFamily
                     verticalAlignment: TextInput.AlignVCenter
                     clip: true
 
@@ -182,9 +192,9 @@ PanelWindow {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Buscar aplicativos..."
-                        color: Colors.foregroundMuted
+                        color: Styles.foregroundMuted
                         font.pixelSize: 14
-                        font.family: Colors.fontFamily
+                        font.family: Styles.fontFamily
                         visible: searchInput.text.length === 0
                     }
                 }
@@ -218,9 +228,9 @@ PanelWindow {
                 Layout.fillHeight: true
                 visible: root.results.length === 0
                 text: "Nenhum aplicativo encontrado"
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 12
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }

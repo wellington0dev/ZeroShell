@@ -1,10 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
 import qs.Theme
 import qs.Widgets
 import qs.State
 import qs.Modules.Capture
+import qs.Modules.Plugins
 
 // A barra vertical fixa na borda esquerda da tela - o "tronco" do shell.
 // É uma PanelWindow (janela do tipo layer-shell, pensada pra barras/painéis,
@@ -36,20 +38,33 @@ PanelWindow {
         left: true
     }
 
+    // Toggle "Manter acordado" (Dashboard > aba Ajustes) - impede o sistema
+    // de suspender/apagar a tela (DPMS) enquanto ligado. Precisa de uma
+    // janela mapeada de verdade pra se "prender" (protocolo
+    // zwp_idle_inhibit_manager_v1 inibe enquanto ESSA superfície existir) -
+    // a Sidebar serve porque vive o tempo todo que o shell existe. Só isso
+    // não desliga o auto-lock da nossa própria lockscreen (timer em
+    // software, não pede nada pro sistema) - LockScreen.qml também confere
+    // "QuickSettings.keepAwake" separadamente pra isso.
+    IdleInhibitor {
+        window: root
+        enabled: QuickSettings.keepAwake
+    }
+
     Shadow { target: bg }
 
     Rectangle {
         id: bg
         anchors.fill: parent
-        color: Colors.background
-        border.color: Colors.border
-        radius: Colors.radiusShell
+        color: Styles.background
+        border.color: Styles.border
+        radius: Styles.radiusShell
         border.width: 2
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Colors.spacing
-            spacing: Colors.spacing
+            anchors.margins: Styles.spacing
+            spacing: Styles.spacing
 
             ProfilePicture {
                 Layout.alignment: Qt.AlignHCenter
@@ -63,24 +78,6 @@ PanelWindow {
                 icon: "search"
                 active: Visibility.launcherOpen
                 onClicked: Visibility.launcherOpen = !Visibility.launcherOpen
-            }
-
-            // Abre o chat da Helena (Modules/Helena).
-            IconButton {
-                Layout.alignment: Qt.AlignHCenter
-                visible: SidebarConfig.showHelena
-                icon: "chat"
-                active: Visibility.helenaOpen
-                onClicked: Visibility.helenaOpen = !Visibility.helenaOpen
-            }
-
-            // Abre o chat de voz da Helena (Modules/Helena/VoiceWidget.qml).
-            IconButton {
-                Layout.alignment: Qt.AlignHCenter
-                visible: SidebarConfig.showVoice
-                icon: "mic"
-                active: Visibility.voiceOpen
-                onClicked: Visibility.voiceOpen = !Visibility.voiceOpen
             }
 
             Item { Layout.fillHeight: true }
@@ -114,6 +111,32 @@ PanelWindow {
                 visible: SidebarConfig.showCapture
             }
 
+            // Ícone próprio de cada plugin instalado, ligado, com
+            // "sidebar.component" no manifesto (ver
+            // Modules/Plugins/PluginService.qml) - o componente carregado é
+            // responsabilidade do próprio plugin desenhar (tamanho/estilo
+            // parecido com um IconButton comum, pra caber na coluna de
+            // 56px da sidebar).
+            //
+            // "enabled" sozinho NÃO basta pra aparecer aqui - precisa
+            // também estar marcado na aba "sidebar" das Configurações
+            // (SidebarConfig.isPluginIconVisible, opt-in e desligado por
+            // padrão - ver Modules/Settings/SidebarPage.qml). Ligar um
+            // plugin não deve mudar a sidebar sozinho.
+            Repeater {
+                model: PluginService.plugins
+
+                Loader {
+                    id: pluginSidebarLoader
+
+                    required property var modelData
+
+                    Layout.alignment: Qt.AlignHCenter
+                    active: modelData.enabled && !!(modelData.sidebar && modelData.sidebar.component) && SidebarConfig.isPluginIconVisible(modelData.id)
+                    source: active ? ("file://" + modelData.dir + "/" + modelData.sidebar.component) : ""
+                }
+            }
+
             // Abre a janela de Configurações (Modules/Settings).
             IconButton {
                 Layout.alignment: Qt.AlignHCenter
@@ -126,7 +149,7 @@ PanelWindow {
             // Abre o menu de energia (Modules/Power).
             IconButton {
                 Layout.alignment: Qt.AlignHCenter
-                Layout.bottomMargin: Colors.spacing
+                Layout.bottomMargin: Styles.spacing
                 visible: SidebarConfig.showPower
                 icon: "shutdown"
                 active: Visibility.powerMenuOpen

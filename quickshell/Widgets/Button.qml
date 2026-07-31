@@ -23,12 +23,12 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusButton
+        radius: Styles.radiusButton
         opacity: root.enabled ? 1 : 0.5
         color: root.primary
-            ? (hover.hovered ? Colors.accentAlt : Colors.accent)
-            : (hover.hovered ? Colors.surfaceAlt : Colors.surface)
-        border.color: root.primary ? "transparent" : Colors.border
+            ? (hover.hovered ? Styles.accentAlt : Styles.accent)
+            : (hover.hovered ? Styles.surfaceAlt : Styles.surface)
+        border.color: root.primary ? "transparent" : Styles.border
         border.width: root.primary ? 0 : 1
 
         Behavior on color { ColorAnimation { duration: 120 } }
@@ -37,9 +37,9 @@ Item {
             id: label
             anchors.centerIn: parent
             text: root.text
-            color: root.primary ? Colors.background : Colors.foreground
+            color: root.primary ? Styles.background : Styles.foreground
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
         }
     }
 

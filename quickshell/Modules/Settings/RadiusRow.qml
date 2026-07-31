@@ -15,13 +15,13 @@ RowLayout {
 
     signal moved(int value)
 
-    spacing: Colors.spacing
+    spacing: Styles.spacing
 
     Text {
         text: root.label
-        color: Colors.foreground
+        color: Styles.foreground
         font.pixelSize: 12
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         Layout.preferredWidth: 90
     }
 
@@ -33,9 +33,9 @@ RowLayout {
 
     Text {
         text: root.value + "px"
-        color: Colors.foregroundMuted
+        color: Styles.foregroundMuted
         font.pixelSize: 11
-        font.family: Colors.fontFamily
+        font.family: Styles.fontFamily
         Layout.preferredWidth: 36
         horizontalAlignment: Text.AlignRight
     }

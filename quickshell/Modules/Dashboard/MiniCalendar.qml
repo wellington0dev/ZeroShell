@@ -36,9 +36,9 @@ ColumnLayout {
 
     Text {
         text: root.months[root.month] + " de " + root.year
-        color: Colors.foreground
-        font.pixelSize: Colors.fontSizeSmall
-        font.family: Colors.fontFamily
+        color: Styles.foreground
+        font.pixelSize: Styles.fontSizeSmall
+        font.family: Styles.fontFamily
         font.bold: true
         Layout.alignment: Qt.AlignHCenter
     }
@@ -59,9 +59,9 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: modelData
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 10
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
             }
         }
 
@@ -76,14 +76,14 @@ ColumnLayout {
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
                 radius: 12
-                color: isToday ? Colors.accent : "transparent"
+                color: isToday ? Styles.accent : "transparent"
 
                 Text {
                     anchors.centerIn: parent
                     text: parent.modelData === 0 ? "" : parent.modelData
-                    color: parent.isToday ? Colors.background : Colors.foreground
+                    color: parent.isToday ? Styles.background : Styles.foreground
                     font.pixelSize: 11
-                    font.family: Colors.fontFamily
+                    font.family: Styles.fontFamily
                     font.bold: parent.isToday
                 }
             }

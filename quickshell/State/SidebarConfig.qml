@@ -11,8 +11,6 @@ Singleton {
 
     property bool showProfile: adapter.showProfile
     property bool showLauncher: adapter.showLauncher
-    property bool showHelena: adapter.showHelena
-    property bool showVoice: adapter.showVoice
     property bool showWorkspaces: adapter.showWorkspaces
     property bool showAppTray: adapter.showAppTray
     property bool showClock: adapter.showClock
@@ -26,6 +24,27 @@ Singleton {
         file.writeAdapter()
     }
 
+    // ---- Ícone de plugin na sidebar - opt-in, não automático ----
+    // Ao contrário dos itens fixos acima, plugin instalado+ligado não basta
+    // pra ganhar ícone na sidebar: o usuário precisa marcar isso aqui
+    // também (aba "sidebar" das Configurações lista um item por plugin que
+    // declarou "sidebar.component"). Desligado por padrão de propósito -
+    // instalar/ligar um plugin não deve mudar a sidebar sozinho.
+    // Mesmo padrão array-de-objetos do PluginService (overrides), pelo
+    // mesmo motivo: chave dinâmica (um id por plugin instalado).
+    property var pluginIcons: adapter.pluginIcons
+
+    function isPluginIconVisible(id) {
+        const entry = pluginIcons.find(o => o.id === id)
+        return entry ? !!entry.visible : false
+    }
+
+    function setPluginIconVisible(id, value) {
+        const rest = adapter.pluginIcons.filter(o => o.id !== id)
+        adapter.pluginIcons = [...rest, { id: id, visible: value }]
+        file.writeAdapter()
+    }
+
     FileView {
         id: file
         path: Quickshell.env("HOME") + "/.config/quickshell/State/sidebar-config.json"
@@ -36,8 +55,6 @@ Singleton {
             id: adapter
             property bool showProfile: true
             property bool showLauncher: true
-            property bool showHelena: true
-            property bool showVoice: true
             property bool showWorkspaces: true
             property bool showAppTray: true
             property bool showClock: true
@@ -45,6 +62,7 @@ Singleton {
             property bool showCapture: true
             property bool showSettings: true
             property bool showPower: true
+            property var pluginIcons: []
         }
     }
 }

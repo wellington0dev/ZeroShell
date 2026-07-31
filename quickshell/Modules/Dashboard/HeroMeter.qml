@@ -16,13 +16,13 @@ Rectangle {
     property string label
     property string sublabel: ""
     property int percent: 0
-    property color ringColor: Colors.accent
+    property color ringColor: Styles.accent
 
     readonly property real strokeW: 4
 
-    radius: Colors.radiusShell
-    color: Colors.surface
-    border.color: Colors.border
+    radius: Styles.radiusShell
+    color: Styles.surface
+    border.color: Styles.border
     border.width: 1
 
     RowLayout {
@@ -42,7 +42,7 @@ Rectangle {
 
                 ShapePath {
                     fillColor: "transparent"
-                    strokeColor: Colors.surfaceAlt
+                    strokeColor: Styles.surfaceAlt
                     strokeWidth: root.strokeW
                     capStyle: ShapePath.RoundCap
 
@@ -93,16 +93,16 @@ Rectangle {
                 text: root.label
                 color: root.ringColor
                 font.pixelSize: 14
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
             }
 
             Text {
                 Layout.fillWidth: true
                 text: root.sublabel
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 10
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 elide: Text.ElideRight
                 visible: text.length > 0
             }
@@ -110,9 +110,9 @@ Rectangle {
             Text {
                 Layout.topMargin: 2
                 text: root.percent + "%"
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 28
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
             }
         }

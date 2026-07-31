@@ -5,8 +5,10 @@ import Quickshell
 import Quickshell.Io
 
 // Paleta de cores e métricas compartilhadas por todo o shell (sidebar, settings,
-// notificações, player, launcher, Helena, menu de energia...). Qualquer módulo
-// importa "qs.Theme" e usa "Colors.accent", "Colors.spacing", etc.
+// notificações, player, launcher, menu de energia...). Qualquer módulo
+// importa "qs.Theme" e usa "Styles.accent", "Styles.spacing", etc. Chama-se
+// "Styles" (não "Colors" - nome antigo do arquivo) porque já não é só cor:
+// raio, espaçamento, fonte e as margens de painel também moram aqui.
 //
 // Por que isso é um singleton "estático" que lê um JSON via FileView, em vez de
 // só ter as cores como propriedades comuns aqui dentro? Porque este arquivo tem
@@ -22,7 +24,7 @@ Singleton {
 
     // Escreve uma ou mais cores diretamente em State/colors.json - usado pela
     // aba "Personalizar" das Configurações quando o usuário escolhe uma cor na
-    // mão. Ex.: Colors.setCustom({accent: "#ff0000"}).
+    // mão. Ex.: Styles.setCustom({accent: "#ff0000"}).
     function setCustom(props) {
         for (const key in props) adapter[key] = props[key]
         colorsFile.writeAdapter()
@@ -194,16 +196,29 @@ Singleton {
     // Espaçamento padrão usado em margins/spacing de layouts pelo shell todo.
     readonly property int spacing: 8
 
+    // Distância padrão entre um painel flutuante (Dashboard, Launcher,
+    // menu de energia, menu de captura, volume) e a borda da tela mais
+    // próxima quando aberto - um valor só, pra não ficar cada painel com o
+    // seu (era 10/12/20 espalhado antes disso existir).
+    readonly property int edgeMargin: 10
+
+    // Margem extra (em vez de edgeMargin) só pro lado que fica colado na
+    // sidebar (56px de largura + 10 de folga) - painéis que nascem no canto
+    // esquerdo (menu de energia) usam isto pra não ficar embaixo dela. Não
+    // é "distância da borda" no sentido geral, por isso é um token
+    // separado.
+    readonly property int sidebarClearance: 76
+
     // JetBrainsMono Nerd Font - instalada pelo install.sh (pacote
     // ttf-jetbrains-mono-nerd). QtQuick "Text"/"TextInput"/"TextEdit" puros
     // (sem QtQuick Controls) não herdam "font" de um ancestral, e
     // "Qt.application.font" é somente-leitura em QML - por isso
-    // "font.family: Colors.fontFamily" é repetido ao lado de cada
+    // "font.family: Styles.fontFamily" é repetido ao lado de cada
     // "font.pixelSize:" do shell, em vez de setado num lugar só.
     readonly property string fontFamily: "JetBrainsMono Nerd Font"
 
     // Escala de tamanho de fonte - use estes tokens em vez de números soltos
-    // (ex.: font.pixelSize: Colors.fontSizeSmall) pra manter consistência.
+    // (ex.: font.pixelSize: Styles.fontSizeSmall) pra manter consistência.
     readonly property int fontSizeSmallest: 9
     readonly property int fontSizeSmaller: 10
     readonly property int fontSizeSmall: 11

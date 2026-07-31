@@ -27,6 +27,28 @@ PanelWindow {
 
     property string selectedTarget: "region"
 
+    // Esta janela é destruída de verdade ao fechar (Loader em shell.qml, ver
+    // comentário acima) - não dá pra ligar o pop-in num "Visibility.xxxOpen"
+    // que persiste entre aberturas, já que aqui SEMPRE é uma abertura nova.
+    // Por isso "shown" começa false e um Timer vira true logo depois de
+    // criada, dando o mesmo "estado fechado real por um frame" que os outros
+    // painéis conseguem de graça (a property já existia antes com o valor
+    // antigo). Timer em vez de Qt.callLater - testado ao vivo (Launcher,
+    // mesmo padrão) que Qt.callLater roda rápido demais aqui e o Behavior
+    // nunca chega a interpolar nada.
+    property bool shown: false
+
+    Timer { interval: 1; running: true; onTriggered: root.shown = true }
+
+    // Tipo/velocidade da animação de abrir vêm de Configurações > Aparência
+    // > Animações (Motion.animationType) - ver Widgets/PanelAnim.qml.
+    PanelAnim {
+        id: anim
+        open: root.shown
+        edge: "bottom"
+        distance: card.height
+    }
+
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
@@ -35,12 +57,6 @@ PanelWindow {
         bottom: true
         left: true
         right: true
-    }
-
-    Component.onCompleted: {
-        card.scale = 0.92
-        card.opacity = 0
-        Qt.callLater(() => { card.scale = 1; card.opacity = 1 })
     }
 
     MouseArea {
@@ -54,15 +70,28 @@ PanelWindow {
         id: card
 
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
+        anchors.bottomMargin: Styles.edgeMargin + anim.slideOffset
         anchors.horizontalCenter: parent.horizontalCenter
         width: 360
         height: 220
-        radius: Colors.radiusShell
-        color: Colors.background
-        border.color: Colors.border
+        radius: Styles.radiusShell
+        color: Styles.background
+        border.color: Styles.border
         border.width: 2
 
+        opacity: anim.targetOpacity
+        scale: anim.targetScale
+        transformOrigin: Item.Bottom
+
+        // Mesma curva do slide do Dashboard (Motion.standard) - pedido pra
+        // ficar igual em todos os painéis, não cada um com a sua.
+        Behavior on anchors.bottomMargin {
+            NumberAnimation {
+                duration: Motion.durationNormal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Motion.standard
+            }
+        }
         Behavior on scale {
             NumberAnimation {
                 duration: Motion.durationNormal
@@ -76,21 +105,21 @@ PanelWindow {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Colors.spacing * 2
-            spacing: Colors.spacing * 1.5
+            anchors.margins: Styles.spacing * 2
+            spacing: Styles.spacing * 1.5
 
             Text {
                 text: "Captura de tela"
-                color: Colors.foreground
-                font.pixelSize: Colors.fontSizeLarge
-                font.family: Colors.fontFamily
+                color: Styles.foreground
+                font.pixelSize: Styles.fontSizeLarge
+                font.family: Styles.fontFamily
                 font.bold: true
                 Layout.alignment: Qt.AlignHCenter
             }
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Colors.spacing * 1.5
+                spacing: Styles.spacing * 1.5
 
                 TargetButton {
                     icon: "crop"
@@ -116,8 +145,8 @@ PanelWindow {
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: Colors.spacing
-                spacing: Colors.spacing
+                Layout.topMargin: Styles.spacing
+                spacing: Styles.spacing
 
                 Button {
                     text: "Capturar"

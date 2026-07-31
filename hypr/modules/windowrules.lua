@@ -57,16 +57,3 @@ hl.window_rule({
     center = true,
     size   = "720 480",
 })
-
--- Quickshell voice chat widget: floating, centered, small - drag it with
--- SUPER + clique-esquerdo, como qualquer outra janela flutuante.
-hl.window_rule({
-    name  = "float-quickshell-voice",
-    match = { class = "^org.quickshell$", title = "^Helena Voz$" },
-
-    float = true,
-    -- Canto superior-direito, 20px de margem das duas bordas (220 de
-    -- largura + 20 de margem = 240 subtraído de monitor_w).
-    move  = "monitor_w-240 20",
-    size  = "220 260",
-})

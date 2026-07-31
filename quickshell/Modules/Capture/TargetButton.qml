@@ -23,11 +23,11 @@ ColumnLayout {
         Layout.preferredWidth: 56
         Layout.preferredHeight: 56
         Layout.alignment: Qt.AlignHCenter
-        radius: Colors.radiusButton
+        radius: Styles.radiusButton
         color: root.selected
-            ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18)
-            : (hover.hovered ? Colors.surfaceAlt : Colors.surface)
-        border.color: root.selected ? Colors.accent : Colors.border
+            ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.18)
+            : (hover.hovered ? Styles.surfaceAlt : Styles.surface)
+        border.color: root.selected ? Styles.accent : Styles.border
         border.width: 1
 
         Behavior on color { ColorAnimation { duration: Motion.durationFast } }
@@ -36,7 +36,7 @@ ColumnLayout {
             anchors.centerIn: parent
             icon: root.icon
             size: 22
-            tint: root.selected ? Colors.accent : Colors.foreground
+            tint: root.selected ? Styles.accent : Styles.foreground
         }
 
         HoverHandler { id: hover }
@@ -46,8 +46,8 @@ ColumnLayout {
     Text {
         Layout.alignment: Qt.AlignHCenter
         text: root.label
-        color: root.selected ? Colors.accent : Colors.foregroundMuted
-        font.pixelSize: Colors.fontSizeSmall
-        font.family: Colors.fontFamily
+        color: root.selected ? Styles.accent : Styles.foregroundMuted
+        font.pixelSize: Styles.fontSizeSmall
+        font.family: Styles.fontFamily
     }
 }

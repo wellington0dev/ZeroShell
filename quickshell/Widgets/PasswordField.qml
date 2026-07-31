@@ -2,8 +2,8 @@ import QtQuick
 import qs.Theme
 
 // Como TextField.qml, mas pra senha: mostra bolinhas em vez do texto e tem um
-// ícone de olho que alterna entre ocultar/revelar o conteúdo. Usado no
-// formulário de login/cadastro da Helena.
+// ícone de olho que alterna entre ocultar/revelar o conteúdo. Usado em
+// Configurações > Wi-Fi (NetworkRow.qml) pra digitar a senha da rede.
 //
 // Por que é um componente separado de TextField em vez de só reaproveitar
 // "passwordMode" de lá? Porque este precisa do botão de revelar dentro do
@@ -24,9 +24,9 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radiusInput
-        color: Colors.surface
-        border.color: input.activeFocus ? Colors.accent : Colors.border
+        radius: Styles.radiusInput
+        color: Styles.surface
+        border.color: input.activeFocus ? Styles.accent : Styles.border
         border.width: 1
 
         Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -38,9 +38,9 @@ Item {
                 leftMargin: 10
             }
             text: root.placeholder
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             visible: input.text.length === 0
         }
 
@@ -53,9 +53,9 @@ Item {
                 leftMargin: 10
                 rightMargin: 6
             }
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 12
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             echoMode: root.revealed ? TextInput.Normal : TextInput.Password
             clip: true
             selectByMouse: true
@@ -77,7 +77,7 @@ Item {
             Icon {
                 anchors.fill: parent
                 icon: root.revealed ? "eye-off" : "eye"
-                tint: Colors.foregroundMuted
+                tint: Styles.foregroundMuted
             }
 
             TapHandler { onTapped: root.revealed = !root.revealed }

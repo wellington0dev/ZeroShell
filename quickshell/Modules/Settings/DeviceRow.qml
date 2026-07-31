@@ -12,11 +12,11 @@ ColumnLayout {
 
     signal clicked()
 
-    spacing: Colors.spacing / 2
+    spacing: Styles.spacing / 2
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         Icon {
             size: 20
@@ -29,9 +29,9 @@ ColumnLayout {
 
             Text {
                 text: root.device.name
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 13
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
@@ -40,9 +40,9 @@ ColumnLayout {
                 text: root.device.state === BluetoothDeviceState.Connected ? "Conectado"
                     : root.device.state === BluetoothDeviceState.Connecting ? "Conectando…"
                     : root.device.paired ? "Pareado" : ""
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 11
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 visible: text.length > 0
             }
         }
@@ -50,9 +50,9 @@ ColumnLayout {
         Text {
             visible: root.device.batteryAvailable
             text: Math.round(root.device.battery * 100) + "%"
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 11
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
         }
 
         TapHandler { onTapped: root.clicked() }
@@ -62,7 +62,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.leftMargin: 16
         visible: root.selected
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         Button {
             text: root.device.connected ? "Desconectar" : "Conectar"
@@ -91,9 +91,9 @@ ColumnLayout {
 
             Text {
                 text: "Confiar"
-                color: Colors.foregroundMuted
+                color: Styles.foregroundMuted
                 font.pixelSize: 11
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
             }
 
             Switch {

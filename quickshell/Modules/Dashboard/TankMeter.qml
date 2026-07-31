@@ -19,11 +19,11 @@ ClippingRectangle {
     property string icon
     property string label
     property int percent: 0
-    property color fillColor: Colors.accent
+    property color fillColor: Styles.accent
 
-    radius: Colors.radiusShell
-    color: Colors.surface
-    border.color: Colors.border
+    radius: Styles.radiusShell
+    color: Styles.surface
+    border.color: Styles.border
     border.width: 1
 
     Rectangle {
@@ -52,18 +52,18 @@ ClippingRectangle {
         Text {
             Layout.alignment: Qt.AlignHCenter
             text: root.percent + "%"
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 17
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             font.bold: true
         }
 
         Text {
             Layout.alignment: Qt.AlignHCenter
             text: root.label
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 10
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
         }
     }
 }

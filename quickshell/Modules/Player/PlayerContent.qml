@@ -94,7 +94,7 @@ RowLayout {
 
             ShapePath {
                 fillColor: "transparent"
-                strokeColor: Colors.surfaceAlt
+                strokeColor: Styles.surfaceAlt
                 strokeWidth: 4
                 capStyle: ShapePath.RoundCap
 
@@ -110,7 +110,7 @@ RowLayout {
 
             ShapePath {
                 fillColor: "transparent"
-                strokeColor: Colors.accent
+                strokeColor: Styles.accent
                 strokeWidth: 4
                 capStyle: ShapePath.RoundCap
 
@@ -137,7 +137,7 @@ RowLayout {
             width: parent.width - 14
             height: width
             radius: width / 2
-            color: Colors.surfaceAlt
+            color: Styles.surfaceAlt
 
             Image {
                 id: cover
@@ -153,7 +153,7 @@ RowLayout {
                 visible: cover.status !== Image.Ready
                 icon: "music-note"
                 size: 28
-                tint: Colors.foregroundMuted
+                tint: Styles.foregroundMuted
             }
         }
     }
@@ -163,7 +163,7 @@ RowLayout {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         RowLayout {
             Layout.fillWidth: true
@@ -180,11 +180,11 @@ RowLayout {
 
                     width: 24
                     height: 24
-                    radius: Colors.radiusSmall
+                    radius: Styles.radiusSmall
                     color: Player.active === modelData
-                        ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.18)
-                        : (tabHover.hovered ? Colors.surfaceAlt : "transparent")
-                    border.color: Player.active === modelData ? Colors.accent : "transparent"
+                        ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.18)
+                        : (tabHover.hovered ? Styles.surfaceAlt : "transparent")
+                    border.color: Player.active === modelData ? Styles.accent : "transparent"
                     border.width: 1
 
                     IconImage {
@@ -203,9 +203,9 @@ RowLayout {
 
         Text {
             text: root.player && root.player.trackTitle ? root.player.trackTitle : "Nada tocando"
-            color: Colors.foreground
+            color: Styles.foreground
             font.pixelSize: 14
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             font.bold: true
             elide: Text.ElideRight
             Layout.fillWidth: true
@@ -213,9 +213,9 @@ RowLayout {
 
         Text {
             text: root.player && root.player.trackAlbum ? root.player.trackAlbum : ""
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 10
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             elide: Text.ElideRight
             Layout.fillWidth: true
             visible: text.length > 0
@@ -223,9 +223,9 @@ RowLayout {
 
         Text {
             text: root.player ? root.player.trackArtist : ""
-            color: Colors.accentAlt
+            color: Styles.accentAlt
             font.pixelSize: 11
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             elide: Text.ElideRight
             Layout.fillWidth: true
             visible: text.length > 0
@@ -260,18 +260,18 @@ RowLayout {
 
                 Text {
                     text: root.formatTime(root.displayPosition)
-                    color: Colors.foregroundMuted
+                    color: Styles.foregroundMuted
                     font.pixelSize: 9
-                    font.family: Colors.fontFamily
+                    font.family: Styles.fontFamily
                 }
 
                 Item { Layout.fillWidth: true }
 
                 Text {
                     text: root.formatTime(root.trackLength)
-                    color: Colors.foregroundMuted
+                    color: Styles.foregroundMuted
                     font.pixelSize: 9
-                    font.family: Colors.fontFamily
+                    font.family: Styles.fontFamily
                 }
             }
         }
@@ -282,7 +282,7 @@ RowLayout {
         // coluna, já que ambos são fillWidth).
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: Colors.spacing
+            spacing: Styles.spacing
 
             IconButton {
                 icon: "shuffle"
@@ -296,14 +296,14 @@ RowLayout {
                 width: 38
                 height: 38
                 radius: 19
-                color: Colors.surfaceAlt
+                color: Styles.surfaceAlt
                 opacity: (root.player && root.player.canGoPrevious) ? 1 : 0.4
 
                 Icon {
                     anchors.centerIn: parent
                     icon: "skip-previous"
                     size: 16
-                    tint: Colors.foreground
+                    tint: Styles.foreground
                 }
 
                 TapHandler {
@@ -316,14 +316,14 @@ RowLayout {
                 width: 60
                 height: 40
                 radius: 20
-                color: Colors.accent
+                color: Styles.accent
                 opacity: (root.player && root.player.canTogglePlaying) ? 1 : 0.5
 
                 Icon {
                     anchors.centerIn: parent
                     icon: root.player && root.player.isPlaying ? "pause" : "play"
                     size: 18
-                    tint: Colors.background
+                    tint: Styles.background
                 }
 
                 TapHandler {
@@ -335,14 +335,14 @@ RowLayout {
                 width: 38
                 height: 38
                 radius: 19
-                color: Colors.surfaceAlt
+                color: Styles.surfaceAlt
                 opacity: (root.player && root.player.canGoNext) ? 1 : 0.4
 
                 Icon {
                     anchors.centerIn: parent
                     icon: "skip-next"
                     size: 16
-                    tint: Colors.foreground
+                    tint: Styles.foreground
                 }
 
                 TapHandler {
@@ -371,9 +371,9 @@ RowLayout {
         Text {
             visible: root.player === null
             text: "Nenhum player encontrado"
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
             font.pixelSize: 11
-            font.family: Colors.fontFamily
+            font.family: Styles.fontFamily
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
         }

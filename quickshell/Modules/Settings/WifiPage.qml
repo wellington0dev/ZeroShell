@@ -22,16 +22,16 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Colors.spacing
+        spacing: Styles.spacing
 
         RowLayout {
             Layout.fillWidth: true
 
             Text {
                 text: "Wi-Fi"
-                color: Colors.foreground
+                color: Styles.foreground
                 font.pixelSize: 16
-                font.family: Colors.fontFamily
+                font.family: Styles.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
             }
@@ -45,14 +45,14 @@ Item {
         Text {
             visible: !root.device
             text: "Nenhum adaptador Wi-Fi encontrado"
-            color: Colors.foregroundMuted
+            color: Styles.foregroundMuted
         }
 
         ListView {
             visible: root.device && Networking.wifiEnabled
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: Colors.spacing
+            spacing: Styles.spacing
             clip: true
             model: root.device ? root.device.networks.values : []
 
