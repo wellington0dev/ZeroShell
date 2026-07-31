@@ -36,7 +36,7 @@ O setup foi feito pra Arch Linux (ou derivada), já que a instalação usa
 Pra instalar:
 
 ```bash
-git clone <url-deste-repositório> ~/ZeroShell
+git clone https://github.com/wellington0dev/ZeroShell.git ~/ZeroShell
 cd ~/ZeroShell
 ./install.sh
 ```
