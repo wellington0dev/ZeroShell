@@ -95,12 +95,35 @@ Item {
         }
 
         ListView {
-            visible: NotificationService.history.length > 0
+            id: historyList
+
+            // Mesmo motivo do "closeDelay" em NotificationPopups.qml: se
+            // "visible" seguisse "length > 0" direto, apagar o ÚLTIMO item
+            // escondia a lista inteira NO MEIO da animação de remoção
+            // abaixo, cortando o fade/slide antes de terminar.
+            visible: NotificationService.history.length > 0 || hideDelay.running
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
             spacing: Styles.spacing
             model: NotificationService.history
+
+            Timer { id: hideDelay; interval: 200 }
+
+            Connections {
+                target: NotificationService
+                function onHistoryChanged() {
+                    if (NotificationService.history.length === 0) hideDelay.restart()
+                }
+            }
+
+            // Entrada/saída (fade + slide) são responsabilidade do próprio
+            // NotificationCard agora (ver comentário grande em
+            // NotificationCard.qml sobre por que um "add:"/"remove:" aqui
+            // no ListView nunca funcionava de verdade).
+            displaced: Transition {
+                NumberAnimation { properties: "y"; duration: 150; easing.type: Easing.OutCubic }
+            }
 
             delegate: NotificationCard {
                 width: ListView.view.width
@@ -110,7 +133,12 @@ Item {
         }
 
         Text {
-            visible: NotificationService.history.length === 0
+            // "!historyList.visible", não "length === 0" direto - fica
+            // mutuamente exclusivo com a lista mesmo durante o hideDelay
+            // dela (ver comentário lá em cima), senão os dois ficavam
+            // visíveis ao mesmo tempo por ~200ms quando o último item é
+            // removido.
+            visible: !historyList.visible
             text: "Nenhuma notificação recente"
             color: Styles.foregroundMuted
             font.pixelSize: Styles.fontSizeSmall

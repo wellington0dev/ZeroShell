@@ -73,7 +73,7 @@ PanelWindow {
         home: 420,
         player: 260,
         system: 430,
-        quick: 220
+        quick: 390
     })
     readonly property var currentSize: ({ w: DashboardState.cardWidth, h: tabHeights[tabs.current] || tabHeights.home })
     readonly property int maxTabHeight: Math.max(tabHeights.home, tabHeights.player, tabHeights.system, tabHeights.quick)

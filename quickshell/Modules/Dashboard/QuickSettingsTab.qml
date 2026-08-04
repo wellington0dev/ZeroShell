@@ -1,115 +1,131 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Networking
+import Quickshell.Bluetooth
 import qs.Theme
 import qs.Widgets
 import qs.State
 
 // Aba "Ajustes" do Dashboard - toggles rápidos que não merecem abrir a
-// janela inteira de Configurações. Cada linha é independente (ícone +
-// nome + descrição curta + Switch), mesmo estilo de linha usado em
-// DeviceRow.qml/DeviceOptionRow.qml das Configurações.
+// janela inteira de Configurações. Grid "bento" 2x2 (QuickToggleTile.qml) em
+// vez de linhas empilhadas - cada ajuste vira um cartão independente, mais
+// fácil de escanear de relance do que uma lista comprida. Wi-Fi e Bluetooth
+// também têm um botão de engrenagem no canto do próprio tile que leva pra
+// aba cheia (WifiPage.qml/BluetoothPage.qml) pra quem precisa escolher
+// rede/parear dispositivo - o Switch aqui só liga/desliga o rádio, não
+// substitui a aba.
 ColumnLayout {
     id: root
 
-    spacing: Styles.spacing * 1.5
-
-    Text {
-        text: "Ajustes rápidos"
-        color: Styles.foreground
-        font.pixelSize: Styles.fontSizeLarge
-        font.family: Styles.fontFamily
-        font.bold: true
+    readonly property WifiDevice wifiDevice: {
+        for (const d of Networking.devices.values) {
+            if (d.type === DeviceType.Wifi) return d
+        }
+        return null
     }
+
+    readonly property WifiNetwork wifiConnectedNetwork: {
+        if (!root.wifiDevice) return null
+        for (const n of root.wifiDevice.networks.values) {
+            if (n.connected) return n
+        }
+        return null
+    }
+
+    readonly property string wifiIcon: {
+        if (!Networking.wifiEnabled || !root.wifiDevice || !root.wifiConnectedNetwork) return "wifi-off"
+        const s = root.wifiConnectedNetwork.signalStrength
+        if (s >= 0.7) return "wifi"
+        if (s >= 0.35) return "wifi-medium"
+        return "wifi-low"
+    }
+
+    readonly property BluetoothAdapter btAdapter: Bluetooth.defaultAdapter
+
+    readonly property var btConnectedDevices: root.btAdapter
+        ? root.btAdapter.devices.values.filter(d => d.connected)
+        : []
+
+    spacing: Styles.spacing * 1.5
 
     RowLayout {
         Layout.fillWidth: true
         spacing: Styles.spacing
 
-        Rectangle {
-            Layout.preferredWidth: 36
-            Layout.preferredHeight: 36
-            radius: Styles.radiusButton
-            color: Styles.surfaceAlt
-
-            Icon {
-                anchors.centerIn: parent
-                icon: QuickSettings.notificationsEnabled ? "bell" : "eye-off"
-                size: 18
-                tint: Styles.foreground
-            }
-        }
-
-        ColumnLayout {
+        Text {
+            text: "Ajustes rápidos"
+            color: Styles.foreground
+            font.pixelSize: Styles.fontSizeLarge
+            font.family: Styles.fontFamily
+            font.bold: true
             Layout.fillWidth: true
-            spacing: 2
+        }
 
-            Text {
-                text: "Notificações"
-                color: Styles.foreground
-                font.pixelSize: Styles.fontSizeNormal
-                font.family: Styles.fontFamily
-            }
+        // Mesmo botão/comportamento do ícone de engrenagem da Sidebar
+        // (Modules/Sidebar/Sidebar.qml, "settingsComp") - replicado aqui
+        // pra abrir a janela cheia de Configurações sem precisar fechar o
+        // Dashboard primeiro pra alcançar a sidebar.
+        IconButton {
+            icon: "gear"
+            active: Visibility.settingsOpen
+            onClicked: Visibility.settingsOpen = !Visibility.settingsOpen
+        }
+    }
 
-            Text {
-                text: "Desligado só esconde os popups - nada some do histórico."
-                color: Styles.foregroundMuted
-                font.pixelSize: Styles.fontSizeSmall
-                font.family: Styles.fontFamily
-                wrapMode: Text.Wrap
-                Layout.fillWidth: true
+    GridLayout {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        columns: 2
+        rowSpacing: Styles.spacing
+        columnSpacing: Styles.spacing
+
+        QuickToggleTile {
+            icon: root.wifiIcon
+            title: "Wi-Fi"
+            state: !Networking.wifiEnabled ? "Desligado"
+                : root.wifiConnectedNetwork ? root.wifiConnectedNetwork.name
+                : "Não conectado"
+            checked: Networking.wifiEnabled
+            showMore: true
+            moreActive: Visibility.settingsOpen && Visibility.settingsCategory === "wifi"
+            onToggled: Networking.wifiEnabled = !Networking.wifiEnabled
+            onMoreClicked: {
+                Visibility.settingsCategory = "wifi"
+                Visibility.settingsOpen = true
             }
         }
 
-        Switch {
+        QuickToggleTile {
+            icon: (root.btAdapter && root.btAdapter.enabled) ? "bluetooth" : "bluetooth-off"
+            title: "Bluetooth"
+            state: !root.btAdapter || !root.btAdapter.enabled ? "Desligado"
+                : root.btConnectedDevices.length > 0 ? root.btConnectedDevices.map(d => d.name).join(", ")
+                : "Não conectado"
+            checked: root.btAdapter ? root.btAdapter.enabled : false
+            switchEnabled: !!root.btAdapter
+            showMore: true
+            moreActive: Visibility.settingsOpen && Visibility.settingsCategory === "bluetooth"
+            onToggled: if (root.btAdapter) root.btAdapter.enabled = !root.btAdapter.enabled
+            onMoreClicked: {
+                Visibility.settingsCategory = "bluetooth"
+                Visibility.settingsOpen = true
+            }
+        }
+
+        QuickToggleTile {
+            icon: QuickSettings.notificationsEnabled ? "bell" : "eye-off"
+            title: "Notificações"
+            state: "Desligado só esconde os popups - nada some do histórico."
             checked: QuickSettings.notificationsEnabled
             onToggled: QuickSettings.setNotificationsEnabled(!QuickSettings.notificationsEnabled)
         }
-    }
 
-    RowLayout {
-        Layout.fillWidth: true
-        spacing: Styles.spacing
-
-        Rectangle {
-            Layout.preferredWidth: 36
-            Layout.preferredHeight: 36
-            radius: Styles.radiusButton
-            color: Styles.surfaceAlt
-
-            Icon {
-                anchors.centerIn: parent
-                icon: "eye"
-                size: 18
-                tint: Styles.foreground
-            }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 2
-
-            Text {
-                text: "Manter acordado"
-                color: Styles.foreground
-                font.pixelSize: Styles.fontSizeNormal
-                font.family: Styles.fontFamily
-            }
-
-            Text {
-                text: "Impede a tela de travar/suspender sozinha enquanto ligado."
-                color: Styles.foregroundMuted
-                font.pixelSize: Styles.fontSizeSmall
-                font.family: Styles.fontFamily
-                wrapMode: Text.Wrap
-                Layout.fillWidth: true
-            }
-        }
-
-        Switch {
+        QuickToggleTile {
+            icon: "eye"
+            title: "Manter acordado"
+            state: "Impede a tela de travar/suspender sozinha enquanto ligado."
             checked: QuickSettings.keepAwake
             onToggled: QuickSettings.setKeepAwake(!QuickSettings.keepAwake)
         }
     }
-
-    Item { Layout.fillHeight: true }
 }

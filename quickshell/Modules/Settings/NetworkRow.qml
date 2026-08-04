@@ -91,6 +91,12 @@ ColumnLayout {
                 primary: false
                 onClicked: root.network.disconnect()
             }
+
+            Button {
+                text: "Esquecer"
+                primary: false
+                onClicked: root.network.forget()
+            }
         }
 
         RowLayout {

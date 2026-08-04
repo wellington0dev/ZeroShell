@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.Theme
+import qs.Widgets
 
 Rectangle {
     id: root
@@ -29,9 +30,20 @@ Rectangle {
             color: Styles.surfaceAlt
 
             IconImage {
+                id: iconImage
                 anchors.centerIn: parent
                 implicitSize: 22
                 source: root.entry ? Quickshell.iconPath(root.entry.icon, true) : ""
+            }
+
+            // Ícone genérico quando o app não tem ícone no tema instalado -
+            // mesmo padrão de NotificationCard.qml/DockButton.qml.
+            Icon {
+                anchors.centerIn: parent
+                visible: iconImage.status !== Image.Ready
+                icon: "window"
+                size: 18
+                tint: Styles.foregroundMuted
             }
         }
 

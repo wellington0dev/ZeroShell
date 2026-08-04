@@ -16,5 +16,7 @@
 hl.on("hyprland.start", function ()
   hl.exec_cmd("qs")
   hl.exec_cmd("~/.config/hypr/scripts/load-wallpaper.sh")
-  hl.exec_cmd("helena start")
+  -- Helena não é mais um serviço de sistema à parte - o próprio Main.qml do
+  -- plugin (plugins/ai-plugin/) sobe e supervisiona local_server.py junto
+  -- do quickshell, então não precisa de linha própria aqui.
 end)

@@ -97,24 +97,25 @@ PanelWindow {
     // Qt.callLater/Timer feito à mão - testado ao vivo com gravação de tela
     // que essa versão manual não anima nada, só salta direto pro valor
     // final).
+    //
+    // Sem "edge"/"distance": o launcher agora abre CENTRALIZADO na tela
+    // (anchors.centerIn no card abaixo), não mais deslizando de uma borda -
+    // "slideOffset" precisa de uma margin de borda pra fazer sentido, e
+    // centerIn não usa margin nenhuma. Só opacity/scale valem aqui (modos
+    // "popup"/"fade" já funcionam assim; modo "slide" vira um fade+scale
+    // pra este painel especificamente, sem deslizar).
     PanelAnim {
         id: anim
         open: Visibility.launcherOpen
-        edge: "bottom"
-        distance: card.height
     }
 
     Rectangle {
         id: card
 
-        readonly property int restMargin: Styles.edgeMargin
-
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: restMargin + anim.slideOffset
+        anchors.centerIn: parent
         opacity: anim.targetOpacity
         scale: anim.targetScale
-        transformOrigin: Item.Bottom
+        transformOrigin: Item.Center
         width: 480
         height: 420
         radius: Styles.radiusShell
@@ -122,15 +123,6 @@ PanelWindow {
         border.color: Styles.border
         border.width: 2
 
-        // Mesma curva do slide do Dashboard (Motion.standard) - pedido pra
-        // ficar igual em todos os painéis, não cada um com a sua.
-        Behavior on anchors.bottomMargin {
-            NumberAnimation {
-                duration: Motion.durationNormal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.standard
-            }
-        }
         Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }
         Behavior on scale {
             NumberAnimation {

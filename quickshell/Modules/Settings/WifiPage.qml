@@ -16,6 +16,17 @@ Item {
 
     property var selectedNetwork: null
 
+    // Conectada primeiro, depois por força de sinal (maior primeiro) - sem
+    // isso a lista vinha na ordem que o backend descobriu cada rede
+    // (basicamente aleatória), então a rede que você já está usando podia
+    // aparecer no meio/fim da lista.
+    readonly property var sortedNetworks: root.device
+        ? [...root.device.networks.values].sort((a, b) => {
+            if (a.connected !== b.connected) return a.connected ? -1 : 1
+            return b.signalStrength - a.signalStrength
+        })
+        : []
+
     Component.onCompleted: if (device) device.scannerEnabled = true
     onDeviceChanged: if (device) device.scannerEnabled = true
     Component.onDestruction: if (device) device.scannerEnabled = false
@@ -48,13 +59,21 @@ Item {
             color: Styles.foregroundMuted
         }
 
+        Text {
+            visible: root.device && Networking.wifiEnabled && root.sortedNetworks.length === 0
+            text: "Procurando redes…"
+            color: Styles.foregroundMuted
+            font.pixelSize: Styles.fontSizeSmall
+            font.family: Styles.fontFamily
+        }
+
         ListView {
-            visible: root.device && Networking.wifiEnabled
+            visible: root.device && Networking.wifiEnabled && root.sortedNetworks.length > 0
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: Styles.spacing
             clip: true
-            model: root.device ? root.device.networks.values : []
+            model: root.sortedNetworks
 
             delegate: NetworkRow {
                 width: ListView.view.width
@@ -65,9 +84,10 @@ Item {
         }
 
         // Keeps the header pinned to the top when the list above is hidden
-        // (no device, or Wi-Fi disabled) instead of the column re-centering.
+        // (no device, Wi-Fi disabled, or still scanning) instead of the
+        // column re-centering.
         Item {
-            visible: !(root.device && Networking.wifiEnabled)
+            visible: !(root.device && Networking.wifiEnabled && root.sortedNetworks.length > 0)
             Layout.fillWidth: true
             Layout.fillHeight: true
         }

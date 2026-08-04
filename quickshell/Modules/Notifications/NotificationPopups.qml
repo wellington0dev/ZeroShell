@@ -12,7 +12,21 @@ PanelWindow {
     // enquanto tá "mudo", só não interrompe na hora.
     readonly property var notifications: QuickSettings.notificationsEnabled ? NotificationService.notifications : []
 
-    visible: notifications.length > 0
+    // "visible" NÃO pode seguir "notifications.length > 0" direto: quando a
+    // ÚLTIMA notificação é removida, isso zera na mesma hora que o "remove"
+    // do ListView começa a animar - a PanelWindow fecha/destrói a
+    // superfície NO MEIO da animação de saída, cortando o fade (e gerando
+    // erro, já que a NumberAnimation perde o item que tava animando embaixo
+    // dela). Com 2+ notificações isso nunca acontece (a janela continua
+    // visível pelas que sobraram) - só reproduz removendo a última/única.
+    // Fix: mantém a janela visível mais um pouco (closeDelay) depois da
+    // lista esvaziar, tempo da transição "remove" terminar antes de
+    // "visible" virar false de verdade.
+    visible: notifications.length > 0 || closeDelay.running
+    onNotificationsChanged: if (notifications.length === 0) closeDelay.restart()
+
+    Timer { id: closeDelay; interval: 200 }
+
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
@@ -38,15 +52,10 @@ PanelWindow {
         spacing: Styles.spacing
         interactive: false
 
-        add: Transition {
-            NumberAnimation { properties: "opacity"; from: 0; to: 1; duration: 150 }
-            NumberAnimation { properties: "x"; from: 40; duration: 150; easing.type: Easing.OutCubic }
-        }
-
-        remove: Transition {
-            NumberAnimation { properties: "opacity"; to: 0; duration: 120 }
-        }
-
+        // Entrada/saída (fade + slide) são responsabilidade do próprio
+        // NotificationCard agora (ver comentário grande em
+        // NotificationCard.qml sobre por que um "add:"/"remove:" aqui no
+        // ListView nunca funcionava de verdade).
         displaced: Transition {
             NumberAnimation { properties: "y"; duration: 150; easing.type: Easing.OutCubic }
         }

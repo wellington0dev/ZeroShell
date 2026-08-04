@@ -17,6 +17,7 @@ import qs.Modules.Dashboard
 import qs.Modules.Lock
 import qs.Modules.Volume
 import qs.Modules.Plugins
+import qs.Modules.Dock
 import qs.State
 
 ShellRoot {
@@ -24,13 +25,13 @@ ShellRoot {
     SettingsWindow {}
     NotificationPopups {}
     LauncherWindow {}
-    LauncherTrigger {}
     PowerMenu {}
     DashboardTrigger {}
     DashboardWindow {}
     LockScreen {}
     VolumeTrigger {}
     VolumePanel {}
+    DockWindow {}
 
     // Componente "main" de cada plugin instalado e ligado (ver
     // Modules/Plugins/PluginService.qml) - mesmo tratamento "sempre

@@ -53,7 +53,9 @@ ClippingRectangle {
         color: "#000000"
         opacity: hover.hovered ? 0.35 : 0
 
-        Behavior on opacity { NumberAnimation { duration: 120 } }
+        Behavior on opacity {
+            NumberAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
+        }
     }
 
     HoverHandler { id: hover }

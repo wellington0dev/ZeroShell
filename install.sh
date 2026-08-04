@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 #
 # Instala as dependências usadas por este setup Hyprland + quickshell,
-# linka as configs de ~/dotfiles em ~/.config (CONFIG_DIRS) e copia os
+# copia as configs de ~/ZeroShell pra ~/.config (CONFIG_DIRS) e os
 # scripts do setup pra lá também (SCRIPT_FILES), com base nos arrays
-# em dirs.sh.
+# em dirs.sh. Cópia de verdade, não symlink - depois de instalado,
+# ~/.config fica independente do clone em ~/ZeroShell (dá pra até
+# apagar ~/ZeroShell depois). Quem quiser mandar mudanças feitas em
+# ~/.config de volta pro repositório usa ./update.sh (caminho inverso).
 #
 # Usage:
 #   ./install.sh
@@ -33,7 +36,7 @@ PACMAN_PKGS=(
 echo "==> Instalando pacotes oficiais..."
 sudo pacman -S --needed "${PACMAN_PKGS[@]}"
 
-echo "==> Linkando dotfiles em $CONFIG_DIR..."
+echo "==> Copiando configs para $CONFIG_DIR..."
 mkdir -p "$CONFIG_DIR"
 
 for dir in "${CONFIG_DIRS[@]}"; do
@@ -45,19 +48,14 @@ for dir in "${CONFIG_DIRS[@]}"; do
         continue
     fi
 
-    if [[ -L "$dest" && "$(readlink -f "$dest")" == "$(readlink -f "$src")" ]]; then
-        echo "  -- $dir já está linkado"
-        continue
-    fi
-
     if [[ -e "$dest" || -L "$dest" ]]; then
         backup="${dest}.bak.$(date +%Y%m%d%H%M%S)"
         echo "  -> $dir já existe em $CONFIG_DIR, fazendo backup em $backup"
         mv "$dest" "$backup"
     fi
 
-    ln -s "$src" "$dest"
-    echo "  -> $dir linkado"
+    cp -a "$src" "$dest"
+    echo "  -> $dir copiado"
 done
 
 echo "==> Copiando scripts para $CONFIG_DIR..."

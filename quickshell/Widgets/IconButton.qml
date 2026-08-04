@@ -8,6 +8,12 @@ import qs.Theme
 // - "active": estado "ligado"/selecionado (fundo e borda ficam na cor de
 //   destaque). Usado pra indicar "este painel está aberto agora" nos botões
 //   da sidebar, ou "esta aba está selecionada" na navegação das Configurações.
+// - "primary": ação principal de um grupo (ex.: enviar mensagem) - fundo
+//   sólido na cor de destaque, igual ao Button.qml "primary: true", em vez
+//   da versão translúcida do "active". Diferente de "active" (que marca
+//   ESTADO/seleção), "primary" marca HIERARQUIA (esse é O botão a apertar
+//   ali, mesmo sem nenhum estado ligado) - os dois nunca deviam ser usados
+//   juntos no mesmo botão.
 // - "monochrome": repassado direto pro Icon interno (veja Icon.qml) - true
 //   pinta o ícone com a cor do tema, false mantém a cor original do SVG
 //   (usado pelos ícones de app do AppTray, que são logos coloridos).
@@ -19,6 +25,7 @@ Item {
     property string icon
     property int size: 36
     property bool active: false
+    property bool primary: false
     property bool monochrome: true
 
     signal clicked()
@@ -28,22 +35,26 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Styles.radiusButton
+        radius: height / 2
         opacity: root.enabled ? 1 : 0.4
-        color: root.active
-            ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.18)
-            : (hover.hovered ? Styles.surfaceAlt : "transparent")
-        border.color: root.active ? Styles.accent : "transparent"
-        border.width: 1
+        color: root.primary
+            ? (hover.hovered ? Styles.accentAlt : Styles.accent)
+            : root.active
+                ? Qt.rgba(Styles.accent.r, Styles.accent.g, Styles.accent.b, 0.18)
+                : (hover.hovered ? Styles.surfaceAlt : "transparent")
+        border.color: Styles.accent
+        border.width: (root.active && !root.primary) ? 1 : 0
 
-        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on color {
+            ColorAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
+        }
 
         Icon {
             anchors.centerIn: parent
             size: Math.max(10, root.size - 16)
             icon: root.icon
             monochrome: root.monochrome
-            tint: root.active ? Styles.accent : Styles.foreground
+            tint: root.primary ? Styles.background : (root.active ? Styles.accent : Styles.foreground)
         }
     }
 

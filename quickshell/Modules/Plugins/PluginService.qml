@@ -52,6 +52,12 @@ Singleton {
         scanProcess.running = true
     }
 
+    // Disparado quando um rescan() de verdade termina (não o do
+    // Component.onCompleted, só o pedido explícito pelo botão "Atualizar")
+    // - a aba Plugins usa isso pra confirmar visualmente que a lista foi
+    // atualizada de verdade, não só que o clique registrou.
+    signal rescanFinished()
+
     Component.onCompleted: rescan()
 
     Process {
@@ -68,6 +74,7 @@ Singleton {
                 root.plugins = manifests.map(m => Object.assign({}, m, {
                     enabled: root.isEnabled(m.id)
                 }))
+                root.rescanFinished()
             }
         }
     }

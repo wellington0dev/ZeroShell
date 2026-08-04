@@ -50,9 +50,21 @@ ColumnLayout {
     }
 
     IconButton {
-        icon: "window"
+        icon: "puzzle"
         active: root.current === "plugins"
         onClicked: Visibility.settingsCategory = "plugins"
+    }
+
+    IconButton {
+        icon: "dock"
+        active: root.current === "dock"
+        onClicked: Visibility.settingsCategory = "dock"
+    }
+
+    IconButton {
+        icon: "keyboard"
+        active: root.current === "keybinds"
+        onClicked: Visibility.settingsCategory = "keybinds"
     }
 
     Item { Layout.fillHeight: true }

@@ -1,3 +1,4 @@
-quickshell/plugins/*
-
+./quickshell/plugins/ai-plugin
+/.claude
+.gitignore
 

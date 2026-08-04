@@ -44,6 +44,67 @@ Rectangle {
     border.width: 1
     clip: true
 
+    // ---- Animação de entrada/saída ----
+    // Antes existia um "add:"/"remove: Transition" direto no ListView
+    // (NotificationPopups.qml/HomeTab.qml), mas NUNCA tocava de verdade: o
+    // model dos dois é um array JS comum reatribuído inteiro a cada mudança
+    // (NotificationService.notifications/history), não um model incremental
+    // de verdade (ListModel/QAbstractItemModel) - o Qt Quick só sabe animar
+    // add/remove/displaced quando o PRÓPRIO model emite sinais linha-a-linha
+    // de inserção/remoção; um array reatribuído inteiro vira um "reset" pro
+    // ListView, sem animação nenhuma (testado ao vivo - as Transitions
+    // ficavam declaradas mas nunca disparavam).
+    //
+    // Fix: o CARD anima a si mesmo (opacity/x via Behavior), sem depender
+    // do ListView pra nada disso. Saída: ANTES de chamar a remoção de
+    // verdade (dismiss()/expire()/removeFromHistory), guarda "closing" pra
+    // esmaecer/deslizar primeiro - quando o item finalmente sai do array,
+    // já tá com opacity 0, então o "corte" instantâneo do array fica
+    // invisível. Entrada: mesma dança ao contrário, disparada em
+    // Component.onCompleted.
+    property bool closing: false
+    property bool appeared: false
+    property var closeAction: null
+
+    readonly property bool settled: appeared && !closing
+
+    opacity: settled ? 1 : 0
+    x: settled ? 0 : 40
+
+    // Assimetria proposital (não é só estética): entrada usa emphasizedDecel
+    // (mais devagar, "pousa" suave) e saída usa emphasizedAccel (mais rápida,
+    // "sai correndo") - mesmo padrão que o end-4/dots-hyprland usa pra
+    // elementMoveEnter/elementMoveExit (Appearance.qml).
+    Behavior on opacity {
+        NumberAnimation {
+            duration: root.closing ? Motion.durationFast : Motion.durationNormal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: root.closing ? Motion.emphasizedAccel : Motion.emphasizedDecel
+        }
+    }
+    Behavior on x {
+        NumberAnimation {
+            duration: root.closing ? Motion.durationFast : Motion.durationNormal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: root.closing ? Motion.emphasizedAccel : Motion.emphasizedDecel
+        }
+    }
+
+    Component.onCompleted: root.appeared = true
+
+    function startClose(action) {
+        if (root.closing) return
+        root.closeAction = action
+        root.closing = true
+        closeTimer.start()
+    }
+
+    Timer {
+        id: closeTimer
+        interval: 160
+        onTriggered: if (root.closeAction) root.closeAction()
+    }
+
     TapHandler {
         onTapped: {
             if (!root.notification) return
@@ -53,9 +114,9 @@ Rectangle {
     }
 
     Timer {
-        running: root.notification && root.autoExpires
+        running: root.notification && root.autoExpires && !root.closing
         interval: root.timeoutMs
-        onTriggered: if (root.notification) root.notification.expire()
+        onTriggered: root.startClose(() => { if (root.notification) root.notification.expire() })
     }
 
     ColumnLayout {
@@ -127,8 +188,10 @@ Rectangle {
                     // No histórico (Dashboard) "notification" é uma cópia
                     // simples dos dados, não o objeto Notification ao vivo -
                     // não tem .dismiss(), some da lista via removeFromHistory.
-                    if (root.isPopup) root.notification.dismiss()
-                    else NotificationService.removeFromHistory(root.notification.id)
+                    root.startClose(() => {
+                        if (root.isPopup) root.notification.dismiss()
+                        else NotificationService.removeFromHistory(root.notification.id)
+                    })
                 }
             }
         }

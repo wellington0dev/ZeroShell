@@ -24,9 +24,10 @@ FloatingWindow {
         function close(): void { Visibility.settingsOpen = false }
 
         // Troca a categoria ativa - "wifi", "bluetooth", "audio", "theme",
-        // "capture", "sidebar" ou "plugins" (ver Modules/Settings/CategoryNav.qml). Não
-        // valida o nome: um valor inválido só faz o Loader acima cair no
-        // "default" (null, painel vazio), sem quebrar nada.
+        // "capture", "sidebar", "plugins", "dock" ou "keybinds" (ver
+        // Modules/Settings/CategoryNav.qml). Não valida o nome: um valor
+        // inválido só faz o Loader acima cair no "default" (null, painel
+        // vazio), sem quebrar nada.
         function category(name: string): void { Visibility.settingsCategory = name }
     }
 
@@ -99,6 +100,8 @@ FloatingWindow {
                         case "capture": return capturePageComp
                         case "sidebar": return sidebarPageComp
                         case "plugins": return pluginsPageComp
+                        case "dock": return dockPageComp
+                        case "keybinds": return keybindsPageComp
                         default: return null
                     }
                 }
@@ -113,4 +116,6 @@ FloatingWindow {
     Component { id: capturePageComp; CapturePage {} }
     Component { id: sidebarPageComp; SidebarPage {} }
     Component { id: pluginsPageComp; PluginsPage {} }
+    Component { id: dockPageComp; DockPage {} }
+    Component { id: keybindsPageComp; KeybindsPage {} }
 }

@@ -34,8 +34,14 @@ Item {
             }
 
             Button {
+                id: rescanButton
                 text: "Atualizar"
                 onClicked: PluginService.rescan()
+
+                Connections {
+                    target: PluginService
+                    function onRescanFinished() { rescanButton.flashSuccess() }
+                }
             }
         }
 
@@ -95,8 +101,6 @@ Item {
                     implicitHeight: content.implicitHeight + Styles.spacing * 2
                     radius: Styles.radiusShell
                     color: Styles.surface
-                    border.color: Styles.border
-                    border.width: 1
 
                     ColumnLayout {
                         id: content
@@ -190,12 +194,36 @@ Item {
                             Layout.fillWidth: true
                         }
 
+                        // Separador só quando a página própria do plugin tá
+                        // expandida - sem isso ela ficava colada direto no
+                        // cabeçalho do card, sem nenhuma quebra visual.
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 1
+                            Layout.topMargin: 2
+                            visible: settingsLoader.active
+                            color: Styles.border
+                        }
+
                         // Página de configuração própria do plugin - só
                         // carregada (Loader "active") quando expandida, pra
                         // não instanciar QML de todo plugin instalado o
                         // tempo todo à toa.
+                        //
+                        // "Layout.preferredHeight: active ? implicitHeight : 0"
+                        // é necessário, não decorativo: sem isso, medido ao
+                        // vivo (console.log), o ColumnLayout "content" ficava
+                        // com implicitHeight TRAVADO no valor de quando
+                        // estava expandido mesmo depois do Loader desativar
+                        // (o Loader não reavisa implicitHeight=0 sozinho pro
+                        // ColumnLayout pai quando o item interno morre) - o
+                        // card nunca encolhia de volta ao fechar. Forçando
+                        // explicitamente aqui garante o valor certo nos dois
+                        // sentidos.
                         Loader {
+                            id: settingsLoader
                             Layout.fillWidth: true
+                            Layout.preferredHeight: active ? implicitHeight : 0
                             active: root.expandedId === card.modelData.id && card.modelData.enabled
                             source: active ? ("file://" + card.modelData.dir + "/" + card.modelData.settingsPage) : ""
                         }

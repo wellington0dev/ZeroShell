@@ -4,20 +4,56 @@
 
 local programs = require("modules.programs")
 
-local mainMod = "SUPER" -- Sets "Windows" key as main modifier
+-- "keybinds.lua" é GERADO por hypr/scripts/sync-hypr-keybinds.sh a partir
+-- de quickshell/State/keybinds.json (Configurações > aba Atalhos) - não
+-- existe até o usuário mexer em algum atalho pela primeira vez, por isso o
+-- pcall (mesmo padrão de theme_colors.lua/window_radius.lua em
+-- appearance.lua). Sem o arquivo (ou sem uma ação específica dentro dele),
+-- cai nos valores hardcoded abaixo - são os mesmos atalhos de sempre,
+-- viram só o "default" desse sistema agora.
+local keybindsOk, keybindsData = pcall(require, "keybinds")
+local mainMod = (keybindsOk and keybindsData.main_mod) or "SUPER" -- Sets "Windows" key as main modifier
+local keybindOverrides = (keybindsOk and keybindsData.overrides) or {}
+local customBinds = (keybindsOk and keybindsData.custom_binds) or {}
+
+-- Monta "mainMod + TECLA1 + TECLA2" a partir do override daquela ação (se
+-- existir) ou do "defaultExtra" hardcoded ali no chamador - até 2 teclas
+-- extras além do mainMod, então até 3 no total. Só as ações NOMEADAS
+-- abaixo passam por aqui; setas de foco/mover, workspaces 1-9-0, arrasto
+-- de mouse e teclas de mídia XF86 continuam com bind fixo mais abaixo
+-- neste arquivo, de propósito (não fazem parte da aba Atalhos).
+local function keybind(id, defaultExtra)
+    local extra = keybindOverrides[id] or defaultExtra
+    local combo = mainMod
+    for _, key in ipairs(extra) do
+        combo = combo .. " + " .. key
+    end
+    return combo
+end
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
-hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(programs.terminal))
-local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
+hl.bind(keybind("terminal", { "T" }), hl.dsp.exec_cmd(programs.terminal))
+local closeWindowBind = hl.bind(keybind("closeWindow", { "Q" }), hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
-hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(programs.fileManager))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(programs.menu))
-hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-wallpaper.sh next"))
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(programs.settingsWin))
+hl.bind(keybind("exitMenu", { "M" }), hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+hl.bind(keybind("fileManager", { "E" }), hl.dsp.exec_cmd(programs.fileManager))
+hl.bind(keybind("floatToggle", { "V" }), hl.dsp.window.float({ action = "toggle" }))
+hl.bind(keybind("menu", { "R" }), hl.dsp.exec_cmd(programs.menu))
+hl.bind(keybind("pseudo", { "P" }), hl.dsp.window.pseudo())
+hl.bind(keybind("togglesplit", { "J" }), hl.dsp.layout("togglesplit"))    -- dwindle only
+hl.bind(keybind("nextWallpaper", { "W" }), hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-wallpaper.sh next"))
+hl.bind(keybind("settings", { "C" }), hl.dsp.exec_cmd(programs.settingsWin))
+
+-- Atalhos personalizados criados na aba Atalhos (comando de shell livre,
+-- sem ação nomeada correspondente) - mesma convenção de mainMod + até 2
+-- teclas extras dos binds acima.
+for _, bind in ipairs(customBinds) do
+    local combo = mainMod
+    for _, key in ipairs(bind.keys) do
+        combo = combo .. " + " .. key
+    end
+    hl.bind(combo, hl.dsp.exec_cmd(bind.command))
+end
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -46,9 +82,9 @@ for i = 1, 10 do
 end
 
 -- Example special workspace (scratchpad)
-hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd(programs.captureAuto)) -- captura de tela (clique/arrasta/fora)
-hl.bind(mainMod .. " + SHIFT + G", hl.dsp.exec_cmd(programs.recordAuto))  -- gravação de tela, mesmo esquema
+hl.bind(keybind("specialWorkspace", { "S" }),   hl.dsp.workspace.toggle_special("magic"))
+hl.bind(keybind("screenshot", { "SHIFT", "S" }), hl.dsp.exec_cmd(programs.captureAuto)) -- captura de tela (clique/arrasta/fora)
+hl.bind(keybind("screenrecord", { "SHIFT", "G" }), hl.dsp.exec_cmd(programs.recordAuto))  -- gravação de tela, mesmo esquema
 
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))

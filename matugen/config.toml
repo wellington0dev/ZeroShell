@@ -7,9 +7,13 @@ fallback_color = "#1a1b26"
 # instead of picking small vivid accents over the image's actual dominant
 # color.
 #
-# The scheme type is the opposite: the per-template `type` key below
-# OVERRIDES the CLI `--type` flag for that template, not the other way
-# around - so it has to be set here, not in apply-theme.sh.
+# The scheme type USED TO be pinned here as a per-template `type` key,
+# because a template's own `type` overrides the global CLI `--type` flag,
+# not the other way around. Removed on purpose: the scheme type is now a
+# user choice (Configurações > Aparência > "Cores do wallpaper"), persisted
+# in quickshell/State/theme-mode.json and passed via `--type` by
+# apply-theme.sh - so no `type` key must exist on [templates.quickshell]
+# below, or it would silently win over whatever the user picked.
 
 [config.custom_colors]
 # Material You has no native "success" role, so we seed one and let
@@ -30,10 +34,10 @@ input_path = "./templates/quickshell-colors.json"
 # Relativo à pasta deste config.toml (~/.config/matugen/), não um caminho
 # absoluto - assim funciona em qualquer usuário/máquina, não só nesta.
 output_path = "../quickshell/State/colors.json"
-# Only affects the neutral background/surface/foreground tones now - accent
-# colors are sampled directly from the image (see apply-theme.sh), because
-# even "expressive" schemes only ever sample ONE real color from the image
-# and derive the rest by rotating its hue mathematically, which can land on
-# hues that aren't actually in the picture. SchemeNeutral gives the most
-# muted, unobtrusive surfaces so the real accent colors are what stands out.
-type = "SchemeNeutral"
+# Sem "type" aqui de propósito - ver o comentário grande em [config] acima.
+# O tipo vem do "--type" passado por apply-theme.sh, escolhido pelo usuário
+# nas Configurações. Só afeta os tons neutros de fundo/superfície/texto -
+# accent colors são amostrados direto da imagem (ver apply-theme.sh),
+# porque até os esquemas "expressive" só amostram UMA cor real da imagem e
+# derivam o resto girando o matiz matematicamente, o que pode cair em tons
+# que nem estão na foto.

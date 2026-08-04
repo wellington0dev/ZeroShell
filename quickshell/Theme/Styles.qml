@@ -51,6 +51,33 @@ Singleton {
         modeFile.writeAdapter()
     }
 
+    // Algoritmo de esquema de cor do matugen - um dos "--type" (scheme-
+    // content, scheme-expressive, etc, ver Modules/Settings/WallpaperGrid.qml
+    // pra lista completa e hypr/scripts/apply-theme.sh pra onde isso é lido
+    // e passado pro matugen). Hoje só afeta "danger"/"success" - fundo/
+    // superfície/borda/texto E accent/accentAlt vêm todos de amostragem
+    // direta da imagem (extract-colors.py), não do algoritmo do matugen,
+    // desde que "background" precisou ficar tingido pela cor do wallpaper
+    // também no modo claro (o "background" nativo do matugen nesse --type
+    // fica quase branco puro no claro, sem matiz nenhum).
+    readonly property string schemeType: modeAdapter.schemeType
+
+    function setSchemeType(value) {
+        modeAdapter.schemeType = value
+        modeFile.writeAdapter()
+    }
+
+    // Claro/escuro pras cores derivadas do wallpaper - o "--mode" do
+    // matugen (só "dark"/"light", ver hypr/scripts/apply-theme.sh e
+    // Modules/Settings/WallpaperGrid.qml). Sem efeito nenhum quando
+    // useWallpaperColors é false (tema fixo/preset não usa matugen).
+    readonly property string colorMode: modeAdapter.colorMode
+
+    function setColorMode(value) {
+        modeAdapter.colorMode = value
+        modeFile.writeAdapter()
+    }
+
     FileView {
         id: modeFile
         path: Quickshell.env("HOME") + "/.config/quickshell/State/theme-mode.json"
@@ -60,6 +87,8 @@ Singleton {
         JsonAdapter {
             id: modeAdapter
             property bool useWallpaperColors: true
+            property string schemeType: "scheme-neutral"
+            property string colorMode: "dark"
         }
     }
 
@@ -185,10 +214,10 @@ Singleton {
 
         JsonAdapter {
             id: radiusAdapter
-            property int shell: 18
-            property int button: 8
-            property int input: 8
-            property int window: 4
+            property int shell: 20
+            property int button: 16
+            property int input: 12
+            property int window: 12
             property bool linked: false
         }
     }

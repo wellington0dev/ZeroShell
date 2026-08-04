@@ -29,7 +29,9 @@ Item {
         border.color: input.activeFocus ? Styles.accent : Styles.border
         border.width: 1
 
-        Behavior on border.color { ColorAnimation { duration: 120 } }
+        Behavior on border.color {
+            ColorAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
+        }
 
         Text {
             anchors {

@@ -33,7 +33,9 @@ Item {
         border.color: Styles.border
         border.width: 1
 
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color {
+            ColorAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
+        }
 
         // A bolinha - desliza entre a esquerda (desligado) e a direita (ligado).
         Rectangle {
@@ -44,7 +46,9 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             x: root.checked ? parent.width - width - 2 : 2
 
-            Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+            Behavior on x {
+                NumberAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveFastSpatial }
+            }
         }
     }
 
