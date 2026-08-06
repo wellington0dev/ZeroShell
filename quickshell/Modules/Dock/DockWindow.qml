@@ -66,9 +66,10 @@ PanelWindow {
     // janela nenhuma, senão elas ficariam pulando de tamanho toda hora que
     // o mouse passa perto da borda).
     exclusionMode: DockConfig.pinned ? ExclusionMode.Normal : ExclusionMode.Ignore
-    exclusiveZone: DockConfig.pinned ? (cardHeight + Styles.edgeMargin) : 0
+    exclusiveZone: DockConfig.pinned ? (cardHeight + restMargin) : 0
 
     readonly property int cardHeight: 64
+    readonly property int restMargin: Styles.edgeMargin
 
     anchors {
         bottom: true
@@ -211,7 +212,7 @@ PanelWindow {
         // Escondido: desliza pra baixo da própria borda da janela (margin
         // negativo do tamanho do cartão) - fica fora da superfície, não só
         // invisível, então não rouba clique de ninguém enquanto escondido.
-        anchors.bottomMargin: root.revealed ? Styles.edgeMargin : -root.cardHeight
+        anchors.bottomMargin: root.revealed ? root.restMargin : -root.cardHeight
         implicitWidth: Math.max(row.implicitWidth + Styles.spacing * 2, 64)
         implicitHeight: root.cardHeight
         radius: Styles.radiusShell

@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import qs.Theme
 import qs.Widgets
+import qs.State
 
 ColumnLayout {
     id: root
@@ -178,6 +179,39 @@ ColumnLayout {
                 }
 
                 Item { Layout.fillWidth: true }
+            }
+
+            Text {
+                text: "Recuo e cantos"
+                color: Styles.foreground
+                font.pixelSize: 12
+                font.family: Styles.fontFamily
+                font.bold: true
+            }
+
+            Text {
+                text: "Recua o wallpaper das 4 bordas da tela e arredonda os cantos - 0 de recuo já arredonda rente ao pixel real da tela, sem vão nenhum."
+                color: Styles.foregroundMuted
+                font.pixelSize: 11
+                font.family: Styles.fontFamily
+                wrapMode: Text.Wrap
+                Layout.fillWidth: true
+            }
+
+            RadiusRow {
+                Layout.fillWidth: true
+                label: "Recuo"
+                value: WallpaperConfig.margin
+                maxValue: 64
+                onMoved: (v) => WallpaperConfig.setMargin(v)
+            }
+
+            RadiusRow {
+                Layout.fillWidth: true
+                label: "Arredondamento"
+                value: WallpaperConfig.radius
+                maxValue: 64
+                onMoved: (v) => WallpaperConfig.setRadius(v)
             }
 
             // "interactive: false" + altura própria (contentHeight, em vez

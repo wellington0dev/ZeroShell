@@ -17,8 +17,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/dirs.sh"
 
 PACMAN_PKGS=(
     hyprland          # compositor
-    quickshell        # shell (qs), usado no autostart e no bar/sidebar
-    awww              # wallpaper daemon (fork drop-in do swww)
+    quickshell        # shell (qs), usado no autostart e no bar/sidebar (também renderiza o wallpaper)
     matugen           # gera o tema do quickshell a partir do wallpaper
     python-pillow     # extract-colors.py, pega uma 2a cor dominante do wallpaper
     kitty             # terminal

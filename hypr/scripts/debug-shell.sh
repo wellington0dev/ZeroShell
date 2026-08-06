@@ -29,19 +29,20 @@ declare -A PANELS=(
     [launcher]="launcher"
     [settings]="settings"
     [powermenu]="powermenu"
+    [volume]="volume"
     [capture]="capture"
     [dashboard]="dashboard"
 )
 # Ordem determinística de captura (arrays associativos no bash não garantem
 # ordem de iteração).
-ORDER=(sidebar launcher settings powermenu capture dashboard)
+ORDER=(sidebar launcher settings powermenu volume capture dashboard)
 
 # Sub-páginas de "dashboard" e "settings" - cada uma ganha o próprio print
 # (dashboard-home.png, settings-wifi.png, etc.) em vez de só a aba/categoria
 # em que o painel abriu por padrão. Nomes batem com DashboardTabs.qml
 # (DashboardState.currentTab) e CategoryNav.qml (Visibility.settingsCategory).
-DASHBOARD_TABS=(home player system)
-SETTINGS_CATEGORIES=(wifi bluetooth audio theme capture sidebar)
+DASHBOARD_TABS=(home player system quick)
+SETTINGS_CATEGORIES=(wifi bluetooth audio theme capture sidebar plugins dock keybinds)
 
 OPEN_WAIT=0.6   # tempo pra animação de abrir terminar antes do print
 CLOSE_WAIT=0.3  # respiro entre fechar um painel e abrir o próximo

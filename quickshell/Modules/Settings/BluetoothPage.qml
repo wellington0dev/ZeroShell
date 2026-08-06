@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Bluetooth
 import qs.Theme
 import qs.Widgets
+import qs.State
 
 Item {
     id: root
@@ -53,8 +54,14 @@ Item {
             }
 
             Switch {
-                checked: root.adapter ? root.adapter.enabled : false
-                onToggled: if (root.adapter) root.adapter.enabled = !root.adapter.enabled
+                // "QuickSettings.bluetoothEnabled" (não "root.adapter.enabled"
+                // direto) - é a preferência PERSISTIDA (ver State/
+                // QuickSettings.qml pro porquê: este bluez não liga o
+                // adaptador sozinho no boot). Mexer só no adaptador aqui
+                // desincronizaria do que fica salvo, e o próximo restart do
+                // shell reaplicaria o valor salvo antigo por cima.
+                checked: QuickSettings.bluetoothEnabled
+                onToggled: QuickSettings.setBluetoothEnabled(!QuickSettings.bluetoothEnabled)
             }
         }
 

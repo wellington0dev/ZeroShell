@@ -2,8 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import qs.Theme
 import qs.Widgets
+import qs.State
 
 // O card do dashboard em si: fica fora da tela (acima do topo) até
 // DashboardState.open virar true (por causa da DashboardTrigger.qml ou por
@@ -20,12 +22,14 @@ PanelWindow {
     readonly property string debugShellScript: Quickshell.env("HOME") + "/.config/hypr/scripts/debug-shell.sh"
     readonly property string debugShellVideoScript: Quickshell.env("HOME") + "/.config/hypr/scripts/debug-shell-video.sh"
 
-    // Sem isso, a superfície continuaria ocupando o mesmo espaço sempre (só
+    // "anim.shouldBeVisible" (NUNCA "DashboardState.open" direto) - sem
+    // isso, a superfície continuaria ocupando o mesmo espaço sempre (só
     // invisível) nos modos de animação "popup"/"fade" - onde margins.top
     // nunca sai de 0 - e roubaria hover/clique de quem tiver perto (mesmo
-    // bug real encontrado no VolumePanel.qml antes do PanelAnim existir). No
-    // modo "slide" não faz diferença (a janela já ficava fora da tela).
-    visible: DashboardState.open
+    // bug real encontrado no VolumePanel.qml antes do PanelAnim existir). E
+    // no modo "slide", desmapearia a superfície ANTES do slide terminar de
+    // verdade - ver comentário de "shouldBeVisible" em Widgets/PanelAnim.qml.
+    visible: anim.shouldBeVisible
 
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -35,6 +39,16 @@ PanelWindow {
         left: true
         right: true
     }
+
+    // Sem isto, a superfície INTEIRA (largura da tela toda) aceita clique/
+    // hover mesmo na parte transparente ao redor do card - igual o Dock já
+    // resolvia (mask: Region { item: bg }), só que aqui nunca tinha sido
+    // preciso porque "visible" desmapeava a janela na hora ao fechar. Agora
+    // que "shouldBeVisible" mantém a superfície viva um pouco mais (pro
+    // slide terminar - ver Widgets/PanelAnim.qml), sem essa máscara a janela
+    // ficaria roubando o hover do DashboardTrigger.qml (que mora embaixo
+    // dela, mais perto do topo) durante essa cauda.
+    mask: Region { item: card }
 
     // Fixa (não segue card.height reativamente): redimensionar a superfície
     // Wayland de verdade a cada frame da animação de troca de aba é pesado
@@ -94,7 +108,14 @@ PanelWindow {
         scale: anim.targetScale
         transformOrigin: Item.Top
 
-        Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }
+        // durationNormal (não durationFast) de propósito - tem que
+        // acompanhar a duração do slide (margins.top, também
+        // durationNormal): se a opacidade chegasse a 0 mais rápido que o
+        // slide termina, o card ficava invisível ainda no meio do
+        // movimento, e a sensação era de "sumiu com fade" em vez de
+        // "deslizou pra fora" (a segunda metade do deslize acontecia sem
+        // ninguém ver).
+        Behavior on opacity { NumberAnimation { duration: Motion.durationNormal } }
         Behavior on scale {
             NumberAnimation {
                 duration: Motion.durationNormal

@@ -39,6 +39,15 @@ Item {
     FileView {
         id: wallpaperPathFile
         path: Quickshell.env("HOME") + "/.cache/hypr/wallpaper_current"
+        // Sem isto, o FileView lê o arquivo só UMA vez (na inicialização do
+        // shell) e nunca mais - trocar de wallpaper depois reescreve
+        // wallpaper_current, mas a lockscreen só enxergava a mudança depois
+        // de reiniciar a sessão (a única forma de recriar este Item do
+        // zero). "watchChanges" + "reload()" é o mesmo padrão usado em todo
+        // outro FileView do shell (ver WallpaperConfig.qml, DockConfig.qml
+        // etc.).
+        watchChanges: true
+        onFileChanged: reload()
     }
 
     IpcHandler {

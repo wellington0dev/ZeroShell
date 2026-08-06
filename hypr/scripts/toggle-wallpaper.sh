@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# Cycle or randomize the wallpaper from ~/Wallpapers using awww
-# (a drop-in fork of swww, same CLI: `awww img`, `awww query`, ...).
+# Cycle or randomize the wallpaper from ~/Wallpapers. Picks the image and
+# hands it to set-wallpaper.sh, which just records it as current and
+# regenerates the theme - the quickshell itself renders the wallpaper
+# (Modules/Wallpaper/WallpaperWindow.qml).
 #
 # Usage:
 #   toggle-wallpaper.sh           # random wallpaper (default)

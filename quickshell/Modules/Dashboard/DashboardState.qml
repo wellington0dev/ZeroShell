@@ -64,7 +64,7 @@ Singleton {
         function open(): void { root.open = true }
         function close(): void { root.open = false }
 
-        // Troca a aba ativa - "home", "player" ou "system" (ver
+        // Troca a aba ativa - "home", "player", "system" ou "quick" (ver
         // Modules/Dashboard/DashboardTabs.qml). Não valida o nome: um valor
         // inválido só faz o Loader do DashboardWindow.qml cair no "default"
         // (aba "home"), sem quebrar nada.

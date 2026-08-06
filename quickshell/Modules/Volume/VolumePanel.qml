@@ -2,8 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
+import Quickshell.Wayland
 import qs.Theme
 import qs.Widgets
+import qs.State
 
 // Card de volume que desliza a partir da borda direita, no meio vertical da
 // tela - abre ao passar o mouse na faixa sensível (VolumeTrigger.qml) ou ao
@@ -22,16 +24,20 @@ PanelWindow {
     readonly property PwNode sink: Pipewire.defaultAudioSink
     readonly property bool ready: !!(sink && sink.ready && sink.audio)
 
-    // Sem isso, a superfície inteira (90x768, ancorada na borda direita)
-    // continuava existindo e recebendo hover mesmo com o card deslizado pra
-    // fora da tela - já que ela é declarada DEPOIS do VolumeTrigger.qml em
+    // "anim.shouldBeVisible" (NUNCA "VolumeState.open" direto) - sem isso, a
+    // superfície inteira (90x768, ancorada na borda direita) continuava
+    // existindo e recebendo hover mesmo com o card deslizado pra fora da
+    // tela - já que ela é declarada DEPOIS do VolumeTrigger.qml em
     // shell.qml, ficava por cima dele e roubava o hover da faixa sensível
     // (visto ao vivo: a faixa parava de reagir ao mouse). Mesmo motivo do
     // "visible: Visibility.launcherOpen" no LauncherWindow.qml - só que lá
     // era óbvio (a janela cobre a tela toda), aqui passou despercebido
     // porque a superfície é fininha e o "card" por dentro já escondia a
-    // aparência, mas a área de clique/hover continuava lá.
-    visible: VolumeState.open
+    // aparência, mas a área de clique/hover continuava lá. "shouldBeVisible"
+    // (em vez de ligar direto em "open") também evita desmapear a
+    // superfície ANTES do slide terminar - ver comentário em
+    // Widgets/PanelAnim.qml.
+    visible: anim.shouldBeVisible
 
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -41,6 +47,16 @@ PanelWindow {
         bottom: true
         right: true
     }
+
+    // Sem isto, a superfície INTEIRA (90px de largura, borda direita de
+    // cima a baixo) aceita clique/hover mesmo na parte transparente ao
+    // redor do card - o EXATO bug que o comentário acima já descreve ter
+    // acontecido antes (a superfície inteira roubando o hover do
+    // VolumeTrigger.qml). Antes "visible: VolumeState.open" bastava porque
+    // desmapeava na hora; agora que "shouldBeVisible" mantém a superfície
+    // viva um pouco mais (pro slide terminar), essa máscara é o que evita a
+    // mesma história se repetir só durante essa cauda.
+    mask: Region { item: card }
 
     implicitWidth: 90
 
@@ -87,7 +103,12 @@ PanelWindow {
                 easing.bezierCurve: Motion.standard
             }
         }
-        Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }
+        // durationNormal (não durationFast) de propósito - mesma duração do
+        // slide (anchors.rightMargin, também durationNormal): sincronizado
+        // assim, senão a opacidade chegava a 0 antes do slide terminar e o
+        // card sumia (fade) bem antes de acabar de deslizar pra fora - a
+        // segunda metade do movimento ficava invisível, sem ninguém ver.
+        Behavior on opacity { NumberAnimation { duration: Motion.durationNormal } }
         Behavior on scale {
             NumberAnimation {
                 duration: Motion.durationNormal

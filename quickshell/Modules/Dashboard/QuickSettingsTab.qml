@@ -96,16 +96,21 @@ ColumnLayout {
         }
 
         QuickToggleTile {
-            icon: (root.btAdapter && root.btAdapter.enabled) ? "bluetooth" : "bluetooth-off"
+            icon: QuickSettings.bluetoothEnabled ? "bluetooth" : "bluetooth-off"
             title: "Bluetooth"
-            state: !root.btAdapter || !root.btAdapter.enabled ? "Desligado"
+            state: !QuickSettings.bluetoothEnabled ? "Desligado"
                 : root.btConnectedDevices.length > 0 ? root.btConnectedDevices.map(d => d.name).join(", ")
                 : "Não conectado"
-            checked: root.btAdapter ? root.btAdapter.enabled : false
+            // "QuickSettings.bluetoothEnabled" (não "root.btAdapter.enabled"
+            // direto) - é a preferência PERSISTIDA (ver State/
+            // QuickSettings.qml pro porquê: este bluez não liga o adaptador
+            // sozinho no boot). Mexer só no adaptador aqui desincronizaria
+            // do que fica salvo.
+            checked: QuickSettings.bluetoothEnabled
             switchEnabled: !!root.btAdapter
             showMore: true
             moreActive: Visibility.settingsOpen && Visibility.settingsCategory === "bluetooth"
-            onToggled: if (root.btAdapter) root.btAdapter.enabled = !root.btAdapter.enabled
+            onToggled: QuickSettings.setBluetoothEnabled(!QuickSettings.bluetoothEnabled)
             onMoreClicked: {
                 Visibility.settingsCategory = "bluetooth"
                 Visibility.settingsOpen = true

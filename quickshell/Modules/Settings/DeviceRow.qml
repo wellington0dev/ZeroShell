@@ -4,15 +4,101 @@ import Quickshell.Bluetooth
 import qs.Theme
 import qs.Widgets
 
+// Uma linha de dispositivo pareável (BluetoothPage.qml). Conectar/parear
+// via Bluetooth.Device não devolve erro nenhum pra QML (a API não expõe
+// "por que falhou") - só um bool ("connected"/"paired") e um "state" sem
+// estado de falha próprio (só Disconnected/Connected/Disconnecting/
+// Connecting). Então o único jeito de perceber falha aqui é por AUSÊNCIA de
+// sucesso: disparamos a tentativa, ligamos um timeout, e se o estado voltar
+// pra "parado" sem nunca ter chegado no "conectado"/"pareado" de verdade, é
+// falha - sem isso o clique em "Conectar" era literalmente mudo quando não
+// funcionava (nem erro, nem nada, o usuário só ficava sem saber o que
+// aconteceu).
 ColumnLayout {
     id: root
 
     property BluetoothDevice device
     property bool selected: false
 
+    property bool connectAttempting: false
+    property bool connectFailed: false
+    property bool pairAttempting: false
+    property bool pairFailed: false
+
     signal clicked()
 
     spacing: Styles.spacing / 2
+
+    function tryConnect() {
+        root.connectFailed = false
+        root.connectAttempting = true
+        connectTimeout.restart()
+        root.device.connected = true
+    }
+
+    function disconnectDevice() {
+        connectTimeout.stop()
+        root.connectAttempting = false
+        root.connectFailed = false
+        root.device.connected = false
+    }
+
+    function tryPair() {
+        root.pairFailed = false
+        root.pairAttempting = true
+        // Pareamento de verdade às vezes espera confirmação manual no OUTRO
+        // aparelho (aceitar no fone, digitar um PIN) - timeout bem mais
+        // folgado que o de conectar, pra não gritar "falha" enquanto o
+        // usuário ainda está confirmando do outro lado.
+        pairTimeout.restart()
+        root.device.pair()
+    }
+
+    Timer {
+        id: connectTimeout
+        interval: 12000
+        onTriggered: {
+            root.connectAttempting = false
+            root.connectFailed = true
+        }
+    }
+
+    Timer {
+        id: pairTimeout
+        interval: 20000
+        onTriggered: {
+            root.pairAttempting = false
+            root.pairFailed = true
+        }
+    }
+
+    Connections {
+        target: root.device
+
+        function onStateChanged() {
+            if (!root.connectAttempting) return
+            if (root.device.state === BluetoothDeviceState.Connected) {
+                connectTimeout.stop()
+                root.connectAttempting = false
+                root.connectFailed = false
+            } else if (root.device.state === BluetoothDeviceState.Disconnected) {
+                // Voltou pra "desconectado" no meio de uma tentativa nossa
+                // (não terminou em "conectado") = falhou.
+                connectTimeout.stop()
+                root.connectAttempting = false
+                root.connectFailed = true
+            }
+        }
+
+        function onPairingChanged() {
+            if (!root.pairAttempting || root.device.pairing) return
+            // "pairing" voltou a false - terminou (sucesso ou falha).
+            // "paired" é o veredito.
+            pairTimeout.stop()
+            root.pairAttempting = false
+            root.pairFailed = !root.device.paired
+        }
+    }
 
     RowLayout {
         Layout.fillWidth: true
@@ -37,13 +123,18 @@ ColumnLayout {
             }
 
             Text {
-                text: root.device.state === BluetoothDeviceState.Connected ? "Conectado"
-                    : root.device.state === BluetoothDeviceState.Connecting ? "Conectando…"
+                text: root.connectFailed ? "Falha ao conectar - tenta de novo?"
+                    : root.pairFailed ? "Falha ao parear - tenta de novo?"
+                    : (root.device.state === BluetoothDeviceState.Connected) ? "Conectado"
+                    : (root.device.state === BluetoothDeviceState.Connecting || root.connectAttempting) ? "Conectando…"
+                    : root.pairAttempting ? "Pareando… (confira o outro aparelho)"
                     : root.device.paired ? "Pareado" : ""
-                color: Styles.foregroundMuted
+                color: (root.connectFailed || root.pairFailed) ? Styles.danger : Styles.foregroundMuted
                 font.pixelSize: 11
                 font.family: Styles.fontFamily
                 visible: text.length > 0
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
             }
         }
 
@@ -65,16 +156,17 @@ ColumnLayout {
         spacing: Styles.spacing
 
         Button {
-            text: root.device.connected ? "Desconectar" : "Conectar"
+            text: root.device.connected ? "Desconectar" : (root.connectAttempting ? "Conectando…" : "Conectar")
             primary: !root.device.connected
-            enabled: root.device.paired
-            onClicked: root.device.connected = !root.device.connected
+            enabled: root.device.paired && !root.connectAttempting
+            onClicked: root.device.connected ? root.disconnectDevice() : root.tryConnect()
         }
 
         Button {
-            text: root.device.paired ? "Parear novamente" : "Parear"
+            text: root.pairAttempting ? "Pareando…" : (root.device.paired ? "Parear novamente" : "Parear")
             primary: false
-            onClicked: root.device.pair()
+            enabled: !root.pairAttempting
+            onClicked: root.tryPair()
         }
 
         Button {

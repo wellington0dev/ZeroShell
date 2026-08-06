@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import qs.Theme
 import qs.Widgets
 import qs.State
@@ -34,7 +35,11 @@ PanelWindow {
 
     Process { id: proc }
 
-    visible: Visibility.powerMenuOpen
+    // "anim.shouldBeVisible" (NUNCA "Visibility.powerMenuOpen" direto) -
+    // evita desmapear a superfície ANTES do slide terminar - ver comentário
+    // em Widgets/PanelAnim.qml.
+    visible: anim.shouldBeVisible
+
     color: "transparent"
     focusable: true
     exclusionMode: ExclusionMode.Ignore
@@ -45,6 +50,17 @@ PanelWindow {
         left: true
         right: true
     }
+
+    // Enquanto genuinamente aberto, a máscara cobre a JANELA INTEIRA
+    // (acompanha "clickOutside" abaixo) - precisa disso pro "clique fora
+    // fecha o menu" (MouseArea de baixo) continuar funcionando em
+    // qualquer ponto da tela. Só na cauda de fechamento (Visibility.
+    // powerMenuOpen já é false mas "shouldBeVisible" ainda segura a
+    // superfície viva pro slide terminar - ver Widgets/PanelAnim.qml)
+    // encolhe pra só "card": nesse momento não precisamos mais detectar
+    // clique-fora (já tá fechando), e uma superfície tela-inteira ainda
+    // mapeada não pode ficar roubando clique de mais nada por baixo.
+    mask: Region { item: Visibility.powerMenuOpen ? clickOutside : card }
 
     // Tipo/velocidade da animação de abrir/fechar vêm de
     // Configurações > Aparência > Animações (Motion.animationType) - ver
@@ -60,21 +76,25 @@ PanelWindow {
     }
 
     MouseArea {
+        id: clickOutside
         anchors.fill: parent
         onClicked: root.close()
     }
+
+    // Vão até a sidebar - "56" é a largura visual dela (Sidebar.qml,
+    // shellWidth) + a margem de sempre que a separa das outras janelas
+    // (Sidebar.qml, outerGapH), pra não ficar embaixo dela.
+    readonly property int sidebarRightEdge: 56 + 10
+    readonly property int leftClearance: sidebarRightEdge + Styles.edgeMargin
 
     Shadow { target: card }
 
     Rectangle {
         id: card
 
-        // Canto inferior-esquerdo, não centralizado - leftMargin maior
-        // (Styles.sidebarClearance) pra não ficar embaixo da sidebar (56px
-        // de largura + 10 de margem = ~66px ocupados ali).
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: Styles.sidebarClearance
+        anchors.leftMargin: root.leftClearance
         anchors.bottomMargin: Styles.edgeMargin + anim.slideOffset
         width: 420
         height: 160
@@ -103,7 +123,12 @@ PanelWindow {
                 easing.bezierCurve: Motion.boing
             }
         }
-        Behavior on opacity { NumberAnimation { duration: Motion.durationFast } }
+        // durationNormal (não durationFast) de propósito - mesma duração do
+        // slide (anchors.bottomMargin, também durationNormal): sincronizado
+        // assim, senão a opacidade chegava a 0 antes do slide terminar e o
+        // card sumia (fade) bem antes de acabar de deslizar pra fora - a
+        // segunda metade do movimento ficava invisível, sem ninguém ver.
+        Behavior on opacity { NumberAnimation { duration: Motion.durationNormal } }
 
         MouseArea { anchors.fill: parent }
 

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import qs.Theme
 import qs.State
 import qs.Widgets
@@ -71,7 +72,10 @@ PanelWindow {
         onTriggered: searchInput.forceActiveFocus()
     }
 
-    visible: Visibility.launcherOpen
+    // "anim.shouldBeVisible" (NUNCA "Visibility.launcherOpen" direto) -
+    // evita desmapear a superfície ANTES do fade/escala de saída terminar -
+    // ver comentário em Widgets/PanelAnim.qml.
+    visible: anim.shouldBeVisible
     color: "transparent"
     focusable: true
     exclusionMode: ExclusionMode.Ignore
@@ -83,7 +87,19 @@ PanelWindow {
         right: true
     }
 
+    // Enquanto genuinamente aberto, a máscara cobre a JANELA INTEIRA
+    // (acompanha "clickOutside" abaixo) - precisa disso pro "clique fora
+    // fecha o launcher" (MouseArea abaixo) continuar funcionando em
+    // qualquer ponto da tela. Só na cauda de fechamento (Visibility.
+    // launcherOpen já é false mas "shouldBeVisible" ainda segura a
+    // superfície viva pro fade/escala terminar - ver Widgets/PanelAnim.qml)
+    // encolhe pra só "card": nesse momento não precisamos mais detectar
+    // clique-fora (já tá fechando), e uma superfície tela-inteira ainda
+    // mapeada não pode ficar roubando clique de mais nada por baixo.
+    mask: Region { item: Visibility.launcherOpen ? clickOutside : card }
+
     MouseArea {
+        id: clickOutside
         anchors.fill: parent
         onClicked: root.close()
     }

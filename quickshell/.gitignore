@@ -7,4 +7,3 @@
 # JsonAdapter em cada singleton), então é seguro não versionar isso: o shell
 # recria cada arquivo sozinho na primeira vez que precisar escrever algo.
 State/*.json
-.gitignore

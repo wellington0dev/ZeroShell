@@ -28,13 +28,35 @@ import qs.Modules.Plugins
 PanelWindow {
     id: root
 
-    implicitWidth: 56
-    exclusiveZone: implicitWidth
+    // A sidebar sempre flutua do mesmo jeito, ligada ou não a borda da tela
+    // (Modules/ScreenBorder) - ela já não precisa mais se fundir com a borda
+    // pra ficar com cara de "moldura contínua": quem faz esse papel agora é
+    // o próprio wallpaper (Modules/Wallpaper/WallpaperWindow.qml), que já
+    // nasce com cantos arredondados encostando exatamente onde a borda
+    // termina. Chegou a existir aqui uma fusão de verdade (raio achatado +
+    // ConcaveFillet pra uma curva côncava na costura) - removida porque
+    // virou redundante com o wallpaper já resolvendo o "arredondado" sozinho.
+
+    // Largura visual de sempre (56) + uma folga interna (shadowPad) só pra
+    // sombra ter onde vazar - "bg" abaixo fica menor que a PanelWindow por
+    // "shadowPad" de cada lado, e a folga é tirada das próprias margens
+    // (nada de aumentar o footprint total: "outerGap - shadowPad" em cada
+    // lado dá exatamente "outerGap" de posição final pra "bg" - ver
+    // Shadow.qml pro porquê da folga ser necessária: sem ela a sombra é
+    // cortada nas bordas da própria superfície Wayland, que sem folga
+    // coincidem exatamente com "bg").
+    readonly property int shellWidth: 56
+    readonly property int outerGapV: 30
+    readonly property int outerGapH: 10
+    readonly property int shadowPad: 10
+
+    implicitWidth: shellWidth + shadowPad * 2
+    exclusiveZone: shellWidth
     color: "transparent"
     margins{
-        top: 30
-        left: 10
-        bottom: 30
+        top: outerGapV - shadowPad
+        left: outerGapH - shadowPad
+        bottom: outerGapV - shadowPad
     }
 
     anchors {
@@ -42,6 +64,12 @@ PanelWindow {
         bottom: true
         left: true
     }
+
+    // A folga acima (shadowPad) é transparente e não tem clique nenhum -
+    // sem isto ela roubaria hover/clique de quem estiver do lado direito da
+    // sidebar (layer-shell não fica "clicável só onde tem conteúdo" sozinho,
+    // mesmo problema documentado em Dock/DockWindow.qml).
+    mask: Region { item: bg }
 
     // Toggle "Manter acordado" (Dashboard > aba Ajustes) - impede o sistema
     // de suspender/apagar a tela (DPMS) enquanto ligado. Precisa de uma
@@ -60,7 +88,11 @@ PanelWindow {
 
     Rectangle {
         id: bg
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.margins: shadowPad
+        width: shellWidth
         color: Styles.background
         border.color: Styles.border
         radius: Styles.radiusShell

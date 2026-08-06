@@ -16,12 +16,17 @@ import qs.Theme
 //
 //   PanelAnim { id: anim; open: DashboardState.open; edge: "top"; distance: root.implicitHeight }
 //
-//   visible: DashboardState.open  // essencial pros modos popup/fade: sem
-//                                 // isso a superfície continua ocupando o
-//                                 // mesmo lugar sempre (só invisível), e
-//                                 // rouba hover/clique de quem tiver perto -
-//                                 // já causou um bug de verdade no
-//                                 // VolumePanel.qml antes desta ficar pronta.
+//   visible: anim.shouldBeVisible  // NUNCA "visible: DashboardState.open"
+//                                  // direto - essencial pros modos popup/
+//                                  // fade (sem isso a superfície continua
+//                                  // ocupando o mesmo lugar sempre, só
+//                                  // invisível, e rouba hover/clique de quem
+//                                  // tiver perto - já causou um bug de
+//                                  // verdade no VolumePanel.qml antes desta
+//                                  // ficar pronta) E pro modo slide (sem
+//                                  // isso a superfície desmapeia ANTES da
+//                                  // nossa animação de saída terminar - ver
+//                                  // comentário de "shouldBeVisible" abaixo).
 //   margins.top: anim.slideOffset
 //   Behavior on margins.top { NumberAnimation { duration: Motion.durationNormal; ... } }
 //
@@ -60,4 +65,30 @@ QtObject {
     // na própria borda) - "edge" continua existindo só pra documentar de
     // onde cada painel entra, não afeta mais o sinal.
     readonly property real slideOffset: (Motion.animationType !== "slide" || open) ? 0 : -distance
+
+    // Pra "visible" da PanelWindow (use "anim.shouldBeVisible" em vez de
+    // ligar direto no "open" de cada painel). Fica true na hora ao abrir,
+    // mas só vira false Motion.durationNormal DEPOIS de fechar - dando
+    // tempo da animação de saída (slide/fade/escala) realmente terminar
+    // antes da superfície desmapear.
+    //
+    // Por quê: mapear/desmapear uma superfície layer-shell TAMBÉM dispara a
+    // animação de layer do próprio Hyprland (layersOut, hypr/modules/
+    // appearance.lua - "style = fade"), correndo em paralelo e sem
+    // sincronia nenhuma com a nossa. Ligando "visible" direto em "open",
+    // a superfície desmapeava na hora que "open" virava false - a nossa
+    // animação de saída não tinha tempo de rodar, só o fade do compositor
+    // aparecia. O Dock nunca teve esse problema porque a superfície dele
+    // nunca desmapeia (só o card interno desliza) - aqui é o mesmo
+    // princípio, só que adiando o desmapeamento em vez de nunca desmapear.
+    readonly property bool shouldBeVisible: open || hideTimer.running
+
+    onOpenChanged: if (!open) hideTimer.restart()
+
+    // QtObject não tem "default property" pra filhos soltos (só Item tem,
+    // via "data") - por isso o Timer é uma property normal (com um Timer
+    // como valor), não um filho anônimo "Timer { ... }" solto no corpo.
+    property Timer hideTimer: Timer {
+        interval: Motion.durationNormal
+    }
 }

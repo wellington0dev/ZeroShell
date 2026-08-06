@@ -6,6 +6,11 @@
 # ~/Videos/debug-shell/<data-hora>.mp4. Chamado pelo botão de debug (ícone de
 # vídeo) na aba "Sistema" do Dashboard, ou direto pelo terminal.
 #
+# Também troca o wallpaper a cada WALLPAPER_INTERVAL segundos, em loop
+# solto rodando durante toda a gravação - útil pra confirmar ao vivo que
+# painéis com miniatura/preview do wallpaper (ex.: lockscreen) atualizam
+# sem precisar reiniciar a sessão.
+#
 # Usage:
 #   debug-shell-video.sh
 
@@ -29,22 +34,26 @@ declare -A PANELS=(
     [launcher]="launcher"
     [settings]="settings"
     [powermenu]="powermenu"
+    [volume]="volume"
     [capture]="capture"
     [dashboard]="dashboard"
 )
 # Ordem determinística (arrays associativos no bash não garantem ordem de
 # iteração).
-ORDER=(sidebar launcher settings powermenu capture dashboard)
+ORDER=(sidebar launcher settings powermenu volume capture dashboard)
 
 # Sub-páginas de "dashboard" e "settings" - em vez de segurar só na
 # aba/categoria em que o painel abre por padrão, passa por cada uma. Nomes
 # batem com DashboardTabs.qml (DashboardState.currentTab) e CategoryNav.qml
 # (Visibility.settingsCategory).
-DASHBOARD_TABS=(home player system)
-SETTINGS_CATEGORIES=(wifi bluetooth audio theme capture sidebar)
+DASHBOARD_TABS=(home player system quick)
+SETTINGS_CATEGORIES=(wifi bluetooth audio theme capture sidebar plugins dock keybinds)
 
-HOLD_TIME=1.5   # tempo que cada painel/página fica em tela, gravando
-CLOSE_WAIT=0.3  # respiro entre fechar um painel e abrir o próximo
+HOLD_TIME=1.5        # tempo que cada painel/página fica em tela, gravando
+CLOSE_WAIT=0.3       # respiro entre fechar um painel e abrir o próximo
+WALLPAPER_INTERVAL=6 # troca de wallpaper durante a gravação, em segundos
+
+SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 open_panel() {
     local target="$1"
@@ -73,6 +82,13 @@ sleep "$CLOSE_WAIT"
 
 ORIGINAL_WORKSPACE="$(hyprctl activeworkspace -j | jq -r '.id')"
 
+# Guarda o wallpaper de antes pra restaurar no fim, já que o loop de troca
+# abaixo vai avançando por ~/Wallpapers a cada WALLPAPER_INTERVAL segundos
+# durante a gravação inteira.
+WALLPAPER_STATE="$HOME/.cache/hypr/wallpaper_current"
+ORIGINAL_WALLPAPER=""
+[ -f "$WALLPAPER_STATE" ] && ORIGINAL_WALLPAPER="$(cat "$WALLPAPER_STATE")"
+
 echo "==> Indo pro workspace $DEBUG_WORKSPACE (vazio)..."
 hyprctl dispatch "hl.dsp.focus({workspace = $DEBUG_WORKSPACE})" >/dev/null
 sleep 0.3
@@ -86,6 +102,15 @@ echo "==> Iniciando gravação..."
 wf-recorder -D -f "$OUT_FILE" >/dev/null 2>&1 &
 RECORDER_PID=$!
 sleep 0.5  # dá tempo do wf-recorder abrir o arquivo antes do 1o painel
+
+echo "==> Trocando wallpaper a cada ${WALLPAPER_INTERVAL}s até o fim da gravação..."
+(
+    while true; do
+        sleep "$WALLPAPER_INTERVAL"
+        "$SCRIPTS_DIR/toggle-wallpaper.sh" next >/dev/null 2>&1
+    done
+) &
+WALLPAPER_LOOP_PID=$!
 
 echo "==> Passando por cada painel (~${HOLD_TIME}s cada)..."
 for name in "${ORDER[@]}"; do
@@ -135,11 +160,19 @@ echo "==> Fechando tudo de novo..."
 for name in "${ORDER[@]}"; do
     close_panel "${PANELS[$name]}"
 done
-sleep "$CLOSE_WAIT"
 
 echo "==> Parando gravação..."
 kill -INT "$RECORDER_PID"
 wait "$RECORDER_PID" 2>/dev/null || true
+
+echo "==> Parando troca de wallpaper..."
+kill "$WALLPAPER_LOOP_PID" 2>/dev/null || true
+wait "$WALLPAPER_LOOP_PID" 2>/dev/null || true
+
+if [ -n "$ORIGINAL_WALLPAPER" ]; then
+    echo "==> Restaurando o wallpaper de antes..."
+    "$SCRIPTS_DIR/set-wallpaper.sh" "$ORIGINAL_WALLPAPER" >/dev/null 2>&1 || true
+fi
 
 echo "==> Voltando pro workspace $ORIGINAL_WORKSPACE..."
 hyprctl dispatch "hl.dsp.focus({workspace = $ORIGINAL_WORKSPACE})" >/dev/null
