@@ -42,6 +42,11 @@ plugins pra estender o shell sem precisar editar o núcleo dele.
   cores do wallpaper.
 - **Sistema de plugins** - instale plugins de terceiros sem editar o
   núcleo do shell (ver seção própria abaixo).
+- **Wallpaper renderizado pelo próprio shell** - sem daemon externo
+  (`awww`/`swww`): o quickshell desenha a imagem direto como parte da
+  árvore de UI, com recuo e cantos arredondados de verdade configuráveis em
+  Configurações > Wallpaper, e crossfade na troca. matugen continua
+  responsável só pela extração de cor.
 
 Tudo documentado com comentários no próprio código explicando o "porquê"
 das decisões, não só o "o quê".
@@ -53,7 +58,7 @@ O setup foi feito pra Arch Linux (ou derivada), já que a instalação usa
 
 - `hyprland` - compositor
 - `quickshell` - o shell em si (`qs`), usado no autostart e em toda a interface
-- `awww` - daemon de wallpaper (fork drop-in do swww)
+  (também renderiza o wallpaper, sem daemon externo)
 - `matugen` - gera o tema do quickshell a partir do wallpaper
 - `python-pillow` - extração de uma segunda cor dominante do wallpaper
 - `kitty` - terminal
