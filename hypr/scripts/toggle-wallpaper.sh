@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #
 # Cycle or randomize the wallpaper from ~/Wallpapers. Picks the image and
-# hands it to set-wallpaper.sh, which just records it as current and
-# regenerates the theme - the quickshell itself renders the wallpaper
-# (Modules/Wallpaper/WallpaperWindow.qml).
+# hands it to set-wallpaper.sh, which records it as current, tells awww to
+# draw it, and regenerates the theme.
 #
 # Usage:
 #   toggle-wallpaper.sh           # random wallpaper (default)

@@ -18,7 +18,6 @@ import qs.Modules.Lock
 import qs.Modules.Volume
 import qs.Modules.Plugins
 import qs.Modules.Dock
-import qs.Modules.Wallpaper
 import qs.State
 
 ShellRoot {
@@ -33,7 +32,6 @@ ShellRoot {
     VolumeTrigger {}
     VolumePanel {}
     DockWindow {}
-    WallpaperWindow {}
 
     // Componente "main" de cada plugin instalado e ligado (ver
     // Modules/Plugins/PluginService.qml) - mesmo tratamento "sempre
