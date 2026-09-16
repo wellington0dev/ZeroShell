@@ -35,7 +35,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: height / 2
+        radius: Styles.radiusButton
         opacity: root.enabled ? 1 : 0.4
         color: root.primary
             ? (hover.hovered ? Styles.accentAlt : Styles.accent)

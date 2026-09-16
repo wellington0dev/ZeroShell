@@ -20,8 +20,20 @@ echo "$wallpaper" > "$STATE_FILE"
 
 # Não deixa uma falha do awww (daemon fora do ar, socket ainda subindo)
 # derrubar a regeneração do tema abaixo - as duas coisas são independentes.
+#
+# "fade" (não o "simple" default) porque só ele respeita
+# --transition-duration - o "simple" anda por --transition-step (soma/
+# subtrai um valor fixo por frame), que com o default de 2 fica lento e
+# mecânico. 400ms pra bater com o mesmo crossfade que o quickshell fazia
+# antes (Motion.durationSlow, ver Theme/Motion.qml) - 60fps pra ficar suave
+# nesse tempo curto (o default de 30 fica visivelmente picado num fade tão
+# rápido).
 if command -v awww >/dev/null 2>&1; then
-    awww img "$wallpaper" || echo "awww: falhou ao trocar o wallpaper" >&2
+    awww img "$wallpaper" \
+        --transition-type any \
+        --transition-duration 1 \
+        --transition-fps 30 \
+        || echo "awww: falhou ao trocar o wallpaper" >&2
 fi
 
 "$(dirname "$0")/apply-theme.sh" "$wallpaper"

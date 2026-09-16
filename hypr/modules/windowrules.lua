@@ -57,3 +57,14 @@ hl.window_rule({
     center = true,
     size   = "720 480",
 })
+
+-- Picture-in-Picture do navegador (Firefox): sempre float, nunca tiled, e
+-- fixada na tela (pin) pra acompanhar a troca de workspace em vez de ficar
+-- pra trás na workspace onde foi aberta.
+hl.window_rule({
+    name  = "float-pin-pip",
+    match = { class = "^firefox$", title = "^Picture-in-Picture$" },
+
+    float = true,
+    pin   = true,
+})

@@ -22,8 +22,10 @@ Singleton {
         settingsFile.writeAdapter()
     }
 
-    // Bluetooth ligado/desligado - PERSISTIDO, ao contrário de "keepAwake"
-    // abaixo. Este sistema não tem AutoEnable ligado em
+    // Bluetooth ligado/desligado - persistido, mas com uma reaplicação ativa
+    // no hardware que "keepAwake" abaixo não precisa (o adaptador Bluetooth
+    // tem estado próprio pra sincronizar; keepAwake é só uma flag lida por
+    // quem precisa). Este sistema não tem AutoEnable ligado em
     // /etc/bluetooth/main.conf, então o bluez sempre sobe com o adaptador
     // DESLIGADO a cada boot/reinício do bluetoothd - sem guardar a
     // preferência aqui e reaplicá-la, o usuário precisaria ligar o
@@ -115,16 +117,21 @@ Singleton {
             // esse "nunca foi definido" que aciona a adoção do estado atual
             // em vez de forçar o default (ver _applyBluetooth()).
             property bool bluetoothEnabledSet: false
+            // Persistido a pedido - a ideia original era não sobreviver a um
+            // reinício do shell (evitar a tela nunca mais travar sozinha se
+            // o usuário esquecesse de desligar), mas na prática a sidebar
+            // reiniciar sozinha (edição de QML, crash, update) no meio de
+            // "tô assistindo algo agora" e perder o estado incomodava mais
+            // do que o risco. LockScreen.qml e Sidebar.qml continuam sendo
+            // os únicos dois lugares que precisam saber disso.
+            property bool keepAwake: false
         }
     }
 
-    // "Manter acordado" NÃO é persistido de propósito - é um estado
-    // temporário ("tô assistindo algo agora"), não uma preferência
-    // duradoura. Persistir isso faria a tela nunca mais travar sozinha se o
-    // usuário esquecesse de desligar antes de fechar a sessão.
-    property bool keepAwake: false
+    readonly property bool keepAwake: adapter.keepAwake
 
     function setKeepAwake(value) {
-        root.keepAwake = value
+        adapter.keepAwake = value
+        settingsFile.writeAdapter()
     }
 }
