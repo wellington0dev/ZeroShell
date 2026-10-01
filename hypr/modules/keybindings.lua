@@ -43,6 +43,9 @@ hl.bind(keybind("pseudo", { "P" }), hl.dsp.window.pseudo())
 hl.bind(keybind("togglesplit", { "J" }), hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(keybind("nextWallpaper", { "W" }), hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-wallpaper.sh next"))
 hl.bind(keybind("settings", { "C" }), hl.dsp.exec_cmd(programs.settingsWin))
+hl.bind(keybind("monitor", { "B" }), hl.dsp.exec_cmd(programs.monitor))
+hl.bind(keybind("bluetui", { "O" }), hl.dsp.exec_cmd(programs.bluetui))
+hl.bind(keybind("bluetui", { "I" }), hl.dsp.exec_cmd(programs.wlctl))
 
 -- Atalhos personalizados criados na aba Atalhos (comando de shell livre,
 -- sem ação nomeada correspondente) - mesma convenção de mainMod + até 2

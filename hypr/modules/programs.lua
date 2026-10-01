@@ -12,4 +12,7 @@ return {
     captureAuto = "qs ipc call capture screenshotAuto",   -- captura: clique=janela, fora=tela cheia, arrasta=região
     recordAuto  = "qs ipc call capture recordAuto",       -- mesmo esquema do de cima, pra gravação
     settingsWin = "qs ipc call settings toggle",           -- janela de Configurações
+    monitor     = "kitty --class 'monitor' -e btop",
+    bluetui     = "kitty --class 'bluetui' -e bluetui",
+    wlctl       = "kitty --class 'wlctl' -e wlctl"
 }

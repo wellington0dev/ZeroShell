@@ -16,6 +16,7 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/dirs.sh"
 
 PACMAN_PKGS=(
+    sddm              # gerenciador de sessão
     hyprland          # compositor
     quickshell        # shell (qs), usado no autostart e no bar/sidebar
     awww              # daemon que desenha o wallpaper de verdade (hypr/scripts/load-wallpaper.sh)
@@ -31,6 +32,8 @@ PACMAN_PKGS=(
     cava              # terminal sound view    
     ttf-jetbrains-mono-nerd # fonte do shell (qs.Theme.Colors.fontFamily), com os glifos de ícone
     python-pam
+    bluetui
+    wlctl
 )
 
 echo "==> Instalando pacotes oficiais..."

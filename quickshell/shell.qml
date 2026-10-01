@@ -26,12 +26,12 @@ ShellRoot {
     NotificationPopups {}
     LauncherWindow {}
     PowerMenu {}
-    DashboardTrigger {}
-    DashboardWindow {}
+    //DashboardTrigger {}
+    //DashboardWindow {}
     LockScreen {}
     VolumeTrigger {}
     VolumePanel {}
-    DockWindow {}
+    //DockWindow {}
 
     // Componente "main" de cada plugin instalado e ligado (ver
     // Modules/Plugins/PluginService.qml) - mesmo tratamento "sempre

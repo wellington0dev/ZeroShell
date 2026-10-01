@@ -30,7 +30,7 @@ echo "$wallpaper" > "$STATE_FILE"
 # rápido).
 if command -v awww >/dev/null 2>&1; then
     awww img "$wallpaper" \
-        --transition-type any \
+        --transition-type wave \
         --transition-duration 1 \
         --transition-fps 30 \
         || echo "awww: falhou ao trocar o wallpaper" >&2

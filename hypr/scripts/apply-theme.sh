@@ -85,3 +85,4 @@ fi
 matugen image "$wallpaper" --source-color-index 0 --type "$scheme_type" --mode "$color_mode" --import-json-string "$extra_colors"
 
 "$script_dir/sync-hypr-colors.sh"
+"$script_dir/sync-kitty-colors.sh"
