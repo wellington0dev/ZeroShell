@@ -16,6 +16,8 @@ SCRIPT_FILES=(
     update.sh
     dirs.sh
     README.md
+    starship.toml
+    dolphinrc
 )
 
 CONFIG_DIR="$HOME/.config"

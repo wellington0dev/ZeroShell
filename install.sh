@@ -35,6 +35,7 @@ PACMAN_PKGS=(
     bluetui
     btop
     fastfetch
+    starship
 )
 
 YAY_PKGS=(
