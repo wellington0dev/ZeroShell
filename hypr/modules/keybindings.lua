@@ -38,7 +38,7 @@ local closeWindowBind = hl.bind(keybind("closeWindow", { "Q" }), hl.dsp.window.c
 hl.bind(keybind("exitMenu", { "M" }), hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(keybind("fileManager", { "E" }), hl.dsp.exec_cmd(programs.fileManager))
 hl.bind(keybind("floatToggle", { "V" }), hl.dsp.window.float({ action = "toggle" }))
-hl.bind(keybind("menu", { "R" }), hl.dsp.exec_cmd(programs.menu))
+-- hl.bind(keybind("menu", { "R" }), hl.dsp.exec_cmd(programs.menu))
 hl.bind(keybind("pseudo", { "P" }), hl.dsp.window.pseudo())
 hl.bind(keybind("togglesplit", { "J" }), hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(keybind("nextWallpaper", { "W" }), hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-wallpaper.sh next"))
@@ -46,8 +46,9 @@ hl.bind(keybind("settings", { "C" }), hl.dsp.exec_cmd(programs.settingsWin))
 hl.bind(keybind("monitor", { "B" }), hl.dsp.exec_cmd(programs.monitor))
 hl.bind(keybind("bluetui", { "O" }), hl.dsp.exec_cmd(programs.bluetui))
 hl.bind(keybind("bluetui", { "I" }), hl.dsp.exec_cmd(programs.wlctl))
+-- Abre o Rofi apenas se a tecla SUPER for solta sozinha
+hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(programs.menu), { release = true })
 
--- Atalhos personalizados criados na aba Atalhos (comando de shell livre,
 -- sem ação nomeada correspondente) - mesma convenção de mainMod + até 2
 -- teclas extras dos binds acima.
 for _, bind in ipairs(customBinds) do

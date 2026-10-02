@@ -55,6 +55,7 @@ hl.window_rule({
 
     float  = true,
     center = true,
+    pin    = true,
     size   = "720 480",
 })
 
@@ -75,23 +76,23 @@ hl.window_rule({
     size  = { "monitor_w * 0.7", "monitor_h * 0.7" }, 
     float = true,
     pin   = true,
-    move  = { "(monitor_w - window_w) - 20","(monitor_h - window_h) - 20"}
+    -- move  = { "(monitor_w - window_w) - 20","(monitor_h - window_h) - 20"}
 })
 
 hl.window_rule({
     name  = "bluetui",
     match = { class = "bluetui" },
-    size  = { "monitor_w * 0.5", "monitor_h * 0.5" }, 
+    size  = { "monitor_w * 0.6", "monitor_h * 0.6" }, 
     float = true,
     pin   = true,
-    move  = { "80","(monitor_h - window_h) - 10"}
+    -- move  = { "80","(monitor_h - window_h) - 10"}
 })
 
 hl.window_rule({
     name  = "wlctl",
     match = { class = "wlctl" },
-    size  = { "monitor_w * 0.5", "monitor_h * 0.5" }, 
+    size  = { "monitor_w * 0.6", "monitor_h * 0.6" }, 
     float = true,
     pin   = true,
-    move  = { "80","(monitor_h - window_h) - 10"}
+    -- move  = { "80","(monitor_h - window_h) - 10"}
 })

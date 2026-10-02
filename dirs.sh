@@ -6,6 +6,8 @@ CONFIG_DIRS=(
     quickshell
     kitty
     matugen
+    rofi
+    btop
 )
 
 # Scripts do próprio setup (ficam na raiz de ~/.config e de ~/dotfiles).
