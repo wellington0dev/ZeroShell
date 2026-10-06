@@ -26,8 +26,8 @@ ShellRoot {
     NotificationPopups {}
     LauncherWindow {}
     PowerMenu {}
-    //DashboardTrigger {}
-    //DashboardWindow {}
+    DashboardTrigger {}
+    DashboardWindow {}
     LockScreen {}
     VolumeTrigger {}
     VolumePanel {}

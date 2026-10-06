@@ -5,11 +5,11 @@
 * {
     font:   "FiraCode Nerd Font Medium 12";
 
-    bg0:     #0e1725;
-    bg1:     #152133;
-    fg0:     #e3e5e8;
+    bg0:     #07262c;
+    bg1:     #0c343b;
+    fg0:     #e2e8e9;
 
-    accent-color:     #bbc9dd;
+    accent-color:     #9cedfc;
     urgent-color:     #ffb4ab;
 
     background-color:   transparent;
@@ -23,7 +23,8 @@
 window {
     location:   center;
     width:      480;
-
+    border:     1px;
+    border-color: @accent-color;
     background-color:   @bg0;
 }
 
@@ -89,7 +90,7 @@ element selected urgent {
 }
 
 element-icon {
-    size:   0.8em;
+    size:   1em;
 }
 
 element-text {

@@ -7,7 +7,7 @@ return {
     terminal    = "kitty",
     fileManager = "dolphin",
     browser     = "firefox",
-    menu        = "pkill rofi || rofi -show drun -theme ~/.config/rofi/theme_colors.rasi",         -- quickshell's own app launcher, replaces rofi
+    menu        = "pkill rofi || rofi -show drun -show-icons -theme ~/.config/rofi/theme_colors.rasi",         -- quickshell's own app launcher, replaces rofi
     captureMenu = "qs ipc call capture toggle",           -- menu de captura/gravação de tela (só pela sidebar agora)
     captureAuto = "qs ipc call capture screenshotAuto",   -- captura: clique=janela, fora=tela cheia, arrasta=região
     recordAuto  = "qs ipc call capture recordAuto",       -- mesmo esquema do de cima, pra gravação

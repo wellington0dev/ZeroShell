@@ -45,7 +45,8 @@ theme = f'''/* ROFI SQUARED THEME */
 window {{
     location:   center;
     width:      480;
-
+    border:     1px;
+    border-color: @accent-color;
     background-color:   @bg0;
 }}
 
@@ -111,7 +112,7 @@ element selected urgent {{
 }}
 
 element-icon {{
-    size:   0.8em;
+    size:   1em;
 }}
 
 element-text {{

@@ -36,6 +36,8 @@ PACMAN_PKGS=(
     btop
     fastfetch
     starship
+    breeze 
+    plasma-integration
 )
 
 YAY_PKGS=(
