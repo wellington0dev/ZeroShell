@@ -44,6 +44,11 @@ IconButton {
         return "wifi-low"
     }
 
+    // 32 na coluna da sidebar (ver SidebarItem.qml); a barra horizontal
+    // sobrescreve pelo "buttonSize" pra bater com os outros tiles dela.
+    property int buttonSize: 32
+    size: buttonSize
+
     active: root.onWifiPanel
 
     onClicked: {

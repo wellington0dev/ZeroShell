@@ -20,7 +20,9 @@ ClippingRectangle {
 
     // 40 é o tamanho usado na sidebar; a aba Início do Dashboard usa um
     // valor maior (ver HomeTab.qml).
-    property int size: 40
+    // Para o topo da sidebar estilo Rumda, usamos 64px.
+    // Mesma conta do AppButton: 34 não cabia na coluna de 40px da sidebar.
+    property int size: 32
 
     implicitWidth: size
     implicitHeight: size

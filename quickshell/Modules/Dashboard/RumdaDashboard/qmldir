@@ -1,0 +1,12 @@
+module qs.Modules.Dashboard.RumdaDashboard
+ContribGraph 1.0 ContribGraph.qml
+DashBoardControls 1.0 DashBoardControls.qml
+Dashboard 1.0 Dashboard.qml
+DashBrightnessControl 1.0 DashBrightnessControl.qml
+DashControlExtras 1.0 DashControlExtras.qml
+DashPlayButtons 1.0 DashPlayButtons.qml
+DashPlayerCover 1.0 DashPlayerCover.qml
+RumdaNotifications 1.0 RumdaNotifications.qml
+ProfileAndPower 1.0 ProfileAndPower.qml
+Rumda_the_cat 1.0 Rumda_the_cat.qml
+Zoom 1.0 Zoom.qml

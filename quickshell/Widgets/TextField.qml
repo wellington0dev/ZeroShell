@@ -36,13 +36,28 @@ Item {
             ColorAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
         }
 
+        // Placeholder limitado à MESMA área útil do TextInput (que é
+        // anchors.fill + margins: 8 abaixo) e truncado com reticências.
+        //
+        // Antes este Text tinha SÓ a âncora `left`, então a largura era a
+        // largura natural do texto: um placeholder maior que o campo
+        // transbordava por cima do que viesse depois, sem nada recortar.
+        // Medido com a fonte real (JetBrainsMono Nerd Font 12px): 38
+        // caracteres ocupam 274px e estouram em 30px um campo de 260px.
+        //
+        // A correção é `right` + `elide`, e NÃO `clip` no Rectangle do
+        // campo: `clip` ali recortaria qualquer filho futuro, incluindo
+        // menus e popovers, que precisam transbordar de propósito.
         Text {
             anchors {
                 left: parent.left
+                right: parent.right
                 verticalCenter: parent.verticalCenter
                 leftMargin: 8
+                rightMargin: 8
             }
             text: root.placeholder
+            elide: Text.ElideRight
             color: Styles.foregroundMuted
             font.pixelSize: 12
             font.family: Styles.fontFamily

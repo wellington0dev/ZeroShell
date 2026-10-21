@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import qs.Theme
 import qs.Widgets
 import qs.State
-import qs.Modules.Plugins
 
 // Aba de Configurações pra escolher quais itens aparecem na sidebar. Cada
 // linha liga/desliga um item guardado em SidebarConfig (State/SidebarConfig.qml,
@@ -29,10 +28,13 @@ Item {
     // reordena algo sem valor salvo ainda.
     readonly property var items: [
         { key: "showProfile",    alignId: "profile",    label: "Foto de perfil" },
+        { key: "showTheme",      alignId: "theme",      label: "Alternância tema" },
         { key: "showLauncher",   alignId: "launcher",   label: "Lançador de apps" },
         { key: "showWorkspaces", alignId: "workspaces", label: "Workspaces" },
         { key: "showAppTray",    alignId: "appTray",    label: "Apps em segundo plano" },
         { key: "showClock",      alignId: "clock",      label: "Relógio" },
+        { key: "showVolume",     alignId: "volume",     label: "Volume" },
+        { key: "showCpu",        alignId: "cpu",        label: "CPU / RAM" },
         { key: "showBattery",    alignId: "battery",    label: "Bateria" },
         { key: "showWifi",       alignId: "wifi",       label: "Wi-Fi" },
         { key: "showBluetooth",  alignId: "bluetooth",  label: "Bluetooth" },
@@ -41,15 +43,10 @@ Item {
         { key: "showPower",      alignId: "power",      label: "Menu de energia" }
     ].map((it, idx) => ({ key: it.key, alignId: it.alignId, label: it.label, fallbackOrder: idx }))
 
-    readonly property var pluginItems: PluginService.plugins
-        .map((p, idx) => ({ p: p, fallbackOrder: 100 + idx }))
-        .filter(o => o.p.enabled && o.p.sidebar && o.p.sidebar.component)
-        .map(o => ({ key: o.p.id, alignId: o.p.id, label: (o.p.name || o.p.id) + " (plugin)", isPlugin: true, fallbackOrder: o.fallbackOrder }))
-
     // Lista combinada com o "order" já resolvido (salvo ou fallback) - as
     // funções moveUp/moveDown abaixo reordenam DENTRO do mesmo grupo
     // (align), igual Sidebar.qml faz pra desenhar.
-    readonly property var merged: root.items.concat(root.pluginItems)
+    readonly property var merged: root.items
 
     function siblingsOf(item) {
         const group = SidebarConfig.getAlign(item.alignId)
@@ -82,7 +79,7 @@ Item {
         spacing: Styles.spacing
 
         Text {
-            text: "Sidebar"
+            text: "Barra"
             color: Styles.foreground
             font.pixelSize: 16
             font.family: Styles.fontFamily
@@ -90,10 +87,49 @@ Item {
         }
 
         Text {
-            text: "Escolha quais itens aparecem na barra lateral."
+            text: "Onde a barra fica na tela. Esquerda/Direita deixa ela na vertical; Topo/Rodapé deixa ela horizontal."
             color: Styles.foregroundMuted
             font.pixelSize: Styles.fontSizeSmall
             font.family: Styles.fontFamily
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+
+        // ---- Posição da barra ----
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Styles.spacing / 2
+
+            Repeater {
+                model: SidebarConfig.positions
+
+                delegate: Button {
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    text: modelData.label
+                    // "primary" só na posição atual: as outras ficam neutras.
+                    primary: SidebarConfig.position === modelData.value
+                    onClicked: SidebarConfig.setPosition(modelData.value)
+                }
+            }
+        }
+
+        Text {
+            text: "Itens da barra"
+            color: Styles.foreground
+            font.pixelSize: Styles.fontSizeNormal
+            font.family: Styles.fontFamily
+            font.bold: true
+        }
+
+        Text {
+            text: "Escolha quais itens aparecem, em que lado ficam e em que ordem."
+            color: Styles.foregroundMuted
+            font.pixelSize: Styles.fontSizeSmall
+            font.family: Styles.fontFamily
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
         }
 
         ListView {
@@ -145,12 +181,8 @@ Item {
                 }
 
                 Switch {
-                    checked: row.modelData.isPlugin
-                        ? SidebarConfig.isPluginIconVisible(row.modelData.key)
-                        : SidebarConfig[row.modelData.key]
-                    onToggled: row.modelData.isPlugin
-                        ? SidebarConfig.setPluginIconVisible(row.modelData.key, !SidebarConfig.isPluginIconVisible(row.modelData.key))
-                        : SidebarConfig.set(row.modelData.key, !SidebarConfig[row.modelData.key])
+                    checked: SidebarConfig[row.modelData.key]
+                    onToggled: SidebarConfig.set(row.modelData.key, !SidebarConfig[row.modelData.key])
                 }
 
                 // Posição dentro do grupo atual (topo/centro/rodapé) - só

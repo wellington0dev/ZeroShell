@@ -52,6 +52,29 @@ Item {
         }
 
         MiniCalendar { Layout.alignment: Qt.AlignHCenter }
+
+        // Brilho e perfil/energia (Fase 3) entram na lateral esquerda, abaixo
+        // do calendário. É o que o Rumda tem no topo do dashboard dele e aqui
+        // não existia.
+        //
+        // Deliberadamente ABAIXO do perfil/relógio/calendário, e não no lugar
+        // deles: os três são a identidade da aba e continuam exatamente como
+        // estavam. Nada daqui compete com o histórico de notificações da
+        // direita, que fica intacto (mesmo NotificationCard, mesmo
+        // NotificationService, mesmo removeFromHistory/clearHistory).
+        //
+        // Alturas fixas em vez de fillHeight: os dois cards são
+        // autorreferentes (DashBrightness/DashProfilePower pedem 132 de altura
+        // ao layout), então sobra espaço abaixo deles dentro da coluna - o
+        // mesmo jeito que a coluna já reservava espaço depois do calendário.
+        DashBrightness {
+            Layout.fillWidth: true
+            Layout.topMargin: Styles.spacing
+        }
+
+        DashProfilePower {
+            Layout.fillWidth: true
+        }
     }
 
     Rectangle {

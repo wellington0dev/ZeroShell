@@ -48,13 +48,6 @@ ColumnLayout {
         active: root.current === "sidebar"
         onClicked: Visibility.settingsCategory = "sidebar"
     }
-
-    IconButton {
-        icon: "puzzle"
-        active: root.current === "plugins"
-        onClicked: Visibility.settingsCategory = "plugins"
-    }
-
     IconButton {
         icon: "dock"
         active: root.current === "dock"

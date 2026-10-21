@@ -33,13 +33,28 @@ Item {
             ColorAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
         }
 
+        // Placeholder espelhando EXATAMENTE a área do TextInput abaixo
+        // (left+10 ate reveal.left-6), com reticências quando não couber.
+        //
+        // Mesmo defeito do TextField.qml corrigido aqui: o Text tinha só a
+        // âncora `left`, então um placeholder longo passava por baixo do
+        // botão de olho — o `reveal` é declarado DEPOIS neste arquivo, e
+        // isso é seguro: o QML resolve ids depois de montar a árvore
+        // inteira (mesmo mecanismo usado em Shadow.qml, cujo `target`
+        // aponta para um Rectangle declarado depois).
+        //
+        // Sem `clip` no Rectangle do campo de propósito: ele traria menus
+        // e popovers junto.
         Text {
             anchors {
                 left: parent.left
+                right: reveal.left
                 verticalCenter: parent.verticalCenter
                 leftMargin: 10
+                rightMargin: 6
             }
             text: root.placeholder
+            elide: Text.ElideRight
             color: Styles.foregroundMuted
             font.pixelSize: 12
             font.family: Styles.fontFamily

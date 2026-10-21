@@ -1,0 +1,4 @@
+module qs.Modules.Sidebar.RumdaBarSections
+BottomSection 1.0 BottomSection.qml
+CenterSection 1.0 CenterSection.qml
+TopSection 1.0 TopSection.qml

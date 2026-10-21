@@ -8,6 +8,7 @@ CONFIG_DIRS=(
     matugen
     rofi
     btop
+    rumda
 )
 
 # Scripts do próprio setup (ficam na raiz de ~/.config e de ~/dotfiles).

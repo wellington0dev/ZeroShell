@@ -10,63 +10,48 @@ import Quickshell
 import qs.Modules.Sidebar
 import qs.Modules.Settings
 import qs.Modules.Notifications
+import qs.Modules.Dashboard.RumdaDashboard
 import qs.Modules.Launcher
 import qs.Modules.Power
 import qs.Modules.Capture
 import qs.Modules.Dashboard
 import qs.Modules.Lock
 import qs.Modules.Volume
-import qs.Modules.Plugins
 import qs.Modules.Dock
 import qs.State
 
 ShellRoot {
-    Sidebar {}
+    // Só a SidebarNew está ativa. A "Sidebar" antiga (Modules/Sidebar/
+    // Sidebar.qml) continua no código, funcionando e sem warning, mas não é
+    // instanciada: as duas declararem "exclusiveZone: 56" fazia o Hyprland
+    // reservar 112px e as duas barras apareciam lado a lado.
+    // Sidebar {}
+
+    // Barra vertical do shell, no estilo Rumda (TopSection/CenterSection/
+    // BottomSection). Usa as cores do tema via Styles + RumdaConfig/Colors.
+    SidebarNew {}
     SettingsWindow {}
-    NotificationPopups {}
+    // NotificationPopups {}   // trocado pelos toasts do Rumda
+    // (Modules/Dashboard/RumdaDashboard/Notifications.qml), que usam o MESMO
+    // NotificationService - um servidor de notificações só. Este continua no
+    // código caso queira voltar atrás.
+    RumdaNotifications {}
     LauncherWindow {}
     PowerMenu {}
-    DashboardTrigger {}
-    DashboardWindow {}
+    // Dashboard: o gatilho de hover (DashboardTrigger) saiu na Fase 3 - a
+    // janela virou WlrLayershell com foco exclusivo de teclado, e uma faixa
+    // sensível de 10px no topo da tela passaria a competir com o teclado e com
+    // o clique-fora do próprio painel. A abertura passa a ser pelo atalho
+    // (Configurações > Atalhos -> Super+TAB) ou por IPC.
+    // DashboardWindow {}
+
+    // Card do Dashboard no estilo Rumda (Modules/Dashboard/RumdaDashboard/),
+    // usando o mesmo DashboardState/IPC do DashboardWindow.
+    Dashboard {}
     LockScreen {}
     VolumeTrigger {}
     VolumePanel {}
     //DockWindow {}
-
-    // Componente "main" de cada plugin instalado e ligado (ver
-    // Modules/Plugins/PluginService.qml) - mesmo tratamento "sempre
-    // instanciado" que os módulos embutidos acima recebem, pra IPC/timers/
-    // lógica de fundo do plugin funcionarem. Plugin sem "main" no manifesto
-    // (só sidebar e/ou settingsPage) não ganha um Loader aqui - não tem
-    // nada pra manter vivo.
-    //
-    // O "Item" em volta do Repeater é necessário - testado ao vivo que um
-    // Repeater direto dentro de ShellRoot não cria NENHUM delegate (nem
-    // erro, nem log, simplesmente nada), porque ShellRoot não é um
-    // Item/Layout de verdade pro Repeater inserir os filhos gerados. Um
-    // Loader avulso (sem Repeater) funciona direto sob ShellRoot (ver
-    // CaptureMenu/CapturePicker abaixo) - só o Repeater precisa desse
-    // Item por baixo.
-    Item {
-        Repeater {
-            model: PluginService.plugins
-
-            Loader {
-                id: pluginMainLoader
-
-                required property var modelData
-
-                active: modelData.enabled && !!modelData.main
-                source: active ? ("file://" + modelData.dir + "/" + modelData.main) : ""
-
-                onStatusChanged: {
-                    if (status === Loader.Error) {
-                        console.log("Plugin \"" + modelData.id + "\": erro ao carregar \"" + modelData.main + "\" - " + modelData.dir)
-                    }
-                }
-            }
-        }
-    }
 
     // CaptureMenu e CapturePicker são os únicos painéis que, ao fechar,
     // precisam ser DESTRUÍDOS de verdade (não só escondidos) - veja os

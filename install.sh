@@ -42,6 +42,7 @@ PACMAN_PKGS=(
 
 YAY_PKGS=(
     wlctl
+    nvim
 )
 
 

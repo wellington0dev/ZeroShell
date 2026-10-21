@@ -66,8 +66,10 @@ ColumnLayout {
     ]
 
     function pickColorMode(value) {
-        Styles.setColorMode(value)
-        if (root.current) root.run(["bash", root.scriptsDir + "/apply-theme.sh", root.current])
+        // Só delegar: quem persiste a escolha E reaplica o tema na hora é o
+        // Styles.applyColorMode (mesma lógica do botão de tema da sidebar, que
+        // antes só chamava setColorMode e não mudava cor nenhuma na tela).
+        Styles.applyColorMode(value)
     }
 
     // Um Flickable só pra TUDO (botões + estilo de cor + claro/escuro +

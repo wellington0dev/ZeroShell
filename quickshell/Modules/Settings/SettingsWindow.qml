@@ -20,11 +20,19 @@ FloatingWindow {
         // open/close explícitos (além do toggle acima) - scripts que
         // precisam de estado determinístico (ex.: debug-shell.sh) não podem
         // usar um toggle cego sem saber o estado atual antes.
-        function open(): void { Visibility.settingsOpen = true }
+        //
+        // "open" aceita a categoria opcional (ex.: "keybinds", "capture",
+        // "sidebar"...) - é o que permite abrir direto numa aba em vez de
+        // cair sempre na primeira. Sem o parâmetro, a categoria que já estava
+        // selecionada continua valendo.
+        function open(category: string): void {
+            if (category) Visibility.settingsCategory = category
+            Visibility.settingsOpen = true
+        }
         function close(): void { Visibility.settingsOpen = false }
 
         // Troca a categoria ativa - "wifi", "bluetooth", "audio", "theme",
-        // "capture", "sidebar", "plugins", "dock" ou "keybinds" (ver
+        // "capture", "sidebar", "dock" ou "keybinds" (ver
         // Modules/Settings/CategoryNav.qml). Não valida o nome: um valor
         // inválido só faz o Loader acima cair no "default" (null, painel
         // vazio), sem quebrar nada.
@@ -99,7 +107,6 @@ FloatingWindow {
                         case "theme": return themePageComp
                         case "capture": return capturePageComp
                         case "sidebar": return sidebarPageComp
-                        case "plugins": return pluginsPageComp
                         case "dock": return dockPageComp
                         case "keybinds": return keybindsPageComp
                         default: return null
@@ -115,7 +122,6 @@ FloatingWindow {
     Component { id: themePageComp; ThemePage {} }
     Component { id: capturePageComp; CapturePage {} }
     Component { id: sidebarPageComp; SidebarPage {} }
-    Component { id: pluginsPageComp; PluginsPage {} }
     Component { id: dockPageComp; DockPage {} }
     Component { id: keybindsPageComp; KeybindsPage {} }
 }

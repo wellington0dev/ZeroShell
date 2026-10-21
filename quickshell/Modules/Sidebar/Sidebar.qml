@@ -6,7 +6,6 @@ import qs.Theme
 import qs.Widgets
 import qs.State
 import qs.Modules.Capture
-import qs.Modules.Plugins
 
 // A barra vertical fixa na borda esquerda da tela - o "tronco" do shell.
 // É uma PanelWindow (janela do tipo layer-shell, pensada pra barras/painéis,
@@ -104,61 +103,102 @@ PanelWindow {
         // só não têm mais "Layout.alignment"/"visible" aqui porque quem
         // instancia isso é o Loader dos Repeaters abaixo, que já cuida
         // disso. Indexados via "builtinComponents" mais abaixo.
-        Component { id: profileComp; ProfilePicture {} }
+        Component { id: profileComp; SidebarItem { content: ProfilePicture {} } }
 
+        // Theme switch (Fase 5): toggle light/dark
         Component {
-            id: launcherComp
-            IconButton {
-                icon: "search"
-                active: Visibility.launcherOpen
-                onClicked: Visibility.launcherOpen = !Visibility.launcherOpen
+            id: themeComp
+            SidebarItem {
+                content: IconButton {
+                    icon: "theme-switch"
+                    // 32 = maior botão que cabe na coluna de 40px da sidebar
+                    // já com o respiro do tile (ver SidebarItem.qml).
+                    size: 32
+                    // applyColorMode e não setColorMode: o segundo só reescrevia
+                    // State/theme-mode.json e as cores da tela continuavam as
+                    // mesmas - quem regenera o colors.json é o apply-theme.sh
+                    // que o Styles.applyColorMode chama (mesmo caminho do botão
+                    // Claro/Escuro em Configurações > WallpaperGrid.qml).
+                    onClicked: Styles.applyColorMode(Styles.colorMode === "dark" ? "light" : "dark")
+                }
             }
         }
 
-        Component { id: workspacesComp; Workspaces {} }
+        Component {
+            id: launcherComp
+            SidebarItem {
+                content: IconButton {
+                    icon: "search"
+                    size: 32
+                    active: Visibility.launcherOpen
+                    onClicked: Visibility.launcherOpen = !Visibility.launcherOpen
+                }
+            }
+        }
+
+        Component { id: workspacesComp; SidebarItem { content: Workspaces {} } }
 
         // Ícones de apps rodando em segundo plano (Spotify/Discord/Steam).
-        Component { id: appTrayComp; AppTray {} }
+        Component { id: appTrayComp; SidebarItem { content: AppTray {} } }
 
-        Component { id: clockComp; Clock {} }
+        Component { id: clockComp; SidebarItem { content: Clock {} } }
 
-        Component { id: batteryComp; Battery {} }
+        // Volume (Fase 4): clique abre/fecha o VolumePanel que já existe e o
+        // ícone reflete mudo/volume do MESMO Pipewire.defaultAudioSink que
+        // o painel lê. O ajuste continua no painel (o IconButton não tem
+        // WheelHandler, e nenhum controle do shell usa scroll).
+        Component { id: volumeComp; SidebarItem { content: SidebarVolume {} } }
+
+        // CPU/RAM (Fase 4): os dois números empilhados, lidos do singleton
+        // SystemStats - o mesmo que a aba Sistema do Dashboard consome.
+        Component { id: cpuComp; SidebarItem { content: SidebarCpu {} } }
+
+        Component { id: batteryComp; SidebarItem { content: Battery {} } }
 
         // Estado do Wi-Fi + atalho pra Configurações > aba Wi-Fi.
-        Component { id: wifiComp; WifiButton {} }
+        Component { id: wifiComp; SidebarItem { content: WifiButton {} } }
 
         // Estado do Bluetooth + atalho pra Configurações > aba Bluetooth.
-        Component { id: bluetoothComp; BluetoothButton {} }
+        Component { id: bluetoothComp; SidebarItem { content: BluetoothButton {} } }
 
         // Captura/gravação de tela (Modules/Capture).
-        Component { id: captureComp; CaptureIndicator {} }
+        Component { id: captureComp; SidebarItem { content: CaptureIndicator {} } }
 
         // Abre a janela de Configurações (Modules/Settings).
         Component {
             id: settingsComp
-            IconButton {
-                icon: "gear"
-                active: Visibility.settingsOpen
-                onClicked: Visibility.settingsOpen = !Visibility.settingsOpen
+            SidebarItem {
+                content: IconButton {
+                    icon: "gear"
+                    size: 32
+                    active: Visibility.settingsOpen
+                    onClicked: Visibility.settingsOpen = !Visibility.settingsOpen
+                }
             }
         }
 
         // Abre o menu de energia (Modules/Power).
         Component {
             id: powerComp
-            IconButton {
-                icon: "shutdown"
-                active: Visibility.powerMenuOpen
-                onClicked: Visibility.powerMenuOpen = !Visibility.powerMenuOpen
+            SidebarItem {
+                content: IconButton {
+                    icon: "shutdown"
+                    size: 32
+                    active: Visibility.powerMenuOpen
+                    onClicked: Visibility.powerMenuOpen = !Visibility.powerMenuOpen
+                }
             }
         }
 
         readonly property var builtinComponents: ({
             profile: profileComp,
+            theme: themeComp,
             launcher: launcherComp,
             workspaces: workspacesComp,
             appTray: appTrayComp,
             clock: clockComp,
+            volume: volumeComp,
+            cpu: cpuComp,
             battery: batteryComp,
             wifi: wifiComp,
             bluetooth: bluetoothComp,
@@ -186,10 +226,13 @@ PanelWindow {
         readonly property var allItems: {
             const builtins = [
                 { id: "profile", visible: SidebarConfig.showProfile },
+                { id: "theme", visible: SidebarConfig.showTheme },
                 { id: "launcher", visible: SidebarConfig.showLauncher },
                 { id: "workspaces", visible: SidebarConfig.showWorkspaces },
                 { id: "appTray", visible: SidebarConfig.showAppTray },
                 { id: "clock", visible: SidebarConfig.showClock },
+                { id: "volume", visible: SidebarConfig.showVolume },
+                { id: "cpu", visible: SidebarConfig.showCpu },
                 { id: "battery", visible: SidebarConfig.showBattery },
                 { id: "wifi", visible: SidebarConfig.showWifi },
                 { id: "bluetooth", visible: SidebarConfig.showBluetooth },
@@ -227,6 +270,7 @@ PanelWindow {
 
         ColumnLayout {
             anchors.fill: parent
+            // Rumda usa innerPadding: 10 e spacing: 10 para módulos
             anchors.margins: Styles.spacing
             spacing: Styles.spacing
 
@@ -234,19 +278,28 @@ PanelWindow {
                 model: bg.itemsForAlign("top")
                 delegate: Loader {
                     required property var modelData
-                    Layout.alignment: Qt.AlignHCenter
+                    // O tile ocupa a largura TODA da coluna (40px = shellWidth
+                    // 56 - 2*Styles.spacing) e o conteúdo é centralizado
+                    // dentro dele pelo SidebarItem. "Layout.minimumWidth: 0"
+                    // é obrigatório: sem ele o QQuickLayout usa o
+                    // implicitWidth do item como largura mínima e um botão
+                    // maior que a coluna vaza pra fora da sidebar.
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
                     sourceComponent: modelData.isPlugin ? null : bg.builtinComponents[modelData.id]
                     source: modelData.isPlugin ? ("file://" + modelData.dir + "/" + modelData.component) : ""
                 }
             }
 
+            // Espaçador elástico estilo Rumda (equivalente ao espaçador flexível)
             Item { Layout.fillHeight: true }
 
             Repeater {
                 model: bg.itemsForAlign("center")
                 delegate: Loader {
                     required property var modelData
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
                     sourceComponent: modelData.isPlugin ? null : bg.builtinComponents[modelData.id]
                     source: modelData.isPlugin ? ("file://" + modelData.dir + "/" + modelData.component) : ""
                 }
@@ -258,7 +311,8 @@ PanelWindow {
                 model: bg.itemsForAlign("bottom")
                 delegate: Loader {
                     required property var modelData
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
                     sourceComponent: modelData.isPlugin ? null : bg.builtinComponents[modelData.id]
                     source: modelData.isPlugin ? ("file://" + modelData.dir + "/" + modelData.component) : ""
                 }

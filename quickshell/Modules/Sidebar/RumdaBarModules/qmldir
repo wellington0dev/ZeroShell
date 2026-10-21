@@ -1,0 +1,9 @@
+module qs.Modules.Sidebar.RumdaBarModules
+ClockModule 1.0 ClockModule.qml
+CpuRamIndicator 1.0 CpuRamIndicator.qml
+Power 1.0 Power.qml
+RadialIndicator 1.0 RadialIndicator.qml
+ThemeSwitch 1.0 ThemeSwitch.qml
+VolumeControl 1.0 VolumeControl.qml
+WeatherStatus 1.0 WeatherStatus.qml
+Workspaces 1.0 Workspaces.qml

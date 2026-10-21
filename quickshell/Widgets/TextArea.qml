@@ -31,9 +31,29 @@ Item {
             ColorAnimation { duration: Motion.durationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.expressiveEffects }
         }
 
+        // Placeholder limitado à MESMA área útil do Flickable interno (que é
+        // anchors.fill + margins: 8, linhas 43-45), com reticências.
+        //
+        // A âncora `right` vai no Rectangle do campo — NÃO dentro do
+        // Flickable. O placeholder é irmão do Flickable, não filho: entrar
+        // no Flickable o submeteria ao `contentItem` e ao
+        // `contentHeight: input.implicitHeight` (linha 47), que é calculado
+        // só a partir do TextEdit. Isso esticaria a área rolável e
+        // desalinharia o placeholder do texto real.
+        //
+        // O placeholder é uma dica de uma linha; truncar com reticências
+        // é preferível a fazer o campo crescer em altura. Sem `clip` no
+        // Rectangle: traria menus e popovers junto.
         Text {
-            anchors { left: parent.left; top: parent.top; margins: 8 }
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                leftMargin: 8
+                rightMargin: 8
+            }
             text: root.placeholder
+            elide: Text.ElideRight
             color: Styles.foregroundMuted
             font.pixelSize: 12
             font.family: Styles.fontFamily
