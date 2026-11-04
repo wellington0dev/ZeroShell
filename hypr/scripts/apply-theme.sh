@@ -90,3 +90,7 @@ matugen image "$wallpaper" --source-color-index 0 --type "$scheme_type" --mode "
 "$script_dir/sync-starship-colors.sh"
 "$script_dir/sync-gtk-colors.sh"
 "$script_dir/sync-kde-colors.sh"
+# Eclipse é o único alvo que não é recarregado ao vivo (as preferências são
+# lidas na inicialização); o script avisa quando há uma instância aberta e sai
+# com 0 se o Eclipse nem estiver instalado, para não derrubar a cadeia.
+"$script_dir/sync-eclipse-colors.sh"

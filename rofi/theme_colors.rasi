@@ -5,11 +5,11 @@
 * {
     font:   "FiraCode Nerd Font Medium 12";
 
-    bg0:     #24072c;
-    bg1:     #310c3b;
-    fg0:     #e7e2e9;
+    bg0:     #070f2c;
+    bg1:     #0c163b;
+    fg0:     #e2e4e9;
 
-    accent-color:     #dbb2e6;
+    accent-color:     #bbc2dd;
     urgent-color:     #ffb4ab;
 
     background-color:   transparent;
